@@ -1,4 +1,4 @@
-from typing import Any, Callable, Dict
+from typing import Any, Callable
 
 from graphene import Schema
 from graphene.utils.str_converters import to_camel_case

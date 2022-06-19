@@ -1,6 +1,6 @@
 import pytest
 
-from graphql import graphql
+from graphql import graphql_sync
 
 from graphene import ObjectType, ID, String, Field
 
@@ -33,7 +33,13 @@ def test_similar_field_name():
     assert (
         str(chat_schema)
         == """schema {
-  query: Query
+  query: ChatQuery
+}
+
+type ChatQuery {
+  message(id: ID!): ChatMessage
+  _entities(representations: [_Any]): [_Entity]
+  _service: _Service
 }
 
 type ChatMessage {
@@ -49,20 +55,14 @@ type ChatUser {
   ID: ID
 }
 
-type Query {
-  message(id: ID!): ChatMessage
-  _entities(representations: [_Any]): [_Entity]
-  _service: _Service
-}
-
-scalar _Any
-
 union _Entity = ChatUser
+
+\"\"\"Anything\"\"\"
+scalar _Any
 
 type _Service {
   sdl: String
-}
-"""
+}"""
     )
     # Check the federation service schema definition language
     query = """
@@ -72,18 +72,18 @@ type _Service {
         }
     }
     """
-    result = graphql(chat_schema, query)
+    result = graphql_sync(chat_schema.graphql_schema, query)
     assert not result.errors
     assert (
         result.data["_service"]["sdl"].strip()
         == """
+type ChatQuery {
+  message(id: ID!): ChatMessage
+}
+
 type ChatMessage {
   id: ID!
   user: ChatUser
-}
-
-type ChatQuery {
-  message(id: ID!): ChatMessage
 }
 
 extend type ChatUser  @key(fields: "id") {
@@ -115,8 +115,10 @@ def test_camel_case_field_name():
     schema = build_schema(query=Query)
     assert (
         str(schema)
-        == """schema {
-  query: Query
+        == """type Query {
+  camel: Camel
+  _entities(representations: [_Any]): [_Entity]
+  _service: _Service
 }
 
 type Camel {
@@ -126,20 +128,14 @@ type Camel {
   aCamel: String
 }
 
-type Query {
-  camel: Camel
-  _entities(representations: [_Any]): [_Entity]
-  _service: _Service
-}
-
-scalar _Any
-
 union _Entity = Camel
+
+\"\"\"Anything\"\"\"
+scalar _Any
 
 type _Service {
   sdl: String
-}
-"""
+}"""
     )
     # Check the federation service schema definition language
     query = """
@@ -149,20 +145,20 @@ type _Service {
         }
     }
     """
-    result = graphql(schema, query)
+    result = graphql_sync(schema.graphql_schema, query)
     assert not result.errors
     assert (
         result.data["_service"]["sdl"].strip()
         == """
+type Query {
+  camel: Camel
+}
+
 extend type Camel  @key(fields: "autoCamel") {
   autoCamel: String @external
   forcedCamel: String @requires(fields: "autoCamel")
   aSnake: String
   aCamel: String
-}
-
-type Query {
-  camel: Camel
 }
 """.strip()
     )
@@ -186,8 +182,10 @@ def test_camel_case_field_name_without_auto_camelcase():
     schema = build_schema(query=Query, auto_camelcase=False)
     assert (
         str(schema)
-        == """schema {
-  query: Query
+        == """type Query {
+  camel: Camel
+  _entities(representations: [_Any]): [_Entity]
+  _service: _Service
 }
 
 type Camel {
@@ -197,20 +195,14 @@ type Camel {
   aCamel: String
 }
 
-type Query {
-  camel: Camel
-  _entities(representations: [_Any]): [_Entity]
-  _service: _Service
-}
-
-scalar _Any
-
 union _Entity = Camel
+
+\"\"\"Anything\"\"\"
+scalar _Any
 
 type _Service {
   sdl: String
-}
-"""
+}"""
     )
     # Check the federation service schema definition language
     query = """
@@ -220,20 +212,20 @@ type _Service {
         }
     }
     """
-    result = graphql(schema, query)
+    result = graphql_sync(schema.graphql_schema, query)
     assert not result.errors
     assert (
         result.data["_service"]["sdl"].strip()
         == """
+type Query {
+  camel: Camel
+}
+
 extend type Camel  @key(fields: "auto_camel") {
   auto_camel: String @external
   forcedCamel: String @requires(fields: "auto_camel")
   a_snake: String
   aCamel: String
-}
-
-type Query {
-  camel: Camel
 }
 """.strip()
     )
@@ -260,8 +252,10 @@ def test_annotated_field_also_used_in_filter():
     schema = build_schema(query=Query)
     assert (
         str(schema)
-        == """schema {
-  query: Query
+        == """type Query {
+  a: A
+  _entities(representations: [_Any]): [_Entity]
+  _service: _Service
 }
 
 type A {
@@ -273,20 +267,14 @@ type B {
   id: ID
 }
 
-type Query {
-  a: A
-  _entities(representations: [_Any]): [_Entity]
-  _service: _Service
-}
-
-scalar _Any
-
 union _Entity = A | B
+
+\"\"\"Anything\"\"\"
+scalar _Any
 
 type _Service {
   sdl: String
-}
-"""
+}"""
     )
     # Check the federation service schema definition language
     query = """
@@ -296,11 +284,15 @@ type _Service {
         }
     }
     """
-    result = graphql(schema, query)
+    result = graphql_sync(schema.graphql_schema, query)
     assert not result.errors
     assert (
         result.data["_service"]["sdl"].strip()
         == """
+type Query {
+  a: A
+}
+
 extend type A  @key(fields: "id") {
   id: ID @external
   b(id: ID): B
@@ -308,10 +300,6 @@ extend type A  @key(fields: "id") {
 
 type B @key(fields: "id") {
   id: ID
-}
-
-type Query {
-  a: A
 }
 """.strip()
     )
@@ -339,8 +327,10 @@ def test_annotate_object_with_meta_name():
     schema = build_schema(query=Query)
     assert (
         str(schema)
-        == """schema {
-  query: Query
+        == """type Query {
+  a: Banana
+  _entities(representations: [_Any]): [_Entity]
+  _service: _Service
 }
 
 type Banana {
@@ -352,20 +342,14 @@ type Potato {
   id: ID
 }
 
-type Query {
-  a: Banana
-  _entities(representations: [_Any]): [_Entity]
-  _service: _Service
-}
-
-scalar _Any
-
 union _Entity = Banana | Potato
+
+\"\"\"Anything\"\"\"
+scalar _Any
 
 type _Service {
   sdl: String
-}
-"""
+}"""
     )
     # Check the federation service schema definition language
     query = """
@@ -375,11 +359,15 @@ type _Service {
         }
     }
     """
-    result = graphql(schema, query)
+    result = graphql_sync(schema.graphql_schema, query)
     assert not result.errors
     assert (
         result.data["_service"]["sdl"].strip()
         == """
+type Query {
+  a: Banana
+}
+
 extend type Banana  @key(fields: "id") {
   id: ID @external
   b(id: ID): Potato
@@ -387,10 +375,6 @@ extend type Banana  @key(fields: "id") {
 
 type Potato @key(fields: "id") {
   id: ID
-}
-
-type Query {
-  a: Banana
 }
 """.strip()
     )

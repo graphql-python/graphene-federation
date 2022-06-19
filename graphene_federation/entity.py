@@ -1,21 +1,25 @@
-from typing import Any, Dict, Union
+from __future__ import annotations
 
-from graphene import List, Union, Schema
+from typing import Any, Callable
 
-import graphene
+from graphene import List, Union
+
+from graphene.types.schema import Schema
+from graphene.types.schema import TypeMap
 
 from .types import _Any
 from .utils import field_name_to_type_attribute
 
 
-def get_entities(schema: Schema) -> Dict[str, Any]:
+def get_entities(schema: Schema) -> dict[str, Any]:
     """
-    Find all the entities from the schema.
+    Find all the entities from the type map.
     They can be easily distinguished from the other type as
     the `@key` and `@extend` decorators adds a `_sdl` attribute to them.
     """
+    type_map: TypeMap = schema.graphql_schema.type_map
     entities = {}
-    for type_name, type_ in schema._type_map.items():
+    for type_name, type_ in type_map.items():
         if not hasattr(type_, "graphene_type"):
             continue
         if getattr(type_.graphene_type, "_keys", None):
@@ -23,7 +27,7 @@ def get_entities(schema: Schema) -> Dict[str, Any]:
     return entities
 
 
-def get_entity_cls(entities: Dict[str, Any]):
+def get_entity_cls(entities: dict[str, Any]) -> Union:
     """
     Create _Entity type which is a union of all the entities types.
     """
@@ -46,14 +50,12 @@ def get_entity_query(schema: Schema):
     entity_type = get_entity_cls(entities_dict)
 
     class EntityQuery:
-        entities = graphene.List(
-            entity_type, name="_entities", representations=List(_Any)
-        )
+        entities = List(entity_type, name="_entities", representations=List(_Any))
 
         def resolve_entities(self, info, representations):
             entities = []
             for representation in representations:
-                type_ = schema.get_type(representation["__typename"])
+                type_ = schema.graphql_schema.get_type(representation["__typename"])
                 model = type_.graphene_type
                 model_arguments = representation.copy()
                 model_arguments.pop("__typename")
@@ -76,7 +78,7 @@ def get_entity_query(schema: Schema):
     return EntityQuery
 
 
-def key(fields: str):
+def key(fields: str) -> Callable:
     """
     Take as input a field that should be used as key for that entity.
     See specification: https://www.apollographql.com/docs/federation/federation-spec/#key

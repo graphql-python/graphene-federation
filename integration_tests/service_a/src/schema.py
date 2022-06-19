@@ -1,4 +1,5 @@
 from graphene import ObjectType, String, Int, List, NonNull, Field, Interface
+
 from graphene_federation import build_schema, extend, external
 
 

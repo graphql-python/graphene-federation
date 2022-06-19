@@ -1,6 +1,6 @@
 import pytest
 
-from graphql import graphql
+from graphql import graphql_sync
 
 from graphene import ObjectType, ID, String, Field
 
@@ -21,11 +21,7 @@ def test_multiple_keys():
     schema = build_schema(query=Query)
     assert (
         str(schema)
-        == """schema {
-  query: Query
-}
-
-type Query {
+        == """type Query {
   user: User
   _entities(representations: [_Any]): [_Entity]
   _service: _Service
@@ -36,14 +32,14 @@ type User {
   email: String
 }
 
-scalar _Any
-
 union _Entity = User
+
+\"\"\"Anything\"\"\"
+scalar _Any
 
 type _Service {
   sdl: String
-}
-"""
+}"""
     )
     # Check the federation service schema definition language
     query = """
@@ -53,7 +49,7 @@ type _Service {
         }
     }
     """
-    result = graphql(schema, query)
+    result = graphql_sync(schema.graphql_schema, query)
     assert not result.errors
     assert (
         result.data["_service"]["sdl"].strip()

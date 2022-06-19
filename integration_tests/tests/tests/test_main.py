@@ -11,7 +11,7 @@ def test_integrate_simple_schema():
         """,
         'variables': {}
     }
-    response = requests.post('http://federation:3000/graphql/', json=query)
+    response = requests.post('http://gateway:3000/graphql/', json=query)
     assert response.status_code == 200
     data = json.loads(response.content)['data']
     assert data['goodbye'] == 'See ya!'
@@ -50,7 +50,7 @@ def test_external_types():
         'variables': {}
     }
     response = requests.post(
-        'http://federation:3000/graphql/',
+        'http://gateway:3000/graphql/',
         json=query,
     )
     assert response.status_code == 200
@@ -103,7 +103,7 @@ def test_mutation_is_accessible_in_federation():
     }"""
 
     response = requests.post(
-        'http://federation:3000/graphql/', json={'query': mutation}
+        'http://gateway:3000/graphql/', json={'query': mutation}
     )
     assert response.status_code == 200
     assert 'errors' not in response.json()
@@ -136,7 +136,7 @@ def test_requires():
         'variables': {}
     }
     response = requests.post(
-        'http://federation:3000/graphql/',
+        'http://gateway:3000/graphql/',
         json=query,
     )
     assert response.status_code == 200
@@ -176,7 +176,7 @@ def test_provides():
         'variables': {}
     }
     response = requests.post(
-        'http://federation:3000/graphql/',
+        'http://gateway:3000/graphql/',
         json=query,
     )
     assert response.status_code == 200

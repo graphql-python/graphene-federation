@@ -2,10 +2,11 @@ version: '2.1'
 services:
   service_a:
     build: service_a/.
+    container_name: federation_service_a
     volumes:
       - ./service_a/src:/project/src
       - ../:/project/federation_deps
-    command: sh -c "pip install ./federation_deps && python ./src/app.py"
+    command: sh -c "pip install -e ./federation_deps && python ./src/app.py"
     healthcheck:
       test: curl http://0.0.0.0:5000/graphql -H "Content-Type:application/json" --data '{"query":"{__schema { types {name} }}"}'
       interval: 1s
@@ -14,10 +15,11 @@ services:
 
   service_b:
     build: service_b/.
+    container_name: federation_service_b
     volumes:
       - ./service_b/src:/project/src
       - ../:/project/federation_deps
-    command: sh -c "pip install ./federation_deps && python ./src/app.py"
+    command: sh -c "pip install -e ./federation_deps && python ./src/app.py"
     healthcheck:
       test: curl http://0.0.0.0:5000/graphql -H "Content-Type:application/json" --data '{"query":"{__schema { types {name} }}"}'
       interval: 1s
@@ -26,10 +28,11 @@ services:
 
   service_c:
     build: service_c/.
+    container_name: federation_service_c
     volumes:
       - ./service_c/src:/project/src
       - ../:/project/federation_deps
-    command: sh -c "pip install ./federation_deps && python ./src/app.py"
+    command: sh -c "pip install -e ./federation_deps && python ./src/app.py"
     healthcheck:
       test: curl http://0.0.0.0:5000/graphql -H "Content-Type:application/json" --data '{"query":"{__schema { types {name} }}"}'
       interval: 1s
@@ -38,20 +41,22 @@ services:
 
   service_d:
     build: service_d/.
+    container_name: federation_service_d
     volumes:
       - ./service_d/src:/project/src
       - ../:/project/federation_deps
-    command: sh -c "pip install ./federation_deps && python ./src/app.py"
+    command: sh -c "pip install -e ./federation_deps && python ./src/app.py"
     healthcheck:
       test: curl http://0.0.0.0:5000/graphql -H "Content-Type:application/json" --data '{"query":"{__schema { types {name} }}"}'
       interval: 1s
       timeout: 10s
       retries: 20
 
-  federation:
-    build: federation/.
+  gateway:
+    build: gateway/.
+    container_name: federation_gateway
     volumes:
-      - ./federation/src:/project/src
+      - ./gateway/src:/project/src
     ports:
       - 3000:3000
     healthcheck:
@@ -72,7 +77,7 @@ services:
   proxy_dep:
     image: busybox
     depends_on:
-      federation:
+      gateway:
         condition: service_healthy
 
   tests:

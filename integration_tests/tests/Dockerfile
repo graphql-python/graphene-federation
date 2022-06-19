@@ -1,4 +1,8 @@
-FROM python:3.6-alpine3.9
+FROM python:3.10-slim
+
+RUN apt-get update \
+ && apt-get install -y git gcc \
+ && rm -rf /var/lib/apt/lists/*
 
 WORKDIR project
 COPY requirements.txt ./

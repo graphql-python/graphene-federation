@@ -1,4 +1,4 @@
-from graphql import graphql
+from graphql import graphql_sync
 
 from graphene import Field, Int, ObjectType, String
 
@@ -29,8 +29,10 @@ def test_provides():
     schema = build_schema(query=Query)
     assert (
         str(schema)
-        == """schema {
-  query: Query
+        == """type Query {
+  inStockCount: InStockCount
+  _entities(representations: [_Any]): [_Entity]
+  _service: _Service
 }
 
 type InStockCount {
@@ -44,20 +46,14 @@ type Product {
   weight: Int
 }
 
-type Query {
-  inStockCount: InStockCount
-  _entities(representations: [_Any]): [_Entity]
-  _service: _Service
-}
-
-scalar _Any
-
 union _Entity = Product
+
+\"\"\"Anything\"\"\"
+scalar _Any
 
 type _Service {
   sdl: String
-}
-"""
+}"""
     )
     # Check the federation service schema definition language
     query = """
@@ -67,11 +63,15 @@ type _Service {
         }
     }
     """
-    result = graphql(schema, query)
+    result = graphql_sync(schema.graphql_schema, query)
     assert not result.errors
     assert (
         result.data["_service"]["sdl"].strip()
         == """
+type Query {
+  inStockCount: InStockCount
+}
+
 type InStockCount  {
   product: Product! @provides(fields: "name")
   quantity: Int!
@@ -81,10 +81,6 @@ extend type Product  @key(fields: "sku") {
   sku: String! @external
   name: String @external
   weight: Int @external
-}
-
-type Query {
-  inStockCount: InStockCount
 }
 """.strip()
     )
@@ -112,8 +108,10 @@ def test_provides_multiple_fields():
     schema = build_schema(query=Query)
     assert (
         str(schema)
-        == """schema {
-  query: Query
+        == """type Query {
+  inStockCount: InStockCount
+  _entities(representations: [_Any]): [_Entity]
+  _service: _Service
 }
 
 type InStockCount {
@@ -127,20 +125,14 @@ type Product {
   weight: Int
 }
 
-type Query {
-  inStockCount: InStockCount
-  _entities(representations: [_Any]): [_Entity]
-  _service: _Service
-}
-
-scalar _Any
-
 union _Entity = Product
+
+\"\"\"Anything\"\"\"
+scalar _Any
 
 type _Service {
   sdl: String
-}
-"""
+}"""
     )
     # Check the federation service schema definition language
     query = """
@@ -150,11 +142,15 @@ type _Service {
         }
     }
     """
-    result = graphql(schema, query)
+    result = graphql_sync(schema.graphql_schema, query)
     assert not result.errors
     assert (
         result.data["_service"]["sdl"].strip()
         == """
+type Query {
+  inStockCount: InStockCount
+}
+
 type InStockCount  {
   product: Product! @provides(fields: "name weight")
   quantity: Int!
@@ -164,10 +160,6 @@ extend type Product  @key(fields: "sku") {
   sku: String! @external
   name: String @external
   weight: Int @external
-}
-
-type Query {
-  inStockCount: InStockCount
 }
 """.strip()
     )
@@ -195,8 +187,10 @@ def test_provides_multiple_fields_as_list():
     schema = build_schema(query=Query)
     assert (
         str(schema)
-        == """schema {
-  query: Query
+        == """type Query {
+  inStockCount: InStockCount
+  _entities(representations: [_Any]): [_Entity]
+  _service: _Service
 }
 
 type InStockCount {
@@ -210,20 +204,14 @@ type Product {
   weight: Int
 }
 
-type Query {
-  inStockCount: InStockCount
-  _entities(representations: [_Any]): [_Entity]
-  _service: _Service
-}
-
-scalar _Any
-
 union _Entity = Product
+
+\"\"\"Anything\"\"\"
+scalar _Any
 
 type _Service {
   sdl: String
-}
-"""
+}"""
     )
     # Check the federation service schema definition language
     query = """
@@ -233,11 +221,15 @@ type _Service {
         }
     }
     """
-    result = graphql(schema, query)
+    result = graphql_sync(schema.graphql_schema, query)
     assert not result.errors
     assert (
         result.data["_service"]["sdl"].strip()
         == """
+type Query {
+  inStockCount: InStockCount
+}
+
 type InStockCount  {
   product: Product! @provides(fields: "name weight")
   quantity: Int!
@@ -247,10 +239,6 @@ extend type Product  @key(fields: "sku") {
   sku: String! @external
   name: String @external
   weight: Int @external
-}
-
-type Query {
-  inStockCount: InStockCount
 }
 """.strip()
     )

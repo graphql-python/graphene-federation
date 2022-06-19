@@ -1,7 +1,9 @@
-FROM python:3.6-alpine3.9
+FROM python:3.10-alpine
+
+RUN apk update \
+ && apk add curl
 
 WORKDIR project
-RUN apk add curl
 
 COPY ./requirements.txt ./
 RUN pip install -r requirements.txt

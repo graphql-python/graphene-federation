@@ -1,4 +1,4 @@
-from graphql import graphql
+from graphql import graphql_sync
 
 from graphene import ObjectType, ID, String, NonNull, Field
 
@@ -90,10 +90,10 @@ def test_user_schema():
     assert (
         str(user_schema)
         == """schema {
-  query: Query
+  query: UserQuery
 }
 
-type Query {
+type UserQuery {
   user(userId: ID!): User
   _entities(representations: [_Any]): [_Entity]
   _service: _Service
@@ -105,14 +105,14 @@ type User {
   name: String
 }
 
-scalar _Any
-
 union _Entity = User
+
+\"\"\"Anything\"\"\"
+scalar _Any
 
 type _Service {
   sdl: String
-}
-"""
+}"""
     )
     query = """
     query {
@@ -121,7 +121,7 @@ type _Service {
         }
     }
     """
-    result = graphql(user_schema, query)
+    result = graphql_sync(user_schema.graphql_schema, query)
     assert not result.errors
     assert result.data == {"user": {"name": "Jack"}}
     # Check the federation service schema definition language
@@ -132,19 +132,19 @@ type _Service {
         }
     }
     """
-    result = graphql(user_schema, query)
+    result = graphql_sync(user_schema.graphql_schema, query)
     assert not result.errors
     assert (
         result.data["_service"]["sdl"].strip()
         == """
+type UserQuery {
+  user(userId: ID!): User
+}
+
 type User @key(fields: "email") @key(fields: "userId") {
   userId: ID!
   email: String!
   name: String
-}
-
-type UserQuery {
-  user(userId: ID!): User
 }
 """.strip()
     )
@@ -158,7 +158,13 @@ def test_chat_schema():
     assert (
         str(chat_schema)
         == """schema {
-  query: Query
+  query: ChatQuery
+}
+
+type ChatQuery {
+  message(id: ID!): ChatMessage
+  _entities(representations: [_Any]): [_Entity]
+  _service: _Service
 }
 
 type ChatMessage {
@@ -172,21 +178,17 @@ type ChatUser {
   userId: ID!
 }
 
-type Query {
-  message(id: ID!): ChatMessage
-  _entities(representations: [_Any]): [_Entity]
-  _service: _Service
-}
-
-scalar _Any
-
 union _Entity = ChatUser
+
+\"\"\"Anything\"\"\"
+scalar _Any
 
 type _Service {
   sdl: String
-}
-"""
+}"""
     )
+
+    # Query the message field
     query = """
     query {
         message(id: "4") {
@@ -195,9 +197,10 @@ type _Service {
         }
     }
     """
-    result = graphql(chat_schema, query)
+    result = graphql_sync(chat_schema.graphql_schema, query)
     assert not result.errors
     assert result.data == {"message": {"text": "Don't be rude Jack", "userId": "3"}}
+
     # Check the federation service schema definition language
     query = """
     query {
@@ -206,20 +209,20 @@ type _Service {
         }
     }
     """
-    result = graphql(chat_schema, query)
+    result = graphql_sync(chat_schema.graphql_schema, query)
     assert not result.errors
     assert (
         result.data["_service"]["sdl"].strip()
         == """
+type ChatQuery {
+  message(id: ID!): ChatMessage
+}
+
 type ChatMessage {
   id: ID!
   text: String
   userId: ID
   user: ChatUser!
-}
-
-type ChatQuery {
-  message(id: ID!): ChatMessage
 }
 
 extend type ChatUser  @key(fields: "userId") {
