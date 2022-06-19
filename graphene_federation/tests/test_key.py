@@ -20,7 +20,7 @@ def test_multiple_keys():
 
     schema = build_schema(query=Query)
     assert (
-        str(schema)
+        str(schema).strip()
         == """type Query {
   user: User
   _entities(representations: [_Any]): [_Entity]

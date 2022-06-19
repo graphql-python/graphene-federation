@@ -28,7 +28,7 @@ def test_provides():
 
     schema = build_schema(query=Query)
     assert (
-        str(schema)
+        str(schema).strip()
         == """type Query {
   inStockCount: InStockCount
   _entities(representations: [_Any]): [_Entity]
@@ -107,7 +107,7 @@ def test_provides_multiple_fields():
 
     schema = build_schema(query=Query)
     assert (
-        str(schema)
+        str(schema).strip()
         == """type Query {
   inStockCount: InStockCount
   _entities(representations: [_Any]): [_Entity]
@@ -186,7 +186,7 @@ def test_provides_multiple_fields_as_list():
 
     schema = build_schema(query=Query)
     assert (
-        str(schema)
+        str(schema).strip()
         == """type Query {
   inStockCount: InStockCount
   _entities(representations: [_Any]): [_Entity]

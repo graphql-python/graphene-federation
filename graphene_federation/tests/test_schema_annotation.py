@@ -88,7 +88,7 @@ def test_user_schema():
     and that a request to retrieve a user works.
     """
     assert (
-        str(user_schema)
+        str(user_schema).strip()
         == """schema {
   query: UserQuery
 }
@@ -156,7 +156,7 @@ def test_chat_schema():
     and that a request to retrieve a chat message works.
     """
     assert (
-        str(chat_schema)
+        str(chat_schema).strip()
         == """schema {
   query: ChatQuery
 }

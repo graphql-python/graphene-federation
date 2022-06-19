@@ -31,7 +31,7 @@ def test_similar_field_name():
 
     chat_schema = build_schema(query=ChatQuery)
     assert (
-        str(chat_schema)
+        str(chat_schema).strip().strip()
         == """schema {
   query: ChatQuery
 }
@@ -114,7 +114,7 @@ def test_camel_case_field_name():
 
     schema = build_schema(query=Query)
     assert (
-        str(schema)
+        str(schema).strip()
         == """type Query {
   camel: Camel
   _entities(representations: [_Any]): [_Entity]
@@ -181,7 +181,7 @@ def test_camel_case_field_name_without_auto_camelcase():
 
     schema = build_schema(query=Query, auto_camelcase=False)
     assert (
-        str(schema)
+        str(schema).strip()
         == """type Query {
   camel: Camel
   _entities(representations: [_Any]): [_Entity]
@@ -251,7 +251,7 @@ def test_annotated_field_also_used_in_filter():
 
     schema = build_schema(query=Query)
     assert (
-        str(schema)
+        str(schema).strip()
         == """type Query {
   a: A
   _entities(representations: [_Any]): [_Entity]
@@ -326,7 +326,7 @@ def test_annotate_object_with_meta_name():
 
     schema = build_schema(query=Query)
     assert (
-        str(schema)
+        str(schema).strip()
         == """type Query {
   a: Banana
   _entities(representations: [_Any]): [_Entity]
