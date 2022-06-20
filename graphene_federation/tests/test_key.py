@@ -23,8 +23,8 @@ def test_multiple_keys():
         str(schema).strip()
         == """type Query {
   user: User
-  _entities(representations: [_Any]): [_Entity]
-  _service: _Service
+  _entities(representations: [_Any!]!): [_Entity]!
+  _service: _Service!
 }
 
 type User {
@@ -34,7 +34,6 @@ type User {
 
 union _Entity = User
 
-\"\"\"Anything\"\"\"
 scalar _Any
 
 type _Service {

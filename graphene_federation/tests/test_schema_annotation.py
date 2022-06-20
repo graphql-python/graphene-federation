@@ -95,8 +95,8 @@ def test_user_schema():
 
 type UserQuery {
   user(userId: ID!): User
-  _entities(representations: [_Any]): [_Entity]
-  _service: _Service
+  _entities(representations: [_Any!]!): [_Entity]!
+  _service: _Service!
 }
 
 type User {
@@ -107,7 +107,6 @@ type User {
 
 union _Entity = User
 
-\"\"\"Anything\"\"\"
 scalar _Any
 
 type _Service {
@@ -163,8 +162,8 @@ def test_chat_schema():
 
 type ChatQuery {
   message(id: ID!): ChatMessage
-  _entities(representations: [_Any]): [_Entity]
-  _service: _Service
+  _entities(representations: [_Any!]!): [_Entity]!
+  _service: _Service!
 }
 
 type ChatMessage {
@@ -180,7 +179,6 @@ type ChatUser {
 
 union _Entity = ChatUser
 
-\"\"\"Anything\"\"\"
 scalar _Any
 
 type _Service {

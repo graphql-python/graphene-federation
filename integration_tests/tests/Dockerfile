@@ -8,4 +8,4 @@ WORKDIR project
 COPY requirements.txt ./
 RUN pip install -r requirements.txt
 
-CMD [ "pytest", "-s"]
+CMD [ "pytest", "-svv"]

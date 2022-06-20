@@ -2,7 +2,6 @@ from graphene import Scalar, String
 
 
 class _Any(Scalar):
-    """Anything"""
 
     __typename = String(required=True)
 

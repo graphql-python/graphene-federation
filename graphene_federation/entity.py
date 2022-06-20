@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any, Callable
 
-from graphene import List, Union
+from graphene import List, NonNull, Union
 
 from graphene.types.schema import Schema
 from graphene.types.schema import TypeMap
@@ -50,7 +50,12 @@ def get_entity_query(schema: Schema):
     entity_type = get_entity_cls(entities_dict)
 
     class EntityQuery:
-        entities = List(entity_type, name="_entities", representations=List(_Any))
+        entities = List(
+            entity_type,
+            name="_entities",
+            representations=NonNull(List(NonNull(_Any))),
+            required=True,
+        )
 
         def resolve_entities(self, info, representations):
             entities = []

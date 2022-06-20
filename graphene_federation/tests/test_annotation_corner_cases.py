@@ -31,15 +31,15 @@ def test_similar_field_name():
 
     chat_schema = build_schema(query=ChatQuery)
     assert (
-        str(chat_schema).strip().strip()
+        str(chat_schema).strip()
         == """schema {
   query: ChatQuery
 }
 
 type ChatQuery {
   message(id: ID!): ChatMessage
-  _entities(representations: [_Any]): [_Entity]
-  _service: _Service
+  _entities(representations: [_Any!]!): [_Entity]!
+  _service: _Service!
 }
 
 type ChatMessage {
@@ -57,7 +57,6 @@ type ChatUser {
 
 union _Entity = ChatUser
 
-\"\"\"Anything\"\"\"
 scalar _Any
 
 type _Service {
@@ -117,8 +116,8 @@ def test_camel_case_field_name():
         str(schema).strip()
         == """type Query {
   camel: Camel
-  _entities(representations: [_Any]): [_Entity]
-  _service: _Service
+  _entities(representations: [_Any!]!): [_Entity]!
+  _service: _Service!
 }
 
 type Camel {
@@ -130,7 +129,6 @@ type Camel {
 
 union _Entity = Camel
 
-\"\"\"Anything\"\"\"
 scalar _Any
 
 type _Service {
@@ -184,8 +182,8 @@ def test_camel_case_field_name_without_auto_camelcase():
         str(schema).strip()
         == """type Query {
   camel: Camel
-  _entities(representations: [_Any]): [_Entity]
-  _service: _Service
+  _entities(representations: [_Any!]!): [_Entity]!
+  _service: _Service!
 }
 
 type Camel {
@@ -197,7 +195,6 @@ type Camel {
 
 union _Entity = Camel
 
-\"\"\"Anything\"\"\"
 scalar _Any
 
 type _Service {
@@ -254,8 +251,8 @@ def test_annotated_field_also_used_in_filter():
         str(schema).strip()
         == """type Query {
   a: A
-  _entities(representations: [_Any]): [_Entity]
-  _service: _Service
+  _entities(representations: [_Any!]!): [_Entity]!
+  _service: _Service!
 }
 
 type A {
@@ -269,7 +266,6 @@ type B {
 
 union _Entity = A | B
 
-\"\"\"Anything\"\"\"
 scalar _Any
 
 type _Service {
@@ -329,8 +325,8 @@ def test_annotate_object_with_meta_name():
         str(schema).strip()
         == """type Query {
   a: Banana
-  _entities(representations: [_Any]): [_Entity]
-  _service: _Service
+  _entities(representations: [_Any!]!): [_Entity]!
+  _service: _Service!
 }
 
 type Banana {
@@ -344,7 +340,6 @@ type Potato {
 
 union _Entity = Banana | Potato
 
-\"\"\"Anything\"\"\"
 scalar _Any
 
 type _Service {

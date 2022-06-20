@@ -42,8 +42,8 @@ def test_requires_multiple_fields():
         str(schema).strip()
         == """type Query {
   product: Product
-  _entities(representations: [_Any]): [_Entity]
-  _service: _Service
+  _entities(representations: [_Any!]!): [_Entity]!
+  _service: _Service!
 }
 
 type Product {
@@ -55,7 +55,6 @@ type Product {
 
 union _Entity = Product
 
-\"\"\"Anything\"\"\"
 scalar _Any
 
 type _Service {
@@ -109,8 +108,8 @@ def test_requires_multiple_fields_as_list():
         str(schema).strip()
         == """type Query {
   product: Product
-  _entities(representations: [_Any]): [_Entity]
-  _service: _Service
+  _entities(representations: [_Any!]!): [_Entity]!
+  _service: _Service!
 }
 
 type Product {
@@ -122,7 +121,6 @@ type Product {
 
 union _Entity = Product
 
-\"\"\"Anything\"\"\"
 scalar _Any
 
 type _Service {
@@ -175,8 +173,8 @@ def test_requires_with_input():
         str(schema).strip()
         == """type Query {
   acme: Acme
-  _entities(representations: [_Any]): [_Entity]
-  _service: _Service
+  _entities(representations: [_Any!]!): [_Entity]!
+  _service: _Service!
 }
 
 type Acme {
@@ -187,7 +185,6 @@ type Acme {
 
 union _Entity = Acme
 
-\"\"\"Anything\"\"\"
 scalar _Any
 
 type _Service {

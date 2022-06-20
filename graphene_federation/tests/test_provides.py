@@ -31,8 +31,8 @@ def test_provides():
         str(schema).strip()
         == """type Query {
   inStockCount: InStockCount
-  _entities(representations: [_Any]): [_Entity]
-  _service: _Service
+  _entities(representations: [_Any!]!): [_Entity]!
+  _service: _Service!
 }
 
 type InStockCount {
@@ -48,7 +48,6 @@ type Product {
 
 union _Entity = Product
 
-\"\"\"Anything\"\"\"
 scalar _Any
 
 type _Service {
@@ -110,8 +109,8 @@ def test_provides_multiple_fields():
         str(schema).strip()
         == """type Query {
   inStockCount: InStockCount
-  _entities(representations: [_Any]): [_Entity]
-  _service: _Service
+  _entities(representations: [_Any!]!): [_Entity]!
+  _service: _Service!
 }
 
 type InStockCount {
@@ -127,7 +126,6 @@ type Product {
 
 union _Entity = Product
 
-\"\"\"Anything\"\"\"
 scalar _Any
 
 type _Service {
@@ -189,8 +187,8 @@ def test_provides_multiple_fields_as_list():
         str(schema).strip()
         == """type Query {
   inStockCount: InStockCount
-  _entities(representations: [_Any]): [_Entity]
-  _service: _Service
+  _entities(representations: [_Any!]!): [_Entity]!
+  _service: _Service!
 }
 
 type InStockCount {
@@ -206,7 +204,6 @@ type Product {
 
 union _Entity = Product
 
-\"\"\"Anything\"\"\"
 scalar _Any
 
 type _Service {

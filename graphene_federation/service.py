@@ -127,7 +127,7 @@ def get_service_query(schema: Schema):
             return sdl_str
 
     class ServiceQuery(ObjectType):
-        _service = Field(_Service, name="_service")
+        _service = Field(_Service, name="_service", required=True)
 
         def resolve__service(parent, info):
             return _Service()
