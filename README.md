@@ -16,6 +16,8 @@ Federation support for ![Graphene Logo](http://graphene-python.org/favicon.png) 
 
 Based on discussion: https://github.com/graphql-python/graphene/issues/953#issuecomment-508481652
 
+WARNING: This version is not compatible with graphene version below v3. If you need to use a version compatible with graphene v2 I recommend using the version 1.0.0 of graphene_federation.
+
 ------------------------
 
 ## Supported Features
@@ -180,4 +182,5 @@ The tests are automatically run on Travis CI on push to GitHub.
 
 ---------------------------
 
-Also, you can read about how we've come to federation at Preply [here](https://medium.com/preply-engineering/apollo-federation-support-in-graphene-761a0512456d)
+This repository is heavily inspired by the repo it was forked from... Huge thanks to [Preply for setting up the foundations](https://medium.com/preply-engineering/apollo-federation-support-in-graphene-761a0512456d).
+Hopefully one day we can merge it into the original repository that doesn't seem maintained anymore.

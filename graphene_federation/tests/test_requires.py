@@ -1,6 +1,6 @@
 import pytest
 
-from graphql import graphql
+from graphql import graphql_sync
 
 from graphene import Field, ID, Int, ObjectType, String
 
@@ -39,9 +39,11 @@ def test_requires_multiple_fields():
 
     schema = build_schema(query=Query)
     assert (
-        str(schema)
-        == """schema {
-  query: Query
+        str(schema).strip()
+        == """type Query {
+  product: Product
+  _entities(representations: [_Any!]!): [_Entity]!
+  _service: _Service!
 }
 
 type Product {
@@ -51,20 +53,13 @@ type Product {
   shippingEstimate: String
 }
 
-type Query {
-  product: Product
-  _entities(representations: [_Any]): [_Entity]
-  _service: _Service
-}
+union _Entity = Product
 
 scalar _Any
 
-union _Entity = Product
-
 type _Service {
   sdl: String
-}
-"""
+}"""
     )
     # Check the federation service schema definition language
     query = """
@@ -74,20 +69,20 @@ type _Service {
         }
     }
     """
-    result = graphql(schema, query)
+    result = graphql_sync(schema.graphql_schema, query)
     assert not result.errors
     assert (
         result.data["_service"]["sdl"].strip()
         == """
+type Query {
+  product: Product
+}
+
 extend type Product  @key(fields: "sku") {
   sku: ID @external
   size: Int @external
   weight: Int @external
   shippingEstimate: String @requires(fields: "size weight")
-}
-
-type Query {
-  product: Product
 }
 """.strip()
     )
@@ -110,9 +105,11 @@ def test_requires_multiple_fields_as_list():
 
     schema = build_schema(query=Query)
     assert (
-        str(schema)
-        == """schema {
-  query: Query
+        str(schema).strip()
+        == """type Query {
+  product: Product
+  _entities(representations: [_Any!]!): [_Entity]!
+  _service: _Service!
 }
 
 type Product {
@@ -122,20 +119,13 @@ type Product {
   shippingEstimate: String
 }
 
-type Query {
-  product: Product
-  _entities(representations: [_Any]): [_Entity]
-  _service: _Service
-}
+union _Entity = Product
 
 scalar _Any
 
-union _Entity = Product
-
 type _Service {
   sdl: String
-}
-"""
+}"""
     )
     # Check the federation service schema definition language
     query = """
@@ -145,20 +135,20 @@ type _Service {
         }
     }
     """
-    result = graphql(schema, query)
+    result = graphql_sync(schema.graphql_schema, query)
     assert not result.errors
     assert (
         result.data["_service"]["sdl"].strip()
         == """
+type Query {
+  product: Product
+}
+
 extend type Product  @key(fields: "sku") {
   sku: ID @external
   size: Int @external
   weight: Int @external
   shippingEstimate: String @requires(fields: "size weight")
-}
-
-type Query {
-  product: Product
 }
 """.strip()
     )
@@ -180,9 +170,11 @@ def test_requires_with_input():
 
     schema = build_schema(query=Query)
     assert (
-        str(schema)
-        == """schema {
-  query: Query
+        str(schema).strip()
+        == """type Query {
+  acme: Acme
+  _entities(representations: [_Any!]!): [_Entity]!
+  _service: _Service!
 }
 
 type Acme {
@@ -191,20 +183,13 @@ type Acme {
   foo(someInput: String): String
 }
 
-type Query {
-  acme: Acme
-  _entities(representations: [_Any]): [_Entity]
-  _service: _Service
-}
+union _Entity = Acme
 
 scalar _Any
 
-union _Entity = Acme
-
 type _Service {
   sdl: String
-}
-"""
+}"""
     )
     # Check the federation service schema definition language
     query = """
@@ -214,19 +199,19 @@ type _Service {
         }
     }
     """
-    result = graphql(schema, query)
+    result = graphql_sync(schema.graphql_schema, query)
     assert not result.errors
     assert (
         result.data["_service"]["sdl"].strip()
         == """
+type Query {
+  acme: Acme
+}
+
 extend type Acme  @key(fields: "id") {
   id: ID! @external
   age: Int @external
   foo(someInput: String): String @requires(fields: "age")
-}
-
-type Query {
-  acme: Acme
 }
 """.strip()
     )

@@ -1,4 +1,4 @@
-FROM python:3.8-slim
+FROM python:3.10-alpine
 
 # Disable Python buffering in order to see the logs immediatly
 ENV PYTHONUNBUFFERED=1

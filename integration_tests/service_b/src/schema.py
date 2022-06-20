@@ -1,4 +1,5 @@
-from graphene import ObjectType, String, Int, Field, Interface, Mutation
+from graphene import ObjectType, String, Int, Interface, Mutation
+
 from graphene_federation import build_schema, key
 
 

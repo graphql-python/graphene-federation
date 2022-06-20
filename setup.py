@@ -5,16 +5,17 @@ from setuptools import find_packages, setup
 def read(*rnames):
   return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
 
-version = '0.1.0'
+version = '3.0.0'
 
 tests_require = [
-    "pytest==6.1.1",
+    "pytest==7.1.2",
     "pytest-cov",
 ]
 
 dev_require = [
-    "black==20.8b1",
-    "flake8==3.8.4",
+    "black==22.3.0",
+    "flake8==4.0.1",
+    "mypy==0.961",
 ] + tests_require
 
 setup(
@@ -27,11 +28,12 @@ setup(
   long_description_content_type='text/markdown',
   author='Igor Kasianov',
   author_email='super.hang.glider@gmail.com',
-  url='https://github.com/preply/graphene-federation',
-  download_url=f'https://github.com/preply/graphene-federation/archive/{version}.tar.gz',
+  url='https://github.com/loft-orbital/graphene-federation',
+  download_url=f'https://github.com/loft-orbital/graphene-federation/archive/{version}.tar.gz',
   keywords=["graphene", "graphql", "gql", "federation"],
   install_requires=[
-    "graphene>=2.1.0,<3"
+    "graphene>=3.1",
+    "graphql-core>=3.1,<3.2", # until https://github.com/graphql-python/graphene/pull/1421 is released in graphene
   ],
   classifiers=[
     "Development Status :: 5 - Production/Stable",

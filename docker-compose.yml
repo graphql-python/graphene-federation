@@ -3,6 +3,7 @@ version: '3.5'
 services:
 
   graphene_federation:
+    container_name: graphene_federation
     build:
       context: .
     volumes:

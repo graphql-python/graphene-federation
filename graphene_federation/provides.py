@@ -1,16 +1,17 @@
-from typing import Any, Dict, List, Union
+from typing import Any, Union
 
-from graphene import Field, Schema
+from graphene import Field
+from graphene import Schema
 
 
-def get_provides_parent_types(schema: Schema) -> Dict[str, Any]:
+def get_provides_parent_types(schema: Schema) -> dict[str, Any]:
     """
     Find all the types for which a field is provided from the schema.
     They can be easily distinguished from the other type as
     the `@provides` decorator used on the type itself adds a `_provide_parent_type` attribute to them.
     """
     provides_parent_types = {}
-    for type_name, type_ in schema._type_map.items():
+    for type_name, type_ in schema.graphql_schema.type_map.items():
         if not hasattr(type_, "graphene_type"):
             continue
         if getattr(type_.graphene_type, "_provide_parent_type", False):
@@ -18,7 +19,7 @@ def get_provides_parent_types(schema: Schema) -> Dict[str, Any]:
     return provides_parent_types
 
 
-def provides(field, fields: Union[str, List[str]] = None):
+def provides(field, fields: Union[str, list[str]] = None):
     """
 
     :param field: base type (when used as decorator) or field of base type

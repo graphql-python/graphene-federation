@@ -31,3 +31,22 @@ def test_multiple_extend_failure():
             potato = String()
 
     assert "Can't extend type which is already extended or has @key" == str(err.value)
+
+
+def test_extend_with_description_failure():
+    """
+    Test that adding a description to an extended type raises an error.
+    """
+    with pytest.raises(AssertionError) as err:
+
+        @extend("id")
+        class A(ObjectType):
+            class Meta:
+                description = "This is an object from here."
+
+            id = ID()
+
+    assert (
+        'Type "A" has a non empty description and it is also marked with extend.\nThey are mutually exclusive.'
+        in str(err.value)
+    )
