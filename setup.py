@@ -28,8 +28,8 @@ setup(
   long_description_content_type='text/markdown',
   author='Igor Kasianov',
   author_email='super.hang.glider@gmail.com',
-  url='https://github.com/loft-orbital/graphene-federation',
-  download_url=f'https://github.com/loft-orbital/graphene-federation/archive/{version}.tar.gz',
+  url='https://github.com/graphql-python/graphene-federation',
+  download_url=f'https://github.com/graphql-python/graphene-federation/archive/{version}.tar.gz',
   keywords=["graphene", "graphql", "gql", "federation"],
   install_requires=[
     "graphene>=3.1",
