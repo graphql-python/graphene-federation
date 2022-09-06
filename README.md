@@ -6,17 +6,18 @@ Federation support for ![Graphene Logo](http://graphene-python.org/favicon.png) 
 [![Coverage Status][coveralls-image]][coveralls-url]
 [![Integration Tests Status][integration-tests-image]][integration-tests-url]
 
-[unit-tests-image]: https://github.com/loft-orbital/graphene-federation/workflows/Unit%20Tests/badge.svg?branch=loft-master
-[unit-tests-url]: https://github.com/loft-orbital/graphene-federation/actions?query=workflow%3A"Unit+Tests"
-[coveralls-image]: https://coveralls.io/repos/github/loft-orbital/graphene-federation/badge.svg?branch=loft-master
-[coveralls-url]: https://coveralls.io/github/loft-orbital/graphene-federation?branch=loft-master
-[integration-tests-image]: https://github.com/loft-orbital/graphene-federation/workflows/Integration%20Tests/badge.svg?branch=loft-master
-[integration-tests-url]: https://github.com/loft-orbital/graphene-federation/actions?query=workflow%3A"Integration+Tests"
+[unit-tests-image]: https://github.com/graphql-python/graphene-federation/workflows/Unit%20Tests/badge.svg?branch=main
+[unit-tests-url]: https://github.com/graphql-python/graphene-federation/actions?query=workflow%3A"Unit+Tests"
+[coveralls-image]: https://coveralls.io/repos/github/graphql-python/graphene-federation/badge.svg?branch=main
+[coveralls-url]: https://coveralls.io/github/graphql-python/graphene-federation?branch=main
+[integration-tests-image]: https://github.com/graphql-python/graphene-federation/workflows/Integration%20Tests/badge.svg?branch=main
+[integration-tests-url]: https://github.com/graphql-python/graphene-federation/actions?query=workflow%3A"Integration+Tests"
 
 
-Based on discussion: https://github.com/graphql-python/graphene/issues/953#issuecomment-508481652
+This repository is heavily based on the repo it was forked from... Huge thanks to [Preply for setting up the foundations](https://medium.com/preply-engineering/apollo-federation-support-in-graphene-761a0512456d).
 
-WARNING: This version is not compatible with graphene version below v3. If you need to use a version compatible with graphene v2 I recommend using the version 1.0.0 of graphene_federation.
+WARNING: This version is not compatible with `graphene` version below v3.
+If you need to use a version compatible with `graphene` v2 I recommend using the version 1.0.0 of `graphene_federation`.
 
 ------------------------
 
@@ -181,6 +182,3 @@ There is also a cool [example](https://github.com/preply/graphene-federation/iss
 The tests are automatically run on Travis CI on push to GitHub.
 
 ---------------------------
-
-This repository is heavily inspired by the repo it was forked from... Huge thanks to [Preply for setting up the foundations](https://medium.com/preply-engineering/apollo-federation-support-in-graphene-761a0512456d).
-Hopefully one day we can merge it into the original repository that doesn't seem maintained anymore.
