@@ -33,7 +33,7 @@ setup(
   keywords=["graphene", "graphql", "gql", "federation"],
   install_requires=[
     "graphene>=3.1",
-    "graphql-core>=3.1,<3.2", # until https://github.com/graphql-python/graphene/pull/1421 is released in graphene
+    "graphql-core>=3.1",
   ],
   classifiers=[
     "Development Status :: 5 - Production/Stable",
