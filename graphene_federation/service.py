@@ -9,7 +9,7 @@ from graphql.utilities.print_schema import print_fields
 from graphene import ObjectType, String, Field, Schema
 
 from .extend import get_extended_types
-from .provides import get_provides_parent_types
+from .provides import get_provides_parent_types, get_provides_fields
 
 from .entity import get_entities
 from .tag import get_tagged_fields
@@ -103,6 +103,7 @@ def get_sdl(schema: Schema) -> str:
     shareable_types = get_shareable_types(schema)
     inaccessible_types = get_inaccessible_types(schema)
     provides_parent_types = get_provides_parent_types(schema)
+    provides_fields = get_provides_fields(schema)
     entities = get_entities(schema)
     shareable_fields = get_shareable_fields(schema)
     tagged_fields = get_tagged_fields(schema)
@@ -120,7 +121,7 @@ def get_sdl(schema: Schema) -> str:
         _schema_import.append('"@requires"')
     if entities:
         _schema_import.append('"@key"')
-    if provides_parent_types:
+    if provides_parent_types or provides_fields:
         _schema_import.append('"@provides"')
     if inaccessible_types or inaccessible_fields:
         _schema_import.append('"@inaccessible"')
@@ -143,7 +144,8 @@ def get_sdl(schema: Schema) -> str:
     # Add fields directives (@external, @provides, @requires, @shareable, @inaccessible)
     for entity in set(provides_parent_types.values()) | set(extended_types.values()) | set(
             shareable_types.values()) | set(inaccessible_types.values()) | set(
-        entities.values()) | set(shareable_fields.values()) | set(tagged_fields.values()):
+        entities.values()) | set(inaccessible_fields.values()) | set(shareable_fields.values()) | set(
+        tagged_fields.values()) | set(required_fields.values()) | set(provides_fields.values()):
         string_schema = add_entity_fields_decorators(entity, schema, string_schema)
 
     # Prepend `extend` keyword to the type definition of extended types
