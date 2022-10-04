@@ -20,8 +20,8 @@ def test_multiple_keys():
 
     schema = build_schema(query=Query)
     assert (
-        str(schema).strip()
-        == """type Query {
+            str(schema).strip()
+            == """type Query {
   user: User
   _entities(representations: [_Any!]!): [_Entity]!
   _service: _Service!
@@ -51,8 +51,8 @@ type _Service {
     result = graphql_sync(schema.graphql_schema, query)
     assert not result.errors
     assert (
-        result.data["_service"]["sdl"].strip()
-        == """
+            result.data["_service"]["sdl"].strip()
+            == """extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key"])
 type Query {
   user: User
 }
@@ -70,7 +70,6 @@ def test_key_non_existing_field_failure():
     Test that using the key decorator and providing a field that does not exist fails.
     """
     with pytest.raises(AssertionError) as err:
-
         @key("potato")
         class A(ObjectType):
             id = ID()
@@ -78,7 +77,7 @@ def test_key_non_existing_field_failure():
     assert 'Field "potato" does not exist on type "A"' == str(err.value)
 
 
-def test_compound_primary_keys_failure():
+def test_compound_primary_keys():
     """
     Compound primary keys are not implemented as of now so this test checks that at least the user get
     an explicit failure.
@@ -87,11 +86,7 @@ def test_compound_primary_keys_failure():
     class Organization(ObjectType):
         id = ID()
 
-    with pytest.raises(NotImplementedError) as err:
-
-        @key("id organization { id }")
-        class User(ObjectType):
-            id = ID()
-            organization = Field(Organization)
-
-    assert "Compound primary keys are not supported." == str(err.value)
+    @key("id organization { id }")
+    class User(ObjectType):
+        id = ID()
+        organization = Field(Organization)

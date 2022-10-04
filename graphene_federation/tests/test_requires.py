@@ -74,12 +74,12 @@ type _Service {
     assert not result.errors
     assert (
         result.data["_service"]["sdl"].strip()
-        == """
+        == """extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@extends", "@external", "@key", "@requires"])
 type Query {
   product: Product
 }
 
-extend type Product  @key(fields: "sku") {
+extend type Product @key(fields: "sku") {
   sku: ID @external
   size: Int @external
   weight: Int @external
@@ -140,12 +140,12 @@ type _Service {
     assert not result.errors
     assert (
         result.data["_service"]["sdl"].strip()
-        == """
+        == """extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@extends", "@external", "@key", "@requires"])
 type Query {
   product: Product
 }
 
-extend type Product  @key(fields: "sku") {
+extend type Product @key(fields: "sku") {
   sku: ID @external
   size: Int @external
   weight: Int @external
@@ -204,12 +204,12 @@ type _Service {
     assert not result.errors
     assert (
         result.data["_service"]["sdl"].strip()
-        == """
+        == """extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@extends", "@external", "@key", "@requires"])
 type Query {
   acme: Acme
 }
 
-extend type Acme  @key(fields: "id") {
+extend type Acme @key(fields: "id") {
   id: ID! @external
   age: Int @external
   foo(someInput: String): String @requires(fields: "age")
