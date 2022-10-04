@@ -2,8 +2,9 @@ from graphql import graphql_sync
 
 from graphene import ObjectType, ID, String, NonNull, Field
 
+from .. import external
 from ..entity import key
-from ..extend import extend, external
+from ..extend import extend
 from ..main import build_schema
 
 # ------------------------

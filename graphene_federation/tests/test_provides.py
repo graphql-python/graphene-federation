@@ -2,9 +2,10 @@ from graphql import graphql_sync
 
 from graphene import Field, Int, ObjectType, String
 
+from .. import external
 from ..provides import provides
 from ..main import build_schema
-from ..extend import extend, external
+from ..extend import extend
 
 
 def test_provides():
