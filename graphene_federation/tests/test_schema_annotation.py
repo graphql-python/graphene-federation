@@ -90,8 +90,8 @@ def test_user_schema():
     and that a request to retrieve a user works.
     """
     assert (
-            str(user_schema).strip()
-            == """schema {
+        str(user_schema).strip()
+        == """schema {
   query: UserQuery
 }
 
@@ -136,8 +136,8 @@ type _Service {
     result = graphql_sync(user_schema.graphql_schema, query)
     assert not result.errors
     assert (
-            result.data["_service"]["sdl"].strip()
-            == """extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key"])
+        result.data["_service"]["sdl"].strip()
+        == """extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key"])
  
 
 type UserQuery {
@@ -159,8 +159,8 @@ def test_chat_schema():
     and that a request to retrieve a chat message works.
     """
     assert (
-            str(chat_schema).strip()
-            == """schema {
+        str(chat_schema).strip()
+        == """schema {
   query: ChatQuery
 }
 
@@ -214,8 +214,8 @@ type _Service {
     result = graphql_sync(chat_schema.graphql_schema, query)
     assert not result.errors
     assert (
-            result.data["_service"]["sdl"].strip()
-            == """extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@extends", "@external", "@key"])
+        result.data["_service"]["sdl"].strip()
+        == """extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@extends", "@external", "@key"])
  
 
 type ChatQuery {

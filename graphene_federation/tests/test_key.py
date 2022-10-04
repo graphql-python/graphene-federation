@@ -20,8 +20,8 @@ def test_multiple_keys():
 
     schema = build_schema(query=Query)
     assert (
-            str(schema).strip()
-            == """type Query {
+        str(schema).strip()
+        == """type Query {
   user: User
   _entities(representations: [_Any!]!): [_Entity]!
   _service: _Service!
@@ -51,8 +51,8 @@ type _Service {
     result = graphql_sync(schema.graphql_schema, query)
     assert not result.errors
     assert (
-            result.data["_service"]["sdl"].strip()
-            == """extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key"])
+        result.data["_service"]["sdl"].strip()
+        == """extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key"])
 type Query {
   user: User
 }
@@ -70,6 +70,7 @@ def test_key_non_existing_field_failure():
     Test that using the key decorator and providing a field that does not exist fails.
     """
     with pytest.raises(AssertionError) as err:
+
         @key("potato")
         class A(ObjectType):
             id = ID()

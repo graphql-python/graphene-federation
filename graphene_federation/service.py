@@ -136,10 +136,18 @@ def get_sdl(schema: Schema) -> str:
     _schema_import = ", ".join(_schema_import)
     _schema = f'extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: [{_schema_import}])\n'
     # Add fields directives (@external, @provides, @requires, @shareable, @inaccessible)
-    for entity in set(provides_parent_types.values()) | set(extended_types.values()) | set(
-            shareable_types.values()) | set(inaccessible_types.values()) | set(
-        entities.values()) | set(inaccessible_fields.values()) | set(shareable_fields.values()) | set(
-        tagged_fields.values()) | set(required_fields.values()) | set(provides_fields.values()):
+    for entity in (
+        set(provides_parent_types.values())
+        | set(extended_types.values())
+        | set(shareable_types.values())
+        | set(inaccessible_types.values())
+        | set(entities.values())
+        | set(inaccessible_fields.values())
+        | set(shareable_fields.values())
+        | set(tagged_fields.values())
+        | set(required_fields.values())
+        | set(provides_fields.values())
+    ):
         string_schema = add_entity_fields_decorators(entity, schema, string_schema)
 
     # Prepend `extend` keyword to the type definition of extended types
@@ -153,9 +161,10 @@ def get_sdl(schema: Schema) -> str:
     get_field_name = type_attribute_to_field_name(schema)
     for entity_name, entity in entities.items():
         type_def_re = r"(type %s [^\{]*)" % entity_name + " "
-        type_annotation = " ".join(
-            [f'@key(fields: "{get_field_name(key)}")' for key in entity._keys]
-        ) + " "
+        type_annotation = (
+            " ".join([f'@key(fields: "{get_field_name(key)}")' for key in entity._keys])
+            + " "
+        )
         repl_str = r"\1%s" % type_annotation
         pattern = re.compile(type_def_re)
         string_schema = pattern.sub(repl_str, string_schema)
