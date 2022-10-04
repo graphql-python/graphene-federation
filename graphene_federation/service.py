@@ -1,13 +1,16 @@
 import re
 
+from .inaccessible import get_inaccessible_types, get_inaccessible_fields
+from .shareable import get_shareable_types, get_shareable_fields
 from graphql.utilities.print_schema import print_fields
 
 from graphene import ObjectType, String, Field, Schema
 
-from graphene_federation.extend import get_extended_types
-from graphene_federation.provides import get_provides_parent_types
+from .extend import get_extended_types
+from .provides import get_provides_parent_types
 
 from .entity import get_entities
+from .tag import get_tagged_fields
 from .utils import field_name_to_type_attribute, type_attribute_to_field_name
 
 
@@ -30,6 +33,10 @@ DECORATORS = {
     "_external": lambda _schema, _fields: "@external",
     "_requires": lambda schema, fields: f'@requires(fields: "{convert_fields(schema, fields)}")',
     "_provides": lambda schema, fields: f'@provides(fields: "{convert_fields(schema, fields)}")',
+    "_shareable": lambda _schema, _fields: "@shareable",
+    "_inaccessible": lambda _schema, _fields: "@inaccessible",
+    "_override": lambda schema, _from: f'@override(from: "{_from}")',
+    "_tag": lambda schema, name: f'@tag(name: "{name}")',
 }
 
 
@@ -82,6 +89,7 @@ def get_sdl(schema: Schema) -> str:
     """
     Add all needed decorators to the string representation of the schema.
     """
+
     string_schema = str(schema)
 
     regex = r"schema \{(\w|\!|\s|\:)*\}"
@@ -90,14 +98,49 @@ def get_sdl(schema: Schema) -> str:
 
     # Get various objects that need to be amended
     extended_types = get_extended_types(schema)
+    shareable_types = get_shareable_types(schema)
+    inaccessible_types = get_inaccessible_types(schema)
     provides_parent_types = get_provides_parent_types(schema)
     entities = get_entities(schema)
+    shareable_fields = get_shareable_fields(schema)
+    tagged_fields = get_tagged_fields(schema)
+    inaccessible_fields = get_inaccessible_fields(schema)
 
-    # Add fields directives (@external, @provides, @requires)
-    for entity in set(provides_parent_types.values()) | set(extended_types.values()):
+    _schema_import = []
+
+    if extended_types:
+        _schema_import.append('"@external"')
+        _schema_import.append('"@requires"')
+    if entities:
+        _schema_import.append('"@key"')
+    if provides_parent_types:
+        _schema_import.append('"@provides"')
+    if inaccessible_types or inaccessible_fields:
+        _schema_import.append('"@inaccessible"')
+    if shareable_types or shareable_fields:
+        _schema_import.append('"@shareable"')
+    if tagged_fields:
+        _schema_import.append('"@tag"')
+    _schema = f'schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: [{", ".join(_schema_import)}]'
+    _schema += '{ %replace% \n} \n\n'
+    _schema_content = ""
+    if schema.query:
+        _schema_content += '\n query: Query'
+    if schema.mutation:
+        _schema_content += '\n mutation: Mutation'
+    if schema.subscription:
+        _schema_content += '\n subscription: Subscription'
+
+    _schema = _schema.replace("%replace%", _schema_content)
+
+    # Add fields directives (@external, @provides, @requires, @shareable, @inaccessible)
+    for entity in set(provides_parent_types.values()) | set(extended_types.values()) | set(
+            shareable_types.values()) | set(inaccessible_types.values()) | set(
+        entities.values()) | set(shareable_fields.values()) | set(tagged_fields.values()):
         string_schema = add_entity_fields_decorators(entity, schema, string_schema)
 
     # Prepend `extend` keyword to the type definition of extended types
+    # noinspection DuplicatedCode
     for entity_name, entity in extended_types.items():
         type_def = re.compile(r"type %s ([^\{]*)" % entity_name)
         repl_str = r"extend type %s \1" % entity_name
@@ -114,7 +157,22 @@ def get_sdl(schema: Schema) -> str:
         pattern = re.compile(type_def_re)
         string_schema = pattern.sub(repl_str, string_schema)
 
-    return string_schema
+    for type_name, type in shareable_types.items():
+        type_def_re = r"(type %s [^\{]*)" % type_name
+        type_annotation = f" @shareable"
+        repl_str = r"\1%s " % type_annotation
+        pattern = re.compile(type_def_re)
+        string_schema = pattern.sub(repl_str, string_schema)
+
+    for type_name, type in inaccessible_types.items():
+        type_def_re = r"(type %s [^\{]*)" % type_name
+        type_annotation = f" @inaccessible"
+        repl_str = r"\1%s " % type_annotation
+        pattern = re.compile(type_def_re)
+        string_schema = pattern.sub(repl_str, string_schema)
+
+    print(_schema + string_schema)
+    return _schema + string_schema
 
 
 def get_service_query(schema: Schema):
