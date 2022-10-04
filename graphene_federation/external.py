@@ -1,26 +1,26 @@
 from graphene import Schema
 
 
-def tag(field, name: str):
+def external(field):
     """
-    Decorator to use to override a given type.
+    Mark a field as external.
     """
-    field._tag = name
+    field._external = True
     return field
 
 
-def get_tagged_fields(schema: Schema) -> []:
+def get_external_fields(schema: Schema) -> []:
     """
     Find all the extended types from the schema.
     They can be easily distinguished from the other type as
-    the `@tag` decorator adds a `_tag` attribute to them.
+    the `@external` decorator adds a `_external` attribute to them.
     """
-    tagged_fields = {}
+    external_fields = {}
     for type_name, type_ in schema.graphql_schema.type_map.items():
         if not hasattr(type_, "graphene_type"):
             continue
         for field in list(type_.graphene_type.__dict__):
-            if getattr(getattr(type_.graphene_type, field), "_tag", False):
-                tagged_fields[type_name] = type_.graphene_type
+            if getattr(getattr(type_.graphene_type, field), "_external", False):
+                external_fields[type_name] = type_.graphene_type
                 continue
-    return tagged_fields
+    return external_fields
