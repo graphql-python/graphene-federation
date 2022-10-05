@@ -1,6 +1,6 @@
 # graphene-federation
 
-Federation support for ![Graphene Logo](http://graphene-python.org/favicon.png) [Graphene](http://graphene-python.org) following the [Federation specifications](https://www.apollographql.com/docs/apollo-server/federation/federation-spec/).
+Federation v2 support for ![Graphene Logo](http://graphene-python.org/favicon.png) [Graphene](http://graphene-python.org) following the [Federation specifications](https://www.apollographql.com/docs/apollo-server/federation/federation-spec/).
 
 [![Unit Tests Status][unit-tests-image]][unit-tests-url]
 [![Coverage Status][coveralls-image]][coveralls-url]
