@@ -45,7 +45,7 @@ def inaccessible(field: Optional[Any] = None) -> Any:
     return decorator
 
 
-def get_inaccessible_fields(schema: Schema) -> []:
+def get_inaccessible_fields(schema: Schema) -> dict:
     """
     Find all the extended types from the schema.
     They can be easily distinguished from the other type as
