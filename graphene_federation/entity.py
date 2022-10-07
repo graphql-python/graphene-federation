@@ -87,9 +87,19 @@ def key(fields: str) -> Callable:
     """
     Take as input a field that should be used as key for that entity.
     See specification: https://www.apollographql.com/docs/federation/federation-spec/#key
+
+    If the input contains a space it means it's a [compound primary key](https://www.apollographql.com/docs/federation/entities/#defining-a-compound-primary-key)
+    which is not yet supported.
     """
+    if " " in fields:
+        raise NotImplementedError("Compound primary keys are not supported.")
 
     def decorator(Type):
+        # Check the provided fields actually exist on the Type.
+        assert (
+                fields in Type._meta.fields
+        ), f'Field "{fields}" does not exist on type "{Type._meta.name}"'
+
         keys = getattr(Type, "_keys", [])
         keys.append(fields)
         setattr(Type, "_keys", keys)
