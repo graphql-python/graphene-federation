@@ -2,6 +2,7 @@ import re
 
 from .external import get_external_fields
 from .inaccessible import get_inaccessible_types, get_inaccessible_fields
+from .override import get_override_fields
 from .requires import get_required_fields
 from .shareable import get_shareable_types, get_shareable_fields
 from graphql.utilities.print_schema import print_fields
@@ -110,6 +111,7 @@ def get_sdl(schema: Schema) -> str:
     inaccessible_fields = get_inaccessible_fields(schema)
     required_fields = get_required_fields(schema)
     external_fields = get_external_fields(schema)
+    override_fields = get_override_fields(schema)
 
     _schema_import = []
 
@@ -117,14 +119,16 @@ def get_sdl(schema: Schema) -> str:
         _schema_import.append('"@extends"')
     if external_fields:
         _schema_import.append('"@external"')
-    if required_fields:
-        _schema_import.append('"@requires"')
     if entities:
         _schema_import.append('"@key"')
-    if provides_parent_types or provides_fields:
-        _schema_import.append('"@provides"')
     if inaccessible_types or inaccessible_fields:
         _schema_import.append('"@inaccessible"')
+    if override_fields:
+        _schema_import.append('"@override"')
+    if provides_parent_types or provides_fields:
+        _schema_import.append('"@provides"')
+    if required_fields:
+        _schema_import.append('"@requires"')
     if shareable_types or shareable_fields:
         _schema_import.append('"@shareable"')
     if tagged_fields:
