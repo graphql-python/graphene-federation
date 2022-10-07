@@ -97,7 +97,7 @@ def key(fields: str) -> Callable:
     def decorator(Type):
         # Check the provided fields actually exist on the Type.
         assert (
-            fields in Type._meta.fields
+                fields in Type._meta.fields
         ), f'Field "{fields}" does not exist on type "{Type._meta.name}"'
 
         keys = getattr(Type, "_keys", [])
