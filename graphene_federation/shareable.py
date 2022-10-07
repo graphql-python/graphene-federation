@@ -13,7 +13,7 @@ def get_shareable_types(schema: Schema) -> dict[str, Any]:
     for type_name, type_ in schema.graphql_schema.type_map.items():
         if not hasattr(type_, "graphene_type"):
             continue
-        if getattr(type_.graphene_type, "_shareable", False):
+        if type_name == "PageInfo" or getattr(type_.graphene_type, "_shareable", False):
             shareable_types[type_name] = type_.graphene_type
     return shareable_types
 
