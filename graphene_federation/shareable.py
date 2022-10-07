@@ -52,14 +52,14 @@ def get_shareable_fields(schema: Schema) -> []:
     """
     Find all the extended types from the schema.
     They can be easily distinguished from the other type as
-    the `@_shareable` decorator adds a `_shareable` attribute to them.
+    the `@shareable` decorator adds a `_shareable` attribute to them.
     """
-    shareable_types = {}
+    shareable_fields = {}
     for type_name, type_ in schema.graphql_schema.type_map.items():
         if not hasattr(type_, "graphene_type"):
             continue
         for field in list(type_.graphene_type.__dict__):
             if getattr(getattr(type_.graphene_type, field), "_shareable", False):
-                shareable_types[type_name] = type_.graphene_type
+                shareable_fields[type_name] = type_.graphene_type
                 continue
-    return shareable_types
+    return shareable_fields

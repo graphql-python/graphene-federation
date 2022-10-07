@@ -1,15 +1,16 @@
 import graphene
 
-from graphene_federation import inaccessible, shareable
+from graphene_federation import inaccessible, shareable, extend, requires, external
 
 from graphene_federation import build_schema
 
 
-@shareable()
+@extend(fields='x')
 class Position(graphene.ObjectType):
     x = graphene.Int(required=True)
-    y = graphene.Int(required=True)
+    y = external(graphene.Int(required=True))
     z = inaccessible(graphene.Int(required=True))
+    a = requires(graphene.Int(required=True), fields="x")
 
 
 class Query(graphene.ObjectType):

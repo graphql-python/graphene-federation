@@ -1,6 +1,8 @@
 import re
 
+from .external import get_external_fields
 from .inaccessible import get_inaccessible_types, get_inaccessible_fields
+from .requires import get_required_fields
 from .shareable import get_shareable_types, get_shareable_fields
 from graphql.utilities.print_schema import print_fields
 
@@ -105,11 +107,16 @@ def get_sdl(schema: Schema) -> str:
     shareable_fields = get_shareable_fields(schema)
     tagged_fields = get_tagged_fields(schema)
     inaccessible_fields = get_inaccessible_fields(schema)
+    required_fields = get_required_fields(schema)
+    external_fields = get_external_fields(schema)
 
     _schema_import = []
 
     if extended_types:
+        _schema_import.append('"@extends"')
+    if external_fields:
         _schema_import.append('"@external"')
+    if required_fields:
         _schema_import.append('"@requires"')
     if entities:
         _schema_import.append('"@key"')
@@ -121,7 +128,7 @@ def get_sdl(schema: Schema) -> str:
         _schema_import.append('"@shareable"')
     if tagged_fields:
         _schema_import.append('"@tag"')
-    _schema = f'schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: [{", ".join(_schema_import)}]'
+    _schema = f'extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: [{", ".join(_schema_import)}]'
     _schema += '{ %replace% \n} \n\n'
     _schema_content = ""
     if schema.query:
