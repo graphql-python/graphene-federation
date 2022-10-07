@@ -48,7 +48,7 @@ def shareable(field: Optional[Any] = None) -> Any:
     return decorator
 
 
-def get_shareable_fields(schema: Schema) -> []:
+def get_shareable_fields(schema: Schema) -> dict:
     """
     Find all the extended types from the schema.
     They can be easily distinguished from the other type as
