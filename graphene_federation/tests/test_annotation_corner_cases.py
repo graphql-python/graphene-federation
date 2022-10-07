@@ -4,8 +4,9 @@ from graphql import graphql_sync
 
 from graphene import ObjectType, ID, String, Field
 
+from .. import external, requires
 from ..entity import key
-from ..extend import extend, external, requires
+from ..extend import extend
 from ..main import build_schema
 
 
