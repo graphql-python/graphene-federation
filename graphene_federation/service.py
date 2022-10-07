@@ -133,8 +133,8 @@ def get_sdl(schema: Schema) -> str:
         _schema_import.append('"@shareable"')
     if tagged_fields:
         _schema_import.append('"@tag"')
-    _schema_import = ", ".join(_schema_import)
-    _schema = f'extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: [{_schema_import}])\n'
+    schema_import = ", ".join(_schema_import)
+    _schema = f'extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: [{schema_import}])\n'
     # Add fields directives (@external, @provides, @requires, @shareable, @inaccessible)
     for entity in (
         set(provides_parent_types.values())
