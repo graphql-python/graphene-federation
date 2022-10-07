@@ -1,10 +1,11 @@
 import graphene
 
-from graphene_federation import inaccessible, shareable, extend, requires, external, provides
+from graphene_federation import inaccessible, external, provides, key
 
 from graphene_federation import build_schema
 
 
+@key(fields="x")
 class Position(graphene.ObjectType):
     x = graphene.Int(required=True)
     y = external(graphene.Int(required=True))
