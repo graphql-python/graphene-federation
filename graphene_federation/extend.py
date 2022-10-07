@@ -29,8 +29,8 @@ def extend(fields: str) -> Callable:
             Type, "_keys"
         ), "Can't extend type which is already extended or has @key"
         # Check the provided fields actually exist on the Type.
-        assert (
-            set(fields.replace(" ", "").split(",")).issubset(set(Type._meta.fields))
+        assert set(fields.replace(" ", "").split(",")).issubset(
+            set(Type._meta.fields)
         ), f'Field "{fields}" does not exist on type "{Type._meta.name}"'
         assert getattr(Type._meta, "description", None) is None, (
             f'Type "{Type.__name__}" has a non empty description and it is also marked with extend.'
