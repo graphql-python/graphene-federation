@@ -134,17 +134,18 @@ def get_sdl(schema: Schema) -> str:
     if tagged_fields:
         _schema_import.append('   "@tag"')
     _schema_import = ",\n".join(_schema_import)
-    _schema = f'extend schema\n@link(\n url: "https://specs.apollo.dev/federation/v2.0",\n import: [\n{_schema_import}\n]'
-    _schema += '\n{ %replace% \n}\n) \n\n'
-    _schema_content = ""
-    if schema.query:
-        _schema_content += '\n query: Query'
-    if schema.mutation:
-        _schema_content += '\n mutation: Mutation'
-    if schema.subscription:
-        _schema_content += '\n subscription: Subscription'
-
-    _schema = _schema.replace("%replace%", _schema_content)
+    _schema = f'extend schema\n@link(\n url: ' \
+              f'"https://specs.apollo.dev/federation/v2.0",\n import: [\n{_schema_import}\n]\n) \n\n'
+    # _schema += '\n{ %replace% \n}\n) \n\n'
+    # _schema_content = ""
+    # if schema.query:
+    #     _schema_content += '\n query: Query'
+    # if schema.mutation:
+    #     _schema_content += '\n mutation: Mutation'
+    # if schema.subscription:
+    #     _schema_content += '\n subscription: Subscription'
+    #
+    # _schema = _schema.replace("%replace%", "")
 
     # Add fields directives (@external, @provides, @requires, @shareable, @inaccessible)
     for entity in set(provides_parent_types.values()) | set(extended_types.values()) | set(
