@@ -116,25 +116,26 @@ def get_sdl(schema: Schema) -> str:
     _schema_import = []
 
     if extended_types:
-        _schema_import.append('"@extends"')
+        _schema_import.append('   "@extends"')
     if external_fields:
-        _schema_import.append('"@external"')
+        _schema_import.append('   "@external"')
     if entities:
-        _schema_import.append('"@key"')
+        _schema_import.append('   "@key"')
     if inaccessible_types or inaccessible_fields:
-        _schema_import.append('"@inaccessible"')
+        _schema_import.append('   "@inaccessible"')
     if override_fields:
-        _schema_import.append('"@override"')
+        _schema_import.append('   "@override"')
     if provides_parent_types or provides_fields:
-        _schema_import.append('"@provides"')
+        _schema_import.append('   "@provides"')
     if required_fields:
-        _schema_import.append('"@requires"')
+        _schema_import.append('   "@requires"')
     if shareable_types or shareable_fields:
-        _schema_import.append('"@shareable"')
+        _schema_import.append('   "@shareable"')
     if tagged_fields:
-        _schema_import.append('"@tag"')
-    _schema = f'extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: [{", ".join(_schema_import)}]'
-    _schema += '{ %replace% \n} \n\n'
+        _schema_import.append('   "@tag"')
+    _schema_import = ",\n".join(_schema_import)
+    _schema = f'extend schema\n@link(\n url: "https://specs.apollo.dev/federation/v2.0",\n import: [\n{_schema_import}\n]'
+    _schema += '\n{ %replace% \n}\n) \n\n'
     _schema_content = ""
     if schema.query:
         _schema_content += '\n query: Query'
