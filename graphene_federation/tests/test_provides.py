@@ -67,7 +67,7 @@ type _Service {
     assert not result.errors
     assert (
         result.data["_service"]["sdl"].strip()
-        == """
+        == """extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@extends", "@external", "@key", "@provides"])
 type Query {
   inStockCount: InStockCount
 }
@@ -77,7 +77,7 @@ type InStockCount  {
   quantity: Int!
 }
 
-extend type Product  @key(fields: "sku") {
+extend type Product @key(fields: "sku") {
   sku: String! @external
   name: String @external
   weight: Int @external
@@ -145,7 +145,7 @@ type _Service {
     assert not result.errors
     assert (
         result.data["_service"]["sdl"].strip()
-        == """
+        == """extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@extends", "@external", "@key", "@provides"])
 type Query {
   inStockCount: InStockCount
 }
@@ -155,7 +155,7 @@ type InStockCount  {
   quantity: Int!
 }
 
-extend type Product  @key(fields: "sku") {
+extend type Product @key(fields: "sku") {
   sku: String! @external
   name: String @external
   weight: Int @external
@@ -223,7 +223,7 @@ type _Service {
     assert not result.errors
     assert (
         result.data["_service"]["sdl"].strip()
-        == """
+        == """extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@extends", "@external", "@key", "@provides"])
 type Query {
   inStockCount: InStockCount
 }
@@ -233,7 +233,7 @@ type InStockCount  {
   quantity: Int!
 }
 
-extend type Product  @key(fields: "sku") {
+extend type Product @key(fields: "sku") {
   sku: String! @external
   name: String @external
   weight: Int @external

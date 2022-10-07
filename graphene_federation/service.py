@@ -130,12 +130,11 @@ def get_sdl(schema: Schema) -> str:
     if required_fields:
         _schema_import.append('"@requires"')
     if shareable_types or shareable_fields:
-        _schema_import.append('   "@shareable"')
+        _schema_import.append('"@shareable"')
     if tagged_fields:
         _schema_import.append('"@tag"')
-    _schema_import = ",\n".join(_schema_import)
-    _schema = f'extend schema\n@link(\n url: ' \
-              f'"https://specs.apollo.dev/federation/v2.0",\n import: [\n{_schema_import}\n]\n) \n\n'
+    _schema_import = ", ".join(_schema_import)
+    _schema = f'extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: [{_schema_import}])\n'
     # Add fields directives (@external, @provides, @requires, @shareable, @inaccessible)
     for entity in set(provides_parent_types.values()) | set(extended_types.values()) | set(
             shareable_types.values()) | set(inaccessible_types.values()) | set(
@@ -153,23 +152,23 @@ def get_sdl(schema: Schema) -> str:
     # Add entity keys declarations
     get_field_name = type_attribute_to_field_name(schema)
     for entity_name, entity in entities.items():
-        type_def_re = r"(type %s [^\{]*)" % entity_name
+        type_def_re = r"(type %s [^\{]*)" % entity_name + " "
         type_annotation = " ".join(
             [f'@key(fields: "{get_field_name(key)}")' for key in entity._keys]
-        )
-        repl_str = r"\1%s " % type_annotation
+        ) + " "
+        repl_str = r"\1%s" % type_annotation
         pattern = re.compile(type_def_re)
         string_schema = pattern.sub(repl_str, string_schema)
 
     for type_name, type in shareable_types.items():
-        type_def_re = r"(type %s [^\{]*)" % type_name
+        type_def_re = r"(type %s [^\{]*)" % type_name + " "
         type_annotation = f" @shareable"
         repl_str = r"\1%s " % type_annotation
         pattern = re.compile(type_def_re)
         string_schema = pattern.sub(repl_str, string_schema)
 
     for type_name, type in inaccessible_types.items():
-        type_def_re = r"(type %s [^\{]*)" % type_name
+        type_def_re = r"(type %s [^\{]*)" % type_name + " "
         type_annotation = f" @inaccessible"
         repl_str = r"\1%s " % type_annotation
         pattern = re.compile(type_def_re)

@@ -32,8 +32,8 @@ def test_similar_field_name():
 
     chat_schema = build_schema(query=ChatQuery)
     assert (
-        str(chat_schema).strip()
-        == """schema {
+            str(chat_schema).strip()
+            == """schema {
   query: ChatQuery
 }
 
@@ -75,8 +75,10 @@ type _Service {
     result = graphql_sync(chat_schema.graphql_schema, query)
     assert not result.errors
     assert (
-        result.data["_service"]["sdl"].strip()
-        == """
+            result.data["_service"]["sdl"].strip()
+            == """extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@extends", "@external", "@key"])
+ 
+
 type ChatQuery {
   message(id: ID!): ChatMessage
 }
@@ -86,7 +88,7 @@ type ChatMessage {
   user: ChatUser
 }
 
-extend type ChatUser  @key(fields: "id") {
+extend type ChatUser @key(fields: "id") {
   uid: ID
   identified: ID
   id: ID @external
@@ -114,8 +116,8 @@ def test_camel_case_field_name():
 
     schema = build_schema(query=Query)
     assert (
-        str(schema).strip()
-        == """type Query {
+            str(schema).strip()
+            == """type Query {
   camel: Camel
   _entities(representations: [_Any!]!): [_Entity]!
   _service: _Service!
@@ -147,13 +149,13 @@ type _Service {
     result = graphql_sync(schema.graphql_schema, query)
     assert not result.errors
     assert (
-        result.data["_service"]["sdl"].strip()
-        == """
+            result.data["_service"]["sdl"].strip()
+            == """ extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@extends", "@external", "@key", "@requires"])
 type Query {
   camel: Camel
 }
 
-extend type Camel  @key(fields: "autoCamel") {
+extend type Camel @key(fields: "autoCamel") {
   autoCamel: String @external
   forcedCamel: String @requires(fields: "autoCamel")
   aSnake: String
@@ -180,8 +182,8 @@ def test_camel_case_field_name_without_auto_camelcase():
 
     schema = build_schema(query=Query, auto_camelcase=False)
     assert (
-        str(schema).strip()
-        == """type Query {
+            str(schema).strip()
+            == """type Query {
   camel: Camel
   _entities(representations: [_Any!]!): [_Entity]!
   _service: _Service!
@@ -213,13 +215,13 @@ type _Service {
     result = graphql_sync(schema.graphql_schema, query)
     assert not result.errors
     assert (
-        result.data["_service"]["sdl"].strip()
-        == """
+            result.data["_service"]["sdl"].strip()
+            == """extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@extends", "@external", "@key", "@requires"])
 type Query {
   camel: Camel
 }
 
-extend type Camel  @key(fields: "auto_camel") {
+extend type Camel @key(fields: "auto_camel") {
   auto_camel: String @external
   forcedCamel: String @requires(fields: "auto_camel")
   a_snake: String
@@ -249,8 +251,8 @@ def test_annotated_field_also_used_in_filter():
 
     schema = build_schema(query=Query)
     assert (
-        str(schema).strip()
-        == """type Query {
+            str(schema).strip()
+            == """type Query {
   a: A
   _entities(representations: [_Any!]!): [_Entity]!
   _service: _Service!
@@ -284,13 +286,13 @@ type _Service {
     result = graphql_sync(schema.graphql_schema, query)
     assert not result.errors
     assert (
-        result.data["_service"]["sdl"].strip()
-        == """
+            result.data["_service"]["sdl"].strip()
+            == """extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@extends", "@external", "@key"])
 type Query {
   a: A
 }
 
-extend type A  @key(fields: "id") {
+extend type A @key(fields: "id") {
   id: ID @external
   b(id: ID): B
 }
@@ -323,8 +325,8 @@ def test_annotate_object_with_meta_name():
 
     schema = build_schema(query=Query)
     assert (
-        str(schema).strip()
-        == """type Query {
+            str(schema).strip()
+            == """type Query {
   a: Banana
   _entities(representations: [_Any!]!): [_Entity]!
   _service: _Service!
@@ -358,13 +360,13 @@ type _Service {
     result = graphql_sync(schema.graphql_schema, query)
     assert not result.errors
     assert (
-        result.data["_service"]["sdl"].strip()
-        == """
+            result.data["_service"]["sdl"].strip()
+            == """extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@extends", "@external", "@key"])
 type Query {
   a: Banana
 }
 
-extend type Banana  @key(fields: "id") {
+extend type Banana @key(fields: "id") {
   id: ID @external
   b(id: ID): Potato
 }
