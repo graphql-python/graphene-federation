@@ -11,7 +11,7 @@ def tag(field, name: str):
 
 def get_tagged_fields(schema: Schema) -> dict:
     """
-    Find all the extended types from the schema.
+    Find all the tagged types from the schema.
     They can be easily distinguished from the other type as
     the `@tag` decorator adds a `_tag` attribute to them.
     """

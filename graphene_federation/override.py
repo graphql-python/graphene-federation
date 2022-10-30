@@ -11,9 +11,9 @@ def override(field, from_: str):
 
 def get_override_fields(schema: Schema) -> dict:
     """
-    Find all the extended types from the schema.
+    Find all the overridden types from the schema.
     They can be easily distinguished from the other type as
-    the `@tag` decorator adds a `_tag` attribute to them.
+    the `@override` decorator adds a `_override` attribute to them.
     """
     override_fields = {}
     for type_name, type_ in schema.graphql_schema.type_map.items():
