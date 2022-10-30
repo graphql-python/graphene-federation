@@ -145,7 +145,7 @@ def get_sdl(schema: Schema) -> str:
         required_fields.values()) | set(provides_fields.values())
 
     if schema.federation_version == 2:
-        entities_ = entities | set(shareable_types.values()) | set(inaccessible_types.values()) | set(
+        entities_ = entities_ | set(shareable_types.values()) | set(inaccessible_types.values()) | set(
             inaccessible_fields.values()) | set(shareable_fields.values()) | set(tagged_fields.values())
     for entity in entities_:
         string_schema = add_entity_fields_decorators(entity, schema, string_schema)
