@@ -99,7 +99,7 @@ def key(fields: str, resolvable: bool = True) -> Callable:
         keys = getattr(Type, "_keys", [])
         keys.append(fields)
         setattr(Type, "_keys", keys)
-        setattr(Type, "_resolvable", keys)
+        setattr(Type, "_resolvable", resolvable)
 
         return Type
 
