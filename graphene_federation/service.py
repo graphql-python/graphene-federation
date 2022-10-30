@@ -33,12 +33,12 @@ def convert_fields(schema: Schema, fields: list[str]) -> str:
 
 
 DECORATORS = {
-    "_external": lambda _schema, _fields: "@external",
+    "_external": lambda schema, fields: "@external",
     "_requires": lambda schema, fields: f'@requires(fields: "{convert_fields(schema, fields)}")',
     "_provides": lambda schema, fields: f'@provides(fields: "{convert_fields(schema, fields)}")',
-    "_shareable": lambda _schema, _fields: "@shareable",
-    "_inaccessible": lambda _schema, _fields: "@inaccessible",
-    "_override": lambda schema, _from: f'@override(from: "{_from}")',
+    "_shareable": lambda schema, fields: "@shareable",
+    "_inaccessible": lambda schema, fields: "@inaccessible",
+    "_override": lambda schema, from_: f'@override(from: "{from_}")',
     "_tag": lambda schema, name: f'@tag(name: "{name}")',
 }
 

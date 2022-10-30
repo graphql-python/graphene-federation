@@ -11,7 +11,7 @@ class Position(graphene.ObjectType):
     y = external(graphene.Int(required=True))
     z = inaccessible(graphene.Int(required=True))
     a = provides(graphene.Int(required=True), fields="x")
-    b = override(graphene.Int(required=True), _from="h")
+    b = override(graphene.Int(required=True), from_="h")
 
 
 class Query(graphene.ObjectType):

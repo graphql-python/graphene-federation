@@ -1,11 +1,11 @@
 from graphene import Schema
 
 
-def override(field, _from: str):
+def override(field, from_: str):
     """
     Decorator to use to override a given type.
     """
-    field._override = _from
+    field._override = from_
     return field
 
 
