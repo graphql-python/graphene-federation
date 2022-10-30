@@ -137,16 +137,16 @@ def get_sdl(schema: Schema) -> str:
     _schema = f'extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: [{schema_import}])\n'
     # Add fields directives (@external, @provides, @requires, @shareable, @inaccessible)
     for entity in (
-        set(provides_parent_types.values())
-        | set(extended_types.values())
-        | set(shareable_types.values())
-        | set(inaccessible_types.values())
-        | set(entities.values())
-        | set(inaccessible_fields.values())
-        | set(shareable_fields.values())
-        | set(tagged_fields.values())
-        | set(required_fields.values())
-        | set(provides_fields.values())
+            set(provides_parent_types.values())
+            | set(extended_types.values())
+            | set(shareable_types.values())
+            | set(inaccessible_types.values())
+            | set(entities.values())
+            | set(inaccessible_fields.values())
+            | set(shareable_fields.values())
+            | set(tagged_fields.values())
+            | set(required_fields.values())
+            | set(provides_fields.values())
     ):
         string_schema = add_entity_fields_decorators(entity, schema, string_schema)
 
@@ -154,7 +154,7 @@ def get_sdl(schema: Schema) -> str:
     # noinspection DuplicatedCode
     for entity_name, entity in extended_types.items():
         type_def = re.compile(r"type %s ([^\{]*)" % entity_name)
-        repl_str = r"extend type %s \1" % entity_name
+        repl_str = fr"extend type {entity_name} \1"
         string_schema = type_def.sub(repl_str, string_schema)
 
     # Add entity keys declarations
@@ -162,24 +162,24 @@ def get_sdl(schema: Schema) -> str:
     for entity_name, entity in entities.items():
         type_def_re = r"(type %s [^\{]*)" % entity_name + " "
         type_annotation = (
-            " ".join([f'@key(fields: "{get_field_name(key)}")' for key in entity._keys])
-            + " "
+                " ".join([f'@key(fields: "{get_field_name(key)}")' for key in entity._keys])
+                + f", resolvable: {str(entity._resolvable).lower()}" + " "
         )
-        repl_str = r"\1%s" % type_annotation
+        repl_str = fr"\1{type_annotation}"
         pattern = re.compile(type_def_re)
         string_schema = pattern.sub(repl_str, string_schema)
 
     for type_name, type in shareable_types.items():
-        type_def_re = r"(type %s [^\{]*)" % type_name + " "
-        type_annotation = f" @shareable"
-        repl_str = r"\1%s " % type_annotation
+        type_def_re = fr"(type {type_name} [^\{{]*)" + " "
+        type_annotation = " @shareable"
+        repl_str = fr"\1{type_annotation} "
         pattern = re.compile(type_def_re)
         string_schema = pattern.sub(repl_str, string_schema)
 
     for type_name, type in inaccessible_types.items():
-        type_def_re = r"(type %s [^\{]*)" % type_name + " "
-        type_annotation = f" @inaccessible"
-        repl_str = r"\1%s " % type_annotation
+        type_def_re = fr"(type {type_name} [^\{{]*)" + " "
+        type_annotation = " @inaccessible"
+        repl_str = fr"\1{type_annotation} "
         pattern = re.compile(type_def_re)
         string_schema = pattern.sub(repl_str, string_schema)
 
