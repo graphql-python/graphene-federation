@@ -101,87 +101,90 @@ def get_sdl(schema: Schema) -> str:
 
     # Get various objects that need to be amended
     extended_types = get_extended_types(schema)
-    shareable_types = get_shareable_types(schema)
-    inaccessible_types = get_inaccessible_types(schema)
     provides_parent_types = get_provides_parent_types(schema)
     provides_fields = get_provides_fields(schema)
     entities = get_entities(schema)
-    shareable_fields = get_shareable_fields(schema)
-    tagged_fields = get_tagged_fields(schema)
-    inaccessible_fields = get_inaccessible_fields(schema)
     required_fields = get_required_fields(schema)
     external_fields = get_external_fields(schema)
     override_fields = get_override_fields(schema)
 
-    _schema_import = []
+    _schema = ""
 
-    if extended_types:
-        _schema_import.append('"@extends"')
-    if external_fields:
-        _schema_import.append('"@external"')
-    if entities:
-        _schema_import.append('"@key"')
-    if inaccessible_types or inaccessible_fields:
-        _schema_import.append('"@inaccessible"')
-    if override_fields:
-        _schema_import.append('"@override"')
-    if provides_parent_types or provides_fields:
-        _schema_import.append('"@provides"')
-    if required_fields:
-        _schema_import.append('"@requires"')
-    if shareable_types or shareable_fields:
-        _schema_import.append('"@shareable"')
-    if tagged_fields:
-        _schema_import.append('"@tag"')
-    schema_import = ", ".join(_schema_import)
-    _schema = f'extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: [{schema_import}])\n'
+    if schema.federation_version == 2:
+        shareable_types = get_shareable_types(schema)
+        inaccessible_types = get_inaccessible_types(schema)
+        shareable_fields = get_shareable_fields(schema)
+        tagged_fields = get_tagged_fields(schema)
+        inaccessible_fields = get_inaccessible_fields(schema)
+
+        _schema_import = []
+
+        if extended_types:
+            _schema_import.append('"@extends"')
+        if external_fields:
+            _schema_import.append('"@external"')
+        if entities:
+            _schema_import.append('"@key"')
+        if override_fields:
+            _schema_import.append('"@override"')
+        if provides_parent_types or provides_fields:
+            _schema_import.append('"@provides"')
+        if required_fields:
+            _schema_import.append('"@requires"')
+        if inaccessible_types or inaccessible_fields:
+            _schema_import.append('"@inaccessible"')
+        if shareable_types or shareable_fields:
+            _schema_import.append('"@shareable"')
+        if tagged_fields:
+            _schema_import.append('"@tag"')
+        schema_import = ", ".join(_schema_import)
+        _schema = f'extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: [{schema_import}])\n'
+
     # Add fields directives (@external, @provides, @requires, @shareable, @inaccessible)
-    for entity in (
-            set(provides_parent_types.values())
-            | set(extended_types.values())
-            | set(shareable_types.values())
-            | set(inaccessible_types.values())
-            | set(entities.values())
-            | set(inaccessible_fields.values())
-            | set(shareable_fields.values())
-            | set(tagged_fields.values())
-            | set(required_fields.values())
-            | set(provides_fields.values())
-    ):
+    entities_ = set(provides_parent_types.values()) | set(extended_types.values()) | set(entities.values()) | set(
+        required_fields.values()) | set(provides_fields.values())
+
+    if schema.federation_version == 2:
+        entities_ = entities | set(shareable_types.values()) | set(inaccessible_types.values()) | set(
+            inaccessible_fields.values()) | set(shareable_fields.values()) | set(tagged_fields.values())
+    for entity in entities_:
         string_schema = add_entity_fields_decorators(entity, schema, string_schema)
 
     # Prepend `extend` keyword to the type definition of extended types
     # noinspection DuplicatedCode
     for entity_name, entity in extended_types.items():
-        type_def = re.compile(r"type %s ([^\{]*)" % entity_name)
+        type_def = re.compile(fr"type {entity_name} ([^{{]*)")
         repl_str = fr"extend type {entity_name} \1"
         string_schema = type_def.sub(repl_str, string_schema)
 
     # Add entity keys declarations
     get_field_name = type_attribute_to_field_name(schema)
     for entity_name, entity in entities.items():
-        type_def_re = r"(type %s [^\{]*)" % entity_name + " "
+        type_def_re = fr"(type {entity_name} [^\{{]*)" + " "
         type_annotation = (
-                " ".join([f'@key(fields: "{get_field_name(key)}")' for key in entity._keys])
-                + f", resolvable: {str(entity._resolvable).lower()}" + " "
+            " ".join([f'@key(fields: "{get_field_name(key)}")' for key in entity._keys])
         )
+        if hasattr(entity, '_resolvable'):
+            type_annotation += f", resolvable: {str(entity._resolvable).lower()}"
+        type_annotation += " "
         repl_str = fr"\1{type_annotation}"
         pattern = re.compile(type_def_re)
         string_schema = pattern.sub(repl_str, string_schema)
 
-    for type_name, type in shareable_types.items():
-        type_def_re = fr"(type {type_name} [^\{{]*)" + " "
-        type_annotation = " @shareable"
-        repl_str = fr"\1{type_annotation} "
-        pattern = re.compile(type_def_re)
-        string_schema = pattern.sub(repl_str, string_schema)
+    if schema.federation_version == 2:
+        for type_name, type in shareable_types.items():
+            type_def_re = fr"(type {type_name} [^\{{]*)" + " "
+            type_annotation = " @shareable"
+            repl_str = fr"\1{type_annotation} "
+            pattern = re.compile(type_def_re)
+            string_schema = pattern.sub(repl_str, string_schema)
 
-    for type_name, type in inaccessible_types.items():
-        type_def_re = fr"(type {type_name} [^\{{]*)" + " "
-        type_annotation = " @inaccessible"
-        repl_str = fr"\1{type_annotation} "
-        pattern = re.compile(type_def_re)
-        string_schema = pattern.sub(repl_str, string_schema)
+        for type_name, type in inaccessible_types.items():
+            type_def_re = fr"(type {type_name} [^\{{]*)" + " "
+            type_annotation = " @inaccessible"
+            repl_str = fr"\1{type_annotation} "
+            pattern = re.compile(type_def_re)
+            string_schema = pattern.sub(repl_str, string_schema)
 
     return _schema + string_schema
 
