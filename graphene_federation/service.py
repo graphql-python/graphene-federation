@@ -161,12 +161,11 @@ def get_sdl(schema: Schema) -> str:
     get_field_name = type_attribute_to_field_name(schema)
     for entity_name, entity in entities.items():
         type_def_re = fr"(type {entity_name} [^\{{]*)" + " "
-        type_annotation = (
-            " ".join([f'@key(fields: "{get_field_name(key)}")' for key in entity._keys])
-        )
-        if hasattr(entity, '_resolvable'):
-            type_annotation += f", resolvable: {str(entity._resolvable).lower()}"
-        type_annotation += " "
+        if hasattr(entity, '_resolvable') and not entity._resolvable:
+            type_annotation = (" ".join([f'@key(fields: "{get_field_name(key)}"' for key in
+                                         entity._keys])) + f", resolvable: {str(entity._resolvable).lower()})" + " "
+        else:
+            type_annotation = (" ".join([f'@key(fields: "{get_field_name(key)}")' for key in entity._keys])) + " "
         repl_str = fr"\1{type_annotation}"
         pattern = re.compile(type_def_re)
         string_schema = pattern.sub(repl_str, string_schema)
