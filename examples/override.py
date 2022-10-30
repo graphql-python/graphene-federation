@@ -14,7 +14,7 @@ class Query(graphene.ObjectType):
     position = graphene.Field(Product)
 
 
-schema = build_schema(Query)
+schema = build_schema(Query, enable_federation_2=True)
 
 query = '''
     query getSDL {
