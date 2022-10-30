@@ -79,7 +79,6 @@ def test_key_non_existing_field_failure():
 
 
 def test_compound_primary_keys():
-
     class Organization(ObjectType):
         id = ID()
 

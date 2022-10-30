@@ -21,7 +21,10 @@ def _get_query(schema: Schema, query_cls: Optional[ObjectType] = None) -> Object
 
 
 def build_schema(
-        query: Optional[ObjectType] = None, mutation: Optional[ObjectType] = None, enable_federation_2=False, **kwargs
+    query: Optional[ObjectType] = None,
+    mutation: Optional[ObjectType] = None,
+    enable_federation_2=False,
+    **kwargs
 ) -> Schema:
     schema = Schema(query=query, mutation=mutation, **kwargs)
     schema.auto_camelcase = kwargs.get("auto_camelcase", True)
