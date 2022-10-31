@@ -1,7 +1,8 @@
 from typing import Any, Callable
 
-from graphene import Schema
+from graphene import Schema, ObjectType
 from graphene.utils.str_converters import to_camel_case
+from graphql import extend_schema, parse, validate
 
 
 def field_name_to_type_attribute(schema: Schema, model: Any) -> Callable[[str], str]:
@@ -26,3 +27,28 @@ def type_attribute_to_field_name(schema: Schema) -> Callable[[str], str]:
         return lambda attr_name: to_camel_case(attr_name)
     else:
         return lambda attr_name: attr_name
+
+
+def check_fields_exist_on_type(fields: set, type_: ObjectType):
+    return fields.issubset(set(type_._meta.fields))
+
+
+def is_valid_compound_key(type_name: str, key: str, schema: Schema):
+    # create a temporary schema by extending the existing schema with a query returning
+    # the type to be validated
+    temp_schema = extend_schema(schema.graphql_schema, parse(f"""
+        extend type Query {{
+         _tempExtendedQuery: {type_name}
+        }}
+        """))
+
+    # validate the return of the temporary query with the types key fields.
+    # If no errors are raised, the compound key is valid
+    errors = validate(temp_schema, parse(f"""
+        {{_tempExtendedQuery
+            {{
+            {key}
+          }}
+        }}"""))
+
+    return not bool(errors)
