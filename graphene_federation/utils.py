@@ -36,19 +36,29 @@ def check_fields_exist_on_type(fields: set, type_: ObjectType):
 def is_valid_compound_key(type_name: str, key: str, schema: Schema):
     # create a temporary schema by extending the existing schema with a query returning
     # the type to be validated
-    temp_schema = extend_schema(schema.graphql_schema, parse(f"""
+    temp_schema = extend_schema(
+        schema.graphql_schema,
+        parse(
+            f"""
         extend type Query {{
          _tempExtendedQuery: {type_name}
         }}
-        """))
+        """
+        ),
+    )
 
     # validate the return of the temporary query with the types key fields.
     # If no errors are raised, the compound key is valid
-    errors = validate(temp_schema, parse(f"""
+    errors = validate(
+        temp_schema,
+        parse(
+            f"""
         {{_tempExtendedQuery
             {{
             {key}
           }}
-        }}"""))
+        }}"""
+        ),
+    )
 
     return not bool(errors)

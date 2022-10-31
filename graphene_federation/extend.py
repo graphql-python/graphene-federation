@@ -22,8 +22,9 @@ def get_extended_types(schema: Schema) -> dict[str, Any]:
             key_str = " ".join(type_.graphene_type._keys)
             type_name = type_.graphene_type._meta.name
             if "{" in key_str:  # checking for subselection to identify compound key
-                assert is_valid_compound_key(type_name, key_str,
-                                             schema), f'Invalid compound key definition for type "{type_name}"'
+                assert is_valid_compound_key(
+                    type_name, key_str, schema
+                ), f'Invalid compound key definition for type "{type_name}"'
     return extended_types
 
 
@@ -43,8 +44,9 @@ def extend(fields: str) -> Callable:
             # Skip valid fields check if the key is a compound key. The validation for compound keys
             # is done on calling get_extended_types()
             fields_set = set(fields.replace(" ", "").split(","))
-            assert check_fields_exist_on_type(fields=fields_set,
-                                              type_=Type), f'Field "{fields}" does not exist on type "{Type._meta.name}"'
+            assert check_fields_exist_on_type(
+                fields=fields_set, type_=Type
+            ), f'Field "{fields}" does not exist on type "{Type._meta.name}"'
 
         assert getattr(Type._meta, "description", None) is None, (
             f'Type "{Type.__name__}" has a non empty description and it is also marked with extend.'

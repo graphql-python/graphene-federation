@@ -70,8 +70,8 @@ def test_extend_with_compound_primary_keys():
 
     schema = build_schema(query=Query, enable_federation_2=True)
     assert (
-            str(schema).strip()
-            == """type Query {
+        str(schema).strip()
+        == """type Query {
   user: User
   _entities(representations: [_Any!]!): [_Entity]!
   _service: _Service!
@@ -105,8 +105,8 @@ type _Service {
     result = graphql_sync(schema.graphql_schema, query)
     assert not result.errors
     assert (
-            result.data["_service"]["sdl"].strip()
-            == """
+        result.data["_service"]["sdl"].strip()
+        == """
 extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@extends", "@external", "@key", "@shareable"])
 type Query {
   user: User
