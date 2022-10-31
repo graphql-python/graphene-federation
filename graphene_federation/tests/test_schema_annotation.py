@@ -39,7 +39,7 @@ class UserQuery(ObjectType):
         return User(**next(filter(lambda x: x["user_id"] == user_id, users)))
 
 
-user_schema = build_schema(query=UserQuery)
+user_schema = build_schema(query=UserQuery, enable_federation_2=True)
 
 # ------------------------
 # Chat service
@@ -76,7 +76,7 @@ class ChatQuery(ObjectType):
         return ChatMessage(**next(filter(lambda x: x["id"] == id, chat_messages)))
 
 
-chat_schema = build_schema(query=ChatQuery)
+chat_schema = build_schema(query=ChatQuery, enable_federation_2=True)
 
 
 # ------------------------

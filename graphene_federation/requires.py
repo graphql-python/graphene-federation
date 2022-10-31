@@ -22,7 +22,7 @@ def requires(field, fields: Union[str, list[str]]):
 
 def get_required_fields(schema: Schema) -> dict:
     """
-    Find all the extended types from the schema.
+    Find all the extended types with required fields from the schema.
     They can be easily distinguished from the other type as
     the `@requires` decorator adds a `_requires` attribute to them.
     """

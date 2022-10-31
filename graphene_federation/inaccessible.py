@@ -6,9 +6,9 @@ from graphene.types.schema import TypeMap
 
 def get_inaccessible_types(schema: Schema) -> dict[str, Any]:
     """
-    Find all the extended types from the schema.
+    Find all the inaccessible types from the schema.
     They can be easily distinguished from the other type as
-    the `@extend` decorator adds a `_extended` attribute to them.
+    the `@inaccessible` decorator adds a `_inaccessible` attribute to them.
     """
     inaccessible_types = {}
     for type_name, type_ in schema.graphql_schema.type_map.items():
@@ -26,16 +26,8 @@ def inaccessible(field: Optional[Any] = None) -> Any:
 
     # noinspection PyProtectedMember,PyPep8Naming
     def decorator(Type):
-        assert not hasattr(
-            Type, "_keys"
-        ), "Can't extend type which is already extended or has @key"
-        # Check the provided fields actually exist on the Type.
-        assert getattr(Type._meta, "description", None) is None, (
-            f'Type "{Type.__name__}" has a non empty description and it is also marked with extend.'
-            "\nThey are mutually exclusive."
-            "\nSee https://github.com/graphql/graphql-js/issues/2385#issuecomment-577997521"
-        )
-        # Set a `_extended` attribute to be able to distinguish it from the other entities
+        # TODO Check the provided fields actually exist on the Type.
+        # Set a `_inaccessible` attribute to be able to distinguish it from the other entities
         setattr(Type, "_inaccessible", True)
         return Type
 
@@ -47,16 +39,16 @@ def inaccessible(field: Optional[Any] = None) -> Any:
 
 def get_inaccessible_fields(schema: Schema) -> dict:
     """
-    Find all the extended types from the schema.
+    Find all the inacessible types from the schema.
     They can be easily distinguished from the other type as
-    the `@_tag` decorator adds a `_tag` attribute to them.
+    the `@inaccessible` decorator adds a `_inaccessible` attribute to them.
     """
-    shareable_types = {}
+    inaccessible_types = {}
     for type_name, type_ in schema.graphql_schema.type_map.items():
         if not hasattr(type_, "graphene_type"):
             continue
         for field in list(type_.graphene_type.__dict__):
             if getattr(getattr(type_.graphene_type, field), "_inaccessible", False):
-                shareable_types[type_name] = type_.graphene_type
+                inaccessible_types[type_name] = type_.graphene_type
                 continue
-    return shareable_types
+    return inaccessible_types

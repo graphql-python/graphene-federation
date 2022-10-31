@@ -83,7 +83,7 @@ def get_entity_query(schema: Schema):
     return EntityQuery
 
 
-def key(fields: str) -> Callable:
+def key(fields: str, resolvable: bool = True) -> Callable:
     """
     Take as input a field that should be used as key for that entity.
     See specification: https://www.apollographql.com/docs/federation/federation-spec/#key
@@ -99,6 +99,7 @@ def key(fields: str) -> Callable:
         keys = getattr(Type, "_keys", [])
         keys.append(fields)
         setattr(Type, "_keys", keys)
+        setattr(Type, "_resolvable", resolvable)
 
         return Type
 

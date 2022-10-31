@@ -18,7 +18,7 @@ def test_multiple_keys():
     class Query(ObjectType):
         user = Field(User)
 
-    schema = build_schema(query=Query)
+    schema = build_schema(query=Query, enable_federation_2=True)
     assert (
         str(schema).strip()
         == """type Query {
@@ -79,11 +79,6 @@ def test_key_non_existing_field_failure():
 
 
 def test_compound_primary_keys():
-    """
-    Compound primary keys are not implemented as of now so this test checks that at least the user get
-    an explicit failure.
-    """
-
     class Organization(ObjectType):
         id = ID()
 
@@ -91,3 +86,66 @@ def test_compound_primary_keys():
     class User(ObjectType):
         id = ID()
         organization = Field(Organization)
+
+    @key("id organization { id }")
+    class User(ObjectType):
+        identifier = ID()
+        organization = Field(Organization)
+
+    class Query(ObjectType):
+        user = Field(User)
+
+    schema = build_schema(query=Query, enable_federation_2=True)
+    assert (
+        str(schema).strip()
+        == """type Query {
+  user: User
+  _entities(representations: [_Any!]!): [_Entity]!
+  _service: _Service!
+}
+
+type User {
+  identifier: ID
+  organization: Organization
+}
+
+type Organization {
+  id: ID
+}
+
+union _Entity = User
+
+scalar _Any
+
+type _Service {
+  sdl: String
+}"""
+    )
+    # Check the federation service schema definition language
+    query = """
+    query {
+        _service {
+            sdl
+        }
+    }
+    """
+    result = graphql_sync(schema.graphql_schema, query)
+    assert not result.errors
+    assert (
+        result.data["_service"]["sdl"].strip()
+        == """
+extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key"])
+type Query {
+  user: User
+}
+
+type User @key(fields: "id organization { id }") {
+  identifier: ID
+  organization: Organization
+}
+
+type Organization {
+  id: ID
+}
+""".strip()
+    )

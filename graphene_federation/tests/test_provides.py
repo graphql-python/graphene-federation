@@ -27,7 +27,7 @@ def test_provides():
     class Query(ObjectType):
         in_stock_count = Field(InStockCount)
 
-    schema = build_schema(query=Query)
+    schema = build_schema(query=Query, enable_federation_2=True)
     assert (
         str(schema).strip()
         == """type Query {
@@ -105,7 +105,7 @@ def test_provides_multiple_fields():
     class Query(ObjectType):
         in_stock_count = Field(InStockCount)
 
-    schema = build_schema(query=Query)
+    schema = build_schema(query=Query, enable_federation_2=True)
     assert (
         str(schema).strip()
         == """type Query {
@@ -183,7 +183,7 @@ def test_provides_multiple_fields_as_list():
     class Query(ObjectType):
         in_stock_count = Field(InStockCount)
 
-    schema = build_schema(query=Query)
+    schema = build_schema(query=Query, enable_federation_2=True)
     assert (
         str(schema).strip()
         == """type Query {

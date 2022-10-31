@@ -38,7 +38,7 @@ def test_requires_multiple_fields():
     class Query(ObjectType):
         product = Field(Product)
 
-    schema = build_schema(query=Query)
+    schema = build_schema(query=Query, enable_federation_2=True)
     assert (
         str(schema).strip()
         == """type Query {
@@ -104,7 +104,7 @@ def test_requires_multiple_fields_as_list():
     class Query(ObjectType):
         product = Field(Product)
 
-    schema = build_schema(query=Query)
+    schema = build_schema(query=Query, enable_federation_2=True)
     assert (
         str(schema).strip()
         == """type Query {
@@ -169,7 +169,7 @@ def test_requires_with_input():
     class Query(ObjectType):
         acme = Field(Acme)
 
-    schema = build_schema(query=Query)
+    schema = build_schema(query=Query, enable_federation_2=True)
     assert (
         str(schema).strip()
         == """type Query {
