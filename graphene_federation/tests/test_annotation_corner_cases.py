@@ -30,7 +30,7 @@ def test_similar_field_name():
     class ChatQuery(ObjectType):
         message = Field(ChatMessage, id=ID(required=True))
 
-    chat_schema = build_schema(query=ChatQuery)
+    chat_schema = build_schema(query=ChatQuery, enable_federation_2=True)
     assert (
         str(chat_schema).strip()
         == """schema {
@@ -114,7 +114,7 @@ def test_camel_case_field_name():
     class Query(ObjectType):
         camel = Field(Camel)
 
-    schema = build_schema(query=Query)
+    schema = build_schema(query=Query, enable_federation_2=True)
     assert (
         str(schema).strip()
         == """type Query {
@@ -180,7 +180,7 @@ def test_camel_case_field_name_without_auto_camelcase():
     class Query(ObjectType):
         camel = Field(Camel)
 
-    schema = build_schema(query=Query, auto_camelcase=False)
+    schema = build_schema(query=Query, auto_camelcase=False, enable_federation_2=True)
     assert (
         str(schema).strip()
         == """type Query {
@@ -249,7 +249,7 @@ def test_annotated_field_also_used_in_filter():
     class Query(ObjectType):
         a = Field(A)
 
-    schema = build_schema(query=Query)
+    schema = build_schema(query=Query, enable_federation_2=True)
     assert (
         str(schema).strip()
         == """type Query {
@@ -323,7 +323,7 @@ def test_annotate_object_with_meta_name():
     class Query(ObjectType):
         a = Field(A)
 
-    schema = build_schema(query=Query)
+    schema = build_schema(query=Query, enable_federation_2=True)
     assert (
         str(schema).strip()
         == """type Query {
