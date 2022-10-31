@@ -87,11 +87,6 @@ def test_compound_primary_keys():
         id = ID()
         organization = Field(Organization)
 
-    @key("id organization { id }")
-    class User(ObjectType):
-        identifier = ID()
-        organization = Field(Organization)
-
     class Query(ObjectType):
         user = Field(User)
 
@@ -105,7 +100,7 @@ def test_compound_primary_keys():
 }
 
 type User {
-  identifier: ID
+  id: ID
   organization: Organization
 }
 
@@ -140,7 +135,7 @@ type Query {
 }
 
 type User @key(fields: "id organization { id }") {
-  identifier: ID
+  id: ID
   organization: Organization
 }
 
