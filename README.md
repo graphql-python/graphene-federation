@@ -171,7 +171,7 @@ There is also a cool [example](https://github.com/preply/graphene-federation/iss
 ## Known issues
 
 1. decorators will not work properly on fields with custom names for example `some_field = String(name='another_name')`
-1. `@key` decorator will not work on [compound primary key](https://www.apollographql.com/docs/federation/entities/#defining-a-compound-primary-key)
+1. `@key` decorator will not work on [compound primary key](https://www.apollographql.com/docs/federation/entities-advanced/#compound-keys)
 
 ------------------------
 
