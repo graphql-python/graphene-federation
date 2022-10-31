@@ -8,7 +8,22 @@ from graphene.types.schema import Schema
 from graphene.types.schema import TypeMap
 
 from .types import _Any
-from .utils import field_name_to_type_attribute
+from .utils import (
+    field_name_to_type_attribute,
+    check_fields_exist_on_type,
+    is_valid_compound_key,
+)
+
+import collections.abc
+
+
+def update(d, u):
+    for k, v in u.items():
+        if isinstance(v, collections.abc.Mapping):
+            d[k] = update(d.get(k, {}), v)
+        else:
+            d[k] = v
+    return d
 
 
 def get_entities(schema: Schema) -> dict[str, Any]:
@@ -24,6 +39,14 @@ def get_entities(schema: Schema) -> dict[str, Any]:
             continue
         if getattr(type_.graphene_type, "_keys", None):
             entities[type_name] = type_.graphene_type
+
+            # Validation for compound keys
+            key_str = " ".join(type_.graphene_type._keys)
+            type_name = type_.graphene_type._meta.name
+            if "{" in key_str:  # checking for subselection to identify compound key
+                assert is_valid_compound_key(
+                    type_name, key_str, schema
+                ), f'Invalid compound key definition for type "{type_name}"'
     return entities
 
 
@@ -94,6 +117,13 @@ def key(fields: str, resolvable: bool = True) -> Callable:
         if " " not in fields:
             assert (
                 fields in Type._meta.fields
+            ), f'Field "{fields}" does not exist on type "{Type._meta.name}"'
+        if "{" not in fields:
+            # Skip valid fields check if the key is a compound key. The validation for compound keys
+            # is done on calling get_entities()
+            fields_set = set(fields.replace(" ", "").split(","))
+            assert check_fields_exist_on_type(
+                fields=fields_set, type_=Type
             ), f'Field "{fields}" does not exist on type "{Type._meta.name}"'
 
         keys = getattr(Type, "_keys", [])
