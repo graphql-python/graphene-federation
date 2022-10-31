@@ -1,6 +1,9 @@
 import pytest
 
-from graphene import ObjectType, ID, String
+from graphene import ObjectType, ID, String, Field
+from graphql import graphql_sync
+
+from graphene_federation import build_schema, external, shareable
 
 from ..extend import extend
 
@@ -49,4 +52,73 @@ def test_extend_with_description_failure():
     assert (
         'Type "A" has a non empty description and it is also marked with extend.\nThey are mutually exclusive.'
         in str(err.value)
+    )
+
+
+def test_extend_with_compound_primary_keys():
+    @shareable
+    class Organization(ObjectType):
+        id = ID()
+
+    @extend(fields="id organization {id }")
+    class User(ObjectType):
+        id = external(ID())
+        organization = Field(Organization)
+
+    class Query(ObjectType):
+        user = Field(User)
+
+    schema = build_schema(query=Query, enable_federation_2=True)
+    assert (
+            str(schema).strip()
+            == """type Query {
+  user: User
+  _entities(representations: [_Any!]!): [_Entity]!
+  _service: _Service!
+}
+
+type User {
+  id: ID
+  organization: Organization
+}
+
+type Organization {
+  id: ID
+}
+
+union _Entity = User
+
+scalar _Any
+
+type _Service {
+  sdl: String
+}"""
+    )
+    # Check the federation service schema definition language
+    query = """
+    query {
+        _service {
+            sdl
+        }
+    }
+    """
+    result = graphql_sync(schema.graphql_schema, query)
+    assert not result.errors
+    assert (
+            result.data["_service"]["sdl"].strip()
+            == """
+extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@extends", "@external", "@key", "@shareable"])
+type Query {
+  user: User
+}
+
+extend type User @key(fields: "id organization {id }") {
+  id: ID @external
+  organization: Organization
+}
+
+type Organization  @shareable {
+  id: ID
+}
+""".strip()
     )
