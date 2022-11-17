@@ -7,7 +7,7 @@ def get_shareable_types(schema: Schema) -> dict[str, Any]:
     """
     Find all the extended types from the schema.
     They can be easily distinguished from the other type as
-    the `@_shareable` decorator adds a `_shareable` attribute to them.
+    the `@shareable` decorator adds a `_shareable` attribute to them.
     """
     shareable_types = {}
     for type_name, type_ in schema.graphql_schema.type_map.items():
