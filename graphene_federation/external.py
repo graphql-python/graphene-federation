@@ -19,7 +19,7 @@ def get_external_fields(schema: Schema) -> dict:
     for type_name, type_ in schema.graphql_schema.type_map.items():
         if not hasattr(type_, "graphene_type"):
             continue
-        for field in list(type_.graphene_type.__dict__):
+        for field in list(type_.graphene_type._meta.fields):
             if getattr(getattr(type_.graphene_type, field), "_external", False):
                 external_fields[type_name] = type_.graphene_type
                 continue
