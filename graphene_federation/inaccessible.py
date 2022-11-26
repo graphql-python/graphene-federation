@@ -1,7 +1,6 @@
-from typing import Callable, Any, Optional
+from typing import Any, Optional
 
-from graphene import Schema, Field
-from graphene.types.schema import TypeMap
+from graphene import Schema
 
 from graphene_federation.utils import get_attributed_fields
 

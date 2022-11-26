@@ -1,4 +1,4 @@
-from typing import Any, Callable, Union
+from typing import Any, Callable
 
 from graphene import Schema
 

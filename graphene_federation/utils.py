@@ -34,34 +34,42 @@ def check_fields_exist_on_type(fields: set, type_: ObjectType):
 
 
 def is_valid_compound_key(type_name: str, key: str, schema: Schema):
-    # create a temporary schema by extending the existing schema with a query returning
-    # the type to be validated
-    temp_schema = extend_schema(
-        schema.graphql_schema,
-        parse(
-            f"""
-        extend type Query {{
-         _tempExtendedQuery: {type_name}
-        }}
-        """
-        ),
-    )
+    key = key.replace("{", " { ").replace(
+        "}", " } "
+    )  # Add padding spaces to curly braces so that they can be parsed separately while using split()
 
-    # validate the return of the temporary query with the types key fields.
-    # If no errors are raised, the compound key is valid
-    errors = validate(
-        temp_schema,
-        parse(
-            f"""
-        {{_tempExtendedQuery
-            {{
-            {key}
-          }}
-        }}"""
-        ),
-    )
+    tokens = key.split()  # tokens list contains field names as well as curly braces
+    types_ = [
+        schema.graphql_schema.type_map[type_name]
+    ]  # the types_ list is used to track the current graphene type whose fields are present in tokens list
 
-    return not bool(errors)
+    for index, token in enumerate(tokens):
+
+        if token == "{":
+            # On encountering opening braces as the current,
+            # the previous token holds the parent type of the following subselection
+            parent_type = tokens[index - 1]  # parent type of the subselection
+            types_.append(types_[-1].fields[parent_type].type)
+
+        elif token == "}":
+            # Once closing brace is encountered, the last parent type in types_ list can be removed
+            # as all its subfields are checked already
+            types_.pop()
+
+        else:  # Current token is a field.
+            try:
+                types_[-1].fields[
+                    token
+                ]  # Check for the existence of the current token in the fields dict of its parent type
+            except KeyError:
+                return False
+
+    if len(types_) != 1:
+        # This works as the check for correct number of opening and closing braces.
+        # Only the base type provided by 'type_name' parameter will be present after successful parsing of key.
+        return False
+
+    return True
 
 
 def get_attributed_fields(attribute: str, schema: Schema):
