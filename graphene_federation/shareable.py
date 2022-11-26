@@ -37,7 +37,7 @@ def shareable(field: Optional[Any] = None) -> Any:
             "\nThey are mutually exclusive."
             "\nSee https://github.com/graphql/graphql-js/issues/2385#issuecomment-577997521"
         )
-        # Set a `_extended` attribute to be able to distinguish it from the other entities
+        # Set a `_shareable` attribute to be able to distinguish it from the other entities
         setattr(type_, "_shareable", True)
         return type_
 
