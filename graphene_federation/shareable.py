@@ -18,9 +18,6 @@ def get_shareable_types(schema: Schema) -> dict[str, Any]:
     return shareable_types
 
 
-_shareable = []
-
-
 def shareable(field: Optional[Any] = None) -> Any:
     """
     Decorator to use to shareable a given type.
@@ -42,7 +39,6 @@ def shareable(field: Optional[Any] = None) -> Any:
         return type_
 
     if field:
-        _shareable.append(field)
         field._shareable = True
         return field
     return decorator
