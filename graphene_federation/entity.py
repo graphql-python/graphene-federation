@@ -112,25 +112,25 @@ def key(fields: str, resolvable: bool = True) -> Callable:
     See specification: https://www.apollographql.com/docs/federation/federation-spec/#key
     """
 
-    def decorator(Type):
+    def decorator(type_):
         # Check the provided fields actually exist on the Type.
         if " " not in fields:
             assert (
-                fields in Type._meta.fields
-            ), f'Field "{fields}" does not exist on type "{Type._meta.name}"'
+                fields in type_._meta.fields
+            ), f'Field "{fields}" does not exist on type "{type_._meta.name}"'
         if "{" not in fields:
             # Skip valid fields check if the key is a compound key. The validation for compound keys
             # is done on calling get_entities()
             fields_set = set(fields.replace(" ", "").split(","))
             assert check_fields_exist_on_type(
-                fields=fields_set, type_=Type
-            ), f'Field "{fields}" does not exist on type "{Type._meta.name}"'
+                fields=fields_set, type_=type_
+            ), f'Field "{fields}" does not exist on type "{type_._meta.name}"'
 
-        keys = getattr(Type, "_keys", [])
+        keys = getattr(type_, "_keys", [])
         keys.append(fields)
-        setattr(Type, "_keys", keys)
-        setattr(Type, "_resolvable", resolvable)
+        setattr(type_, "_keys", keys)
+        setattr(type_, "_resolvable", resolvable)
 
-        return Type
+        return type_
 
     return decorator

@@ -29,4 +29,4 @@ query = '''
 '''
 result = schema.execute(query)
 print(result.data)
-# OrderedDict([('_service', OrderedDict([('sdl', '   extend type Message @key(fields: "id") {   id: Int! @external }  type Query {   message: Message } ')]))])
+# {'_service': {'sdl': 'extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@external", "@key", "@override", "@provides", "@inaccessible"])\ntype Query {\n  position: Position\n}\n\ntype Position @key(fields: "x") {\n  x: Int!\n  y: Int! @external\n  z: Int! @inaccessible\n  a: Int @provides(fields: "x")\n  b: Int! @override(from: "h")\n}'}}
