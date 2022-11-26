@@ -3,6 +3,8 @@ from typing import Callable, Any, Optional
 from graphene import Schema, Field
 from graphene.types.schema import TypeMap
 
+from graphene_federation.utils import get_attributed_fields
+
 
 def get_inaccessible_types(schema: Schema) -> dict[str, Any]:
     """
@@ -43,12 +45,4 @@ def get_inaccessible_fields(schema: Schema) -> dict:
     They can be easily distinguished from the other type as
     the `@inaccessible` decorator adds a `_inaccessible` attribute to them.
     """
-    inaccessible_types = {}
-    for type_name, type_ in schema.graphql_schema.type_map.items():
-        if not hasattr(type_, "graphene_type"):
-            continue
-        for field in list(type_.graphene_type._meta.fields):
-            if getattr(getattr(type_.graphene_type, field), "_inaccessible", False):
-                inaccessible_types[type_name] = type_.graphene_type
-                continue
-    return inaccessible_types
+    return get_attributed_fields(attribute="_inaccessible", schema=schema)
