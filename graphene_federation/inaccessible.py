@@ -28,8 +28,8 @@ def inaccessible(field: Optional[Any] = None) -> Any:
     def decorator(type_):
         # TODO Check the provided fields actually exist on the Type.
         # Set a `_inaccessible` attribute to be able to distinguish it from the other entities
-        setattr(Type, "_inaccessible", True)
-        return Type
+        setattr(type_, "_inaccessible", True)
+        return type_
 
     if field:
         field._inaccessible = True

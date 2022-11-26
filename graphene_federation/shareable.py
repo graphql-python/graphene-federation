@@ -27,19 +27,19 @@ def shareable(field: Optional[Any] = None) -> Any:
     """
 
     # noinspection PyProtectedMember,PyPep8Naming
-    def decorator(Type):
+    def decorator(type_):
         assert not hasattr(
-            Type, "_keys"
+            type_, "_keys"
         ), "Can't extend type which is already extended or has @key"
         # Check the provided fields actually exist on the Type.
-        assert getattr(Type._meta, "description", None) is None, (
-            f'Type "{Type.__name__}" has a non empty description and it is also marked with extend.'
+        assert getattr(type_._meta, "description", None) is None, (
+            f'Type "{type_.__name__}" has a non empty description and it is also marked with extend.'
             "\nThey are mutually exclusive."
             "\nSee https://github.com/graphql/graphql-js/issues/2385#issuecomment-577997521"
         )
         # Set a `_extended` attribute to be able to distinguish it from the other entities
-        setattr(Type, "_shareable", True)
-        return Type
+        setattr(type_, "_shareable", True)
+        return type_
 
     if field:
         _shareable.append(field)
