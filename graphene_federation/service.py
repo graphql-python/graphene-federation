@@ -174,7 +174,11 @@ def get_sdl(schema: Schema) -> str:
         type_def_re = rf"(type {entity_name} [^\{{]*)" + " "
 
         # resolvable argument of @key directive is true by default. If false, we add 'resolvable: false' to sdl.
-        if schema.federation_version == 2 and hasattr(entity, "_resolvable") and not entity._resolvable:
+        if (
+            schema.federation_version == 2
+            and hasattr(entity, "_resolvable")
+            and not entity._resolvable
+        ):
             type_annotation = (
                 (
                     " ".join(
