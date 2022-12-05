@@ -36,7 +36,7 @@ DECORATORS = {
 def field_to_string(field) -> str:
     str_field = print_fields(field)
     # Remove blocks added by `print_block`
-    block_match = re.match(" \{\n(?P<field_str>.*)\n\}", str_field, flags=re.DOTALL)
+    block_match = re.match(r" \{\n(?P<field_str>.*)\n\}", str_field, flags=re.DOTALL)
     if block_match:
         str_field = block_match.groups()[0]
     return str_field
