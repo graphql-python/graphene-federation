@@ -47,12 +47,15 @@ def is_valid_compound_key(type_name: str, key: str, schema: Schema):
 
         for field in selection_node.selection_set.selections:
             parent_type_fields = parent_object_type.fields
-
-            if field.name.value not in parent_type_fields:
+            if schema.auto_camelcase:
+                field_name = to_camel_case(field.name.value)
+            else:
+                field_name = field.name.value
+            if field_name not in parent_type_fields:
                 # Field does not exist on parent
                 return False
 
-            field_type = parent_type_fields[field.name.value].type
+            field_type = parent_type_fields[field_name].type
             if field.selection_set:
                 # If the field has sub-selections, add it to node mappings to check for valid subfields
 
