@@ -1,8 +1,9 @@
 from typing import Any, Callable
 
 from graphene import Schema, ObjectType
+from graphene.types.definitions import GrapheneObjectType
 from graphene.utils.str_converters import to_camel_case
-from graphql import extend_schema, parse, validate
+from graphql import parse, GraphQLScalarType
 
 
 def field_name_to_type_attribute(schema: Schema, model: Any) -> Callable[[str], str]:
@@ -34,40 +35,38 @@ def check_fields_exist_on_type(fields: set, type_: ObjectType):
 
 
 def is_valid_compound_key(type_name: str, key: str, schema: Schema):
-    key = key.replace("{", " { ").replace(
-        "}", " } "
-    )  # Add padding spaces to curly braces so that they can be parsed separately while using split()
+    key_document = parse(f"{{{key}}}")
 
-    tokens = key.split()  # tokens list contains field names as well as curly braces
-    types_ = [
-        schema.graphql_schema.type_map[type_name]
-    ]  # the types_ list is used to track the current graphene type whose fields are present in tokens list
+    # List storing tuples of nodes in the key document with its parent types
+    key_nodes: list[tuple[Any, GrapheneObjectType]] = [
+        (key_document.definitions[0], schema.graphql_schema.type_map[type_name])
+    ]
 
-    for index, token in enumerate(tokens):
+    while key_nodes:
+        selection_node, parent_object_type = key_nodes[0]
 
-        if token == "{":
-            # On encountering opening braces as the current,
-            # the previous token holds the parent type of the following subselection
-            parent_type = tokens[index - 1]  # parent type of the subselection
-            types_.append(types_[-1].fields[parent_type].type)
+        for field in selection_node.selection_set.selections:
+            parent_type_fields = parent_object_type.fields
 
-        elif token == "}":
-            # Once closing brace is encountered, the last parent type in types_ list can be removed
-            # as all its subfields are checked already
-            types_.pop()
-
-        else:  # Current token is a field.
-            try:
-                types_[-1].fields[
-                    token
-                ]  # Check for the existence of the current token in the fields dict of its parent type
-            except KeyError:
+            if field.name.value not in parent_type_fields:
+                # Field does not exist on parent
                 return False
 
-    if len(types_) != 1:
-        # This works as the check for correct number of opening and closing braces.
-        # Only the base type provided by 'type_name' parameter will be present after successful parsing of key.
-        return False
+            field_type = parent_type_fields[field.name.value].type
+            if field.selection_set:
+                # If the field has sub-selections, add it to node mappings to check for valid subfields
+
+                if isinstance(field_type, GraphQLScalarType):
+                    # sub-selections are added to a scalar type, key is not valid
+                    return False
+
+                key_nodes.append((field, field_type))
+            else:
+                # If there are no sub-selections for a field, it should be a scalar
+                if not isinstance(field_type, GraphQLScalarType):
+                    return False
+
+        key_nodes.pop(0)  # Remove the current node as it is fully processed
 
     return True
 
