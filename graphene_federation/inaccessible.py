@@ -26,15 +26,14 @@ def inaccessible(field: Optional[Any] = None) -> Any:
     """
 
     # noinspection PyProtectedMember,PyPep8Naming
-    def decorator(type_):
+    def decorator(field_or_type):
         # TODO Check the provided fields actually exist on the Type.
         # Set a `_inaccessible` attribute to be able to distinguish it from the other entities
-        setattr(type_, "_inaccessible", True)
-        return type_
+        setattr(field_or_type, "_inaccessible", True)
+        return field_or_type
 
     if field:
-        field._inaccessible = True
-        return field
+        return decorator(field)
     return decorator
 
 
