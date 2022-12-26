@@ -39,7 +39,7 @@ query = '''
 '''
 result = schema.execute(query)
 print(result.data)
-# OrderedDict([('_service', OrderedDict([('sdl', '   type File @key(fields: "id") {   id: Int!   name: String }  extend type Query {   hello: String   file: File } ')]))])
+# {'_service': {'sdl': 'type Query {\n  file: File\n}\n\ntype File @key(fields: "id") {\n  id: Int!\n  name: String\n}'}}
 
 query ='''
     query entities($_representations: [_Any!]!) {
@@ -62,4 +62,4 @@ result = schema.execute(query, variables={
     ]
 })
 print(result.data)
-# OrderedDict([('_entities', [OrderedDict([('id', 1), ('name', 'test_name')])])])
+# {'_entities': [{'id': 1, 'name': 'test_name'}]}

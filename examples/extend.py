@@ -28,4 +28,4 @@ query = '''
 '''
 result = schema.execute(query)
 print(result.data)
-# OrderedDict([('_service', OrderedDict([('sdl', '   extend type Message @key(fields: "id") {   id: Int! @external }  type Query {   message: Message } ')]))])
+# {'sdl': 'type Query {\n  message: Message\n}\n\nextend type Message @key(fields: "id") {\n  id: Int! @external\n}'}}

@@ -4,8 +4,9 @@ from graphql import graphql_sync
 
 from graphene import Field, ID, Int, ObjectType, String
 
-from .. import external, requires
 from ..extend import extend
+from ..external import external
+from ..requires import requires
 from ..main import build_schema
 
 
@@ -38,7 +39,7 @@ def test_requires_multiple_fields():
     class Query(ObjectType):
         product = Field(Product)
 
-    schema = build_schema(query=Query, enable_federation_2=True)
+    schema = build_schema(query=Query)
     assert (
         str(schema).strip()
         == """type Query {
@@ -74,7 +75,7 @@ type _Service {
     assert not result.errors
     assert (
         result.data["_service"]["sdl"].strip()
-        == """extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@extends", "@external", "@key", "@requires"])
+        == """
 type Query {
   product: Product
 }
@@ -104,7 +105,7 @@ def test_requires_multiple_fields_as_list():
     class Query(ObjectType):
         product = Field(Product)
 
-    schema = build_schema(query=Query, enable_federation_2=True)
+    schema = build_schema(query=Query)
     assert (
         str(schema).strip()
         == """type Query {
@@ -140,7 +141,7 @@ type _Service {
     assert not result.errors
     assert (
         result.data["_service"]["sdl"].strip()
-        == """extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@extends", "@external", "@key", "@requires"])
+        == """
 type Query {
   product: Product
 }
@@ -169,7 +170,7 @@ def test_requires_with_input():
     class Query(ObjectType):
         acme = Field(Acme)
 
-    schema = build_schema(query=Query, enable_federation_2=True)
+    schema = build_schema(query=Query)
     assert (
         str(schema).strip()
         == """type Query {
@@ -204,7 +205,7 @@ type _Service {
     assert not result.errors
     assert (
         result.data["_service"]["sdl"].strip()
-        == """extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@extends", "@external", "@key", "@requires"])
+        == """
 type Query {
   acme: Acme
 }
