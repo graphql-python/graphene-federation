@@ -94,7 +94,7 @@ class Product(ObjectType):
         """
         Here we resolve the reference of the product entity referenced by its `upc` field.
         """
-        return User(upc=self.upc, name=f"product {self.upc}")
+        return Product(upc=self.upc, name=f"product {self.upc}")
 
 class Query(ObjectType):
     topProducts = List(Product, first=Argument(Int, default_value=5))
