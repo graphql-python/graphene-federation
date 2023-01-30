@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Callable
+from typing import Any, Callable, Dict
 
 from graphene import List, NonNull, Union
 
@@ -11,7 +11,7 @@ from .types import _Any
 from .utils import field_name_to_type_attribute
 
 
-def get_entities(schema: Schema) -> dict[str, Any]:
+def get_entities(schema: Schema) -> Dict[str, Any]:
     """
     Find all the entities from the type map.
     They can be easily distinguished from the other type as
@@ -27,7 +27,7 @@ def get_entities(schema: Schema) -> dict[str, Any]:
     return entities
 
 
-def get_entity_cls(entities: dict[str, Any]) -> Union:
+def get_entity_cls(entities: Dict[str, Any]) -> Union:
     """
     Create _Entity type which is a union of all the entities types.
     """

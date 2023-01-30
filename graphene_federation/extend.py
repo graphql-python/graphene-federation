@@ -1,9 +1,9 @@
-from typing import Any, Callable, Union
+from typing import Any, Callable, Union, Dict, List
 
 from graphene import Schema
 
 
-def get_extended_types(schema: Schema) -> dict[str, Any]:
+def get_extended_types(schema: Schema) -> Dict[str, Any]:
     """
     Find all the extended types from the schema.
     They can be easily distinguished from the other type as
@@ -54,7 +54,7 @@ def external(field):
     return field
 
 
-def requires(field, fields: Union[str, list[str]]):
+def requires(field, fields: Union[str, List[str]]):
     """
     Mark the required fields for a given field.
     The input `fields` can be either a string or a list.
