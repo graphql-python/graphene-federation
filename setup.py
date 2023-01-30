@@ -5,7 +5,7 @@ from setuptools import find_packages, setup
 def read(*rnames):
   return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
 
-version = '3.0.2'
+version = '3.0.3'
 
 tests_require = [
     "pytest==7.1.2",
