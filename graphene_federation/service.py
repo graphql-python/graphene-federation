@@ -215,9 +215,7 @@ def get_sdl(schema: Schema) -> str:
     if schema.federation_version == 2:
         for type_name, type in shareable_types.items():
             # noinspection PyProtectedMember
-            if isinstance(type._meta, InterfaceOptions):
-                type_def_re = rf"(interface {type_name}[^\{{]*)" + " "
-            elif isinstance(type._meta, UnionOptions):
+            if isinstance(type._meta, UnionOptions):
                 type_def_re = rf"(union {type_name})"
             else:
                 type_def_re = rf"(type {type_name} [^\{{]*)" + " "

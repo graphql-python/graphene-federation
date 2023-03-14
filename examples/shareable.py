@@ -13,20 +13,6 @@ class Position(graphene.ObjectType):
 
 
 @shareable
-class ReviewInterface(graphene.Interface):
-    interfaced_body = graphene.String(required=True)
-
-
-@shareable
-class Review(graphene.ObjectType):
-    class Meta:
-        interfaces = (ReviewInterface,)
-
-    id = shareable(graphene.Int(required=True))
-    body = graphene.String(required=True)
-
-
-@shareable
 class Human(graphene.ObjectType):
     name = graphene.String()
     born_in = graphene.String()
@@ -54,7 +40,7 @@ class Query(graphene.ObjectType):
     position = graphene.Field(Position)
 
 
-schema = build_schema(Query, enable_federation_2=True, types=(ReviewInterface,))
+schema = build_schema(Query, enable_federation_2=True, types=(SearchResult,))
 
 query = '''
     query getSDL {
