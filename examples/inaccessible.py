@@ -1,6 +1,6 @@
 import graphene
 
-from graphene_federation import inaccessible, external, provides, key, override
+from graphene_federation import inaccessible, external, provides, key, override, shareable
 
 from graphene_federation import build_schema
 
@@ -14,11 +14,24 @@ class Position(graphene.ObjectType):
     b = override(graphene.Int(required=True), from_="h")
 
 
+@inaccessible
+class ReviewInterface(graphene.Interface):
+    interfaced_body = graphene.String(required=True)
+
+
+class Review(graphene.ObjectType):
+    class Meta:
+        interfaces = (ReviewInterface,)
+
+    id = graphene.Int(required=True)
+    body = graphene.String(required=True)
+
+
 class Query(graphene.ObjectType):
     position = graphene.Field(Position)
 
 
-schema = build_schema(Query, enable_federation_2=True)
+schema = build_schema(Query, enable_federation_2=True, types=(ReviewInterface,))
 
 query = '''
     query getSDL {

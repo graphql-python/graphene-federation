@@ -1,5 +1,7 @@
 import re
 
+from graphene.types.interface import InterfaceOptions
+
 from .external import get_external_fields
 from .inaccessible import get_inaccessible_types, get_inaccessible_fields
 from .override import get_override_fields
@@ -142,21 +144,21 @@ def get_sdl(schema: Schema) -> str:
 
     # Add fields directives (@external, @provides, @requires, @shareable, @inaccessible)
     entities_ = (
-        set(provides_parent_types.values())
-        | set(extended_types.values())
-        | set(entities.values())
-        | set(required_fields.values())
-        | set(provides_fields.values())
+            set(provides_parent_types.values())
+            | set(extended_types.values())
+            | set(entities.values())
+            | set(required_fields.values())
+            | set(provides_fields.values())
     )
 
     if schema.federation_version == 2:
         entities_ = (
-            entities_
-            | set(shareable_types.values())
-            | set(inaccessible_types.values())
-            | set(inaccessible_fields.values())
-            | set(shareable_fields.values())
-            | set(tagged_fields.values())
+                entities_
+                | set(shareable_types.values())
+                | set(inaccessible_types.values())
+                | set(inaccessible_fields.values())
+                | set(shareable_fields.values())
+                | set(tagged_fields.values())
         )
     for entity in entities_:
         string_schema = add_entity_fields_decorators(entity, schema, string_schema)
@@ -175,42 +177,50 @@ def get_sdl(schema: Schema) -> str:
 
         # resolvable argument of @key directive is true by default. If false, we add 'resolvable: false' to sdl.
         if (
-            schema.federation_version == 2
-            and hasattr(entity, "_resolvable")
-            and not entity._resolvable
+                schema.federation_version == 2
+                and hasattr(entity, "_resolvable")
+                and not entity._resolvable
         ):
             type_annotation = (
-                (
-                    " ".join(
-                        [
-                            f'@key(fields: "{get_field_name(key)}"'
-                            for key in entity._keys
-                        ]
+                    (
+                        " ".join(
+                            [
+                                f'@key(fields: "{get_field_name(key)}"'
+                                for key in entity._keys
+                            ]
+                        )
                     )
-                )
-                + f", resolvable: {str(entity._resolvable).lower()})"
-                + " "
+                    + f", resolvable: {str(entity._resolvable).lower()})"
+                    + " "
             )
         else:
             type_annotation = (
-                " ".join(
-                    [f'@key(fields: "{get_field_name(key)}")' for key in entity._keys]
-                )
-            ) + " "
+                                  " ".join(
+                                      [f'@key(fields: "{get_field_name(key)}")' for key in entity._keys]
+                                  )
+                              ) + " "
         repl_str = rf"\1{type_annotation}"
         pattern = re.compile(type_def_re)
         string_schema = pattern.sub(repl_str, string_schema)
 
     if schema.federation_version == 2:
         for type_name, type in shareable_types.items():
-            type_def_re = rf"(type {type_name} [^\{{]*)" + " "
+            # noinspection PyProtectedMember
+            if isinstance(type._meta, InterfaceOptions):
+                type_def_re = rf"(interface {type_name}[^\{{]*)" + " "
+            else:
+                type_def_re = rf"(type {type_name} [^\{{]*)" + " "
             type_annotation = " @shareable"
             repl_str = rf"\1{type_annotation} "
             pattern = re.compile(type_def_re)
             string_schema = pattern.sub(repl_str, string_schema)
 
         for type_name, type in inaccessible_types.items():
-            type_def_re = rf"(type {type_name} [^\{{]*)" + " "
+            # noinspection PyProtectedMember
+            if isinstance(type._meta, InterfaceOptions):
+                type_def_re = rf"(interface {type_name}[^\{{]*)" + " "
+            else:
+                type_def_re = rf"(type {type_name} [^\{{]*)" + " "
             type_annotation = " @inaccessible"
             repl_str = rf"\1{type_annotation} "
             pattern = re.compile(type_def_re)
