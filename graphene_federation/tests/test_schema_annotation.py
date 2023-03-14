@@ -79,7 +79,6 @@ class ChatQuery(ObjectType):
 chat_schema = build_schema(query=ChatQuery, enable_federation_2=True)
 
 
-
 # ------------------------
 # Tests
 # ------------------------
