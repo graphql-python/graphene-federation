@@ -4,7 +4,7 @@ WORKDIR /project
 COPY package.json package-lock.json ./
 ENV NPM_CONFIG_LOGLEVEL warn
 
-RUN npm config set unsafe-perm true && npm clean-install
+RUN npm clean-install --unsafe-perm=true
 RUN apk add curl
 
 CMD [ "npm", "start"]
