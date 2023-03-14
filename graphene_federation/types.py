@@ -2,7 +2,6 @@ from graphene import Scalar, String
 
 
 class _Any(Scalar):
-
     __typename = String(required=True)
 
     @staticmethod

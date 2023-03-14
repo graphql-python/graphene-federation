@@ -71,7 +71,9 @@ def add_entity_fields_decorators(entity, schema: Schema, string_schema: str) -> 
     entity_type = schema.graphql_schema.get_type(entity_name)
     str_fields = []
     get_model_attr = field_name_to_type_attribute(schema, entity)
-    for field_name, field in entity_type.fields.items() if getattr(entity_type, "fields", None) else []:
+    for field_name, field in (
+        entity_type.fields.items() if getattr(entity_type, "fields", None) else []
+    ):
         str_field = field_to_string(MonoFieldType(field_name, field))
         # Check if we need to annotate the field by checking if it has the decorator attribute set on the field.
         f = getattr(entity, get_model_attr(field_name), None)
@@ -83,7 +85,9 @@ def add_entity_fields_decorators(entity, schema: Schema, string_schema: str) -> 
         str_fields.append(str_field)
     str_fields_annotated = "\n".join(str_fields)
     # Replace the original field declaration by the annotated one
-    if isinstance(entity_type, GraphQLObjectType) or isinstance(entity_type, GraphQLInterfaceType):
+    if isinstance(entity_type, GraphQLObjectType) or isinstance(
+        entity_type, GraphQLInterfaceType
+    ):
         str_fields_original = field_to_string(entity_type)
     else:
         str_fields_original = ""
@@ -149,21 +153,21 @@ def get_sdl(schema: Schema) -> str:
 
     # Add fields directives (@external, @provides, @requires, @shareable, @inaccessible)
     entities_ = (
-            set(provides_parent_types.values())
-            | set(extended_types.values())
-            | set(entities.values())
-            | set(required_fields.values())
-            | set(provides_fields.values())
+        set(provides_parent_types.values())
+        | set(extended_types.values())
+        | set(entities.values())
+        | set(required_fields.values())
+        | set(provides_fields.values())
     )
 
     if schema.federation_version == 2:
         entities_ = (
-                entities_
-                | set(shareable_types.values())
-                | set(inaccessible_types.values())
-                | set(inaccessible_fields.values())
-                | set(shareable_fields.values())
-                | set(tagged_fields.values())
+            entities_
+            | set(shareable_types.values())
+            | set(inaccessible_types.values())
+            | set(inaccessible_fields.values())
+            | set(shareable_fields.values())
+            | set(tagged_fields.values())
         )
     for entity in entities_:
         string_schema = add_entity_fields_decorators(entity, schema, string_schema)
@@ -182,28 +186,28 @@ def get_sdl(schema: Schema) -> str:
 
         # resolvable argument of @key directive is true by default. If false, we add 'resolvable: false' to sdl.
         if (
-                schema.federation_version == 2
-                and hasattr(entity, "_resolvable")
-                and not entity._resolvable
+            schema.federation_version == 2
+            and hasattr(entity, "_resolvable")
+            and not entity._resolvable
         ):
             type_annotation = (
-                    (
-                        " ".join(
-                            [
-                                f'@key(fields: "{get_field_name(key)}"'
-                                for key in entity._keys
-                            ]
-                        )
+                (
+                    " ".join(
+                        [
+                            f'@key(fields: "{get_field_name(key)}"'
+                            for key in entity._keys
+                        ]
                     )
-                    + f", resolvable: {str(entity._resolvable).lower()})"
-                    + " "
+                )
+                + f", resolvable: {str(entity._resolvable).lower()})"
+                + " "
             )
         else:
             type_annotation = (
-                                  " ".join(
-                                      [f'@key(fields: "{get_field_name(key)}")' for key in entity._keys]
-                                  )
-                              ) + " "
+                " ".join(
+                    [f'@key(fields: "{get_field_name(key)}")' for key in entity._keys]
+                )
+            ) + " "
         repl_str = rf"\1{type_annotation}"
         pattern = re.compile(type_def_re)
         string_schema = pattern.sub(repl_str, string_schema)

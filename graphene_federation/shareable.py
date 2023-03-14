@@ -1,6 +1,7 @@
 from typing import Any, Optional
 
 from graphene import Schema
+from graphene.types.interface import InterfaceOptions
 
 from graphene_federation.utils import get_attributed_fields
 
@@ -30,6 +31,9 @@ def shareable(field: Optional[Any] = None) -> Any:
         assert not hasattr(
             type_, "_keys"
         ), "Can't extend type which is already extended or has @key"
+        assert not hasattr(
+            type_, "_keys"
+        ), "Can't extend type which is already extended or has @key"
         # Check the provided fields actually exist on the Type.
         assert getattr(type_._meta, "description", None) is None, (
             f'Type "{type_.__name__}" has a non empty description and it is also marked with extend.'
@@ -40,6 +44,14 @@ def shareable(field: Optional[Any] = None) -> Any:
         setattr(type_, "_shareable", True)
         return type_
 
+    assert isinstance(field, InterfaceOptions), (
+        "The @Shareable directive is about indicating when an object field "
+        "can be resolved by multiple subgraphs. As interface fields are not "
+        "directly resolved (their implementation is), @Shareable is not "
+        "meaningful on an interface field and is not allowed (at least since "
+        "federation 2.2; earlier versions of federation 2 mistakenly ignored "
+        "@Shareable on interface fields). "
+    )
     if field:
         field._shareable = True
         return field

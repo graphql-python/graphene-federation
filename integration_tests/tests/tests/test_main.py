@@ -117,7 +117,7 @@ def test_multiple_key_decorators_apply_multiple_key_annotations():
 
 def test_avoid_duplication_of_key_decorator():
     sdl = fetch_sdl('service_a')
-    assert 'extend type FileNode  @key(fields: \"id\") {' in sdl
+    assert 'extend type FileNode @key(fields: \"id\") {' in sdl
 
 
 def test_requires():
