@@ -2,9 +2,9 @@ from graphql import graphql_sync
 
 from graphene import ObjectType, ID, String, NonNull, Field
 
-from .. import external
 from ..entity import key
 from ..extend import extend
+from ..external import external
 from ..main import build_schema
 
 # ------------------------
@@ -39,7 +39,7 @@ class UserQuery(ObjectType):
         return User(**next(filter(lambda x: x["user_id"] == user_id, users)))
 
 
-user_schema = build_schema(query=UserQuery, enable_federation_2=True)
+user_schema = build_schema(query=UserQuery)
 
 # ------------------------
 # Chat service
@@ -76,9 +76,7 @@ class ChatQuery(ObjectType):
         return ChatMessage(**next(filter(lambda x: x["id"] == id, chat_messages)))
 
 
-chat_schema = build_schema(query=ChatQuery, enable_federation_2=True)
-
-
+chat_schema = build_schema(query=ChatQuery)
 
 # ------------------------
 # Tests
@@ -138,9 +136,7 @@ type _Service {
     assert not result.errors
     assert (
         result.data["_service"]["sdl"].strip()
-        == """extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key"])
- 
-
+        == """
 type UserQuery {
   user(userId: ID!): User
 }
@@ -216,9 +212,7 @@ type _Service {
     assert not result.errors
     assert (
         result.data["_service"]["sdl"].strip()
-        == """extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@extends", "@external", "@key"])
- 
-
+        == """
 type ChatQuery {
   message(id: ID!): ChatMessage
 }

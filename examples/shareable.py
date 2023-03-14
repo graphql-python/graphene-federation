@@ -14,7 +14,7 @@ class Query(graphene.ObjectType):
     position = graphene.Field(Position)
 
 
-schema = build_schema(Query)
+schema = build_schema(Query, enable_federation_2=True)
 
 query = '''
     query getSDL {
@@ -25,4 +25,4 @@ query = '''
 '''
 result = schema.execute(query)
 print(result.data)
-# OrderedDict([('_service', OrderedDict([('sdl', '   extend type Message @key(fields: "id") {   id: Int! @external }  type Query {   message: Message } ')]))])
+# {'_service': {'sdl': 'extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@shareable"])\ntype Query {\n  position: Position\n}\n\ntype Position  @shareable {\n  x: Int!\n  y: Int! @shareable\n}'}}

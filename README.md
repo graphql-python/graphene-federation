@@ -1,11 +1,14 @@
 # graphene-federation
 
-Federation v2 support for ![Graphene Logo](http://graphene-python.org/favicon.png) [Graphene](http://graphene-python.org) following the [Federation specifications](https://www.apollographql.com/docs/apollo-server/federation/federation-spec/).
+Federation support for ![Graphene Logo](http://graphene-python.org/favicon.png) [Graphene](http://graphene-python.org) following the [Apollo Federation specifications](https://www.apollographql.com/docs/federation/subgraph-spec).
 
+[![PyPI version][pypi-image]][pypi-url]
 [![Unit Tests Status][unit-tests-image]][unit-tests-url]
 [![Coverage Status][coveralls-image]][coveralls-url]
 [![Integration Tests Status][integration-tests-image]][integration-tests-url]
 
+[pypi-image]: https://badge.fury.io/py/graphene-federation.svg
+[pypi-url]: https://pypi.org/project/graphene-federation/
 [unit-tests-image]: https://github.com/graphql-python/graphene-federation/workflows/Unit%20Tests/badge.svg?branch=main
 [unit-tests-url]: https://github.com/graphql-python/graphene-federation/actions?query=workflow%3A"Unit+Tests"
 [coveralls-image]: https://coveralls.io/repos/github/graphql-python/graphene-federation/badge.svg?branch=main
@@ -91,7 +94,7 @@ class Product(ObjectType):
         """
         Here we resolve the reference of the product entity referenced by its `upc` field.
         """
-        return User(upc=self.upc, name=f"product {self.upc}")
+        return Product(upc=self.upc, name=f"product {self.upc}")
 
 class Query(ObjectType):
     topProducts = List(Product, first=Argument(Int, default_value=5))
@@ -168,7 +171,6 @@ There is also a cool [example](https://github.com/preply/graphene-federation/iss
 ## Known issues
 
 1. decorators will not work properly on fields with custom names for example `some_field = String(name='another_name')`
-1. `@key` decorator will not work on [compound primary key](https://www.apollographql.com/docs/federation/entities/#defining-a-compound-primary-key)
 
 ------------------------
 
