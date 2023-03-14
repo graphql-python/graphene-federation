@@ -1,5 +1,7 @@
 from graphene import Schema
 
+from graphene_federation.utils import get_attributed_fields
+
 
 def tag(field, name: str):
     """
@@ -11,16 +13,8 @@ def tag(field, name: str):
 
 def get_tagged_fields(schema: Schema) -> dict:
     """
-    Find all the tagged types from the schema.
+    Find all the extended types from the schema.
     They can be easily distinguished from the other type as
-    the `@tag` decorator adds a `_tag` attribute to them.
+    the `@external` decorator adds a `_external` attribute to them.
     """
-    tagged_fields = {}
-    for type_name, type_ in schema.graphql_schema.type_map.items():
-        if not hasattr(type_, "graphene_type"):
-            continue
-        for field in list(type_.graphene_type._meta.fields):
-            if getattr(getattr(type_.graphene_type, field), "_tag", False):
-                tagged_fields[type_name] = type_.graphene_type
-                continue
-    return tagged_fields
+    return get_attributed_fields(attribute="_tag", schema=schema)

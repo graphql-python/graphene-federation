@@ -19,6 +19,7 @@ class ReviewInterface(graphene.Interface):
     interfaced_body = graphene.String(required=True)
 
 
+@inaccessible
 class Review(graphene.ObjectType):
     class Meta:
         interfaces = (ReviewInterface,)
@@ -27,11 +28,35 @@ class Review(graphene.ObjectType):
     body = graphene.String(required=True)
 
 
+@inaccessible
+class Human(graphene.ObjectType):
+    name = graphene.String()
+    born_in = graphene.String()
+
+
+@inaccessible
+class Droid(graphene.ObjectType):
+    name = graphene.String()
+    primary_function = graphene.String()
+
+
+@inaccessible
+class Starship(graphene.ObjectType):
+    name = graphene.String()
+    length = graphene.Int()
+
+
+@inaccessible
+class SearchResult(graphene.Union):
+    class Meta:
+        types = (Human, Droid, Starship)
+
+
 class Query(graphene.ObjectType):
     position = graphene.Field(Position)
 
 
-schema = build_schema(Query, enable_federation_2=True, types=(ReviewInterface,))
+schema = build_schema(Query, enable_federation_2=True, types=(ReviewInterface, SearchResult, Review))
 
 query = '''
     query getSDL {
