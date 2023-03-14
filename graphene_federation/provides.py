@@ -1,4 +1,4 @@
-from typing import Any, Union
+from typing import Any, Union, Dict, List
 
 from graphene import Field
 from graphene import Schema
@@ -6,7 +6,7 @@ from graphene import Schema
 from graphene_federation.utils import get_attributed_fields
 
 
-def get_provides_parent_types(schema: Schema) -> dict[str, Any]:
+def get_provides_parent_types(schema: Schema) -> Dict[str, Any]:
     """
     Find all the types for which a field is provided from the schema.
     They can be easily distinguished from the other type as
@@ -21,7 +21,7 @@ def get_provides_parent_types(schema: Schema) -> dict[str, Any]:
     return provides_parent_types
 
 
-def provides(field, fields: Union[str, list[str]] = None):
+def provides(field, fields: Union[str, List[str]] = None):
     """
 
     :param field: base type (when used as decorator) or field of base type
