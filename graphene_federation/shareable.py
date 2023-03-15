@@ -44,15 +44,15 @@ def shareable(field: Optional[Any] = None) -> Any:
         setattr(type_, "_shareable", True)
         return type_
 
-    assert not isinstance(field._meta, InterfaceOptions), (
-        "The @Shareable directive is about indicating when an object field "
-        "can be resolved by multiple subgraphs. As interface fields are not "
-        "directly resolved (their implementation is), @Shareable is not "
-        "meaningful on an interface field and is not allowed (at least since "
-        "federation 2.2; earlier versions of federation 2 mistakenly ignored "
-        "@Shareable on interface fields). "
-    )
     if field:
+        assert not isinstance(field._meta, InterfaceOptions), (
+            "The @Shareable directive is about indicating when an object field "
+            "can be resolved by multiple subgraphs. As interface fields are not "
+            "directly resolved (their implementation is), @Shareable is not "
+            "meaningful on an interface field and is not allowed (at least since "
+            "federation 2.2; earlier versions of federation 2 mistakenly ignored "
+            "@Shareable on interface fields). "
+        )
         field._shareable = True
         return field
     return decorator
