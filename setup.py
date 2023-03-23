@@ -5,7 +5,7 @@ from setuptools import find_packages, setup
 def read(*rnames):
   return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
 
-version = '3.0.3'
+version = '3.1.0'
 
 tests_require = [
     "pytest==7.1.2",
@@ -40,6 +40,11 @@ setup(
     "Intended Audience :: Developers",
     "Topic :: Software Development :: Libraries",
     "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
   ],
   extras_require={
     "test": tests_require,
