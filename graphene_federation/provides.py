@@ -3,6 +3,8 @@ from typing import Any, Union, Dict, List
 from graphene import Field
 from graphene import Schema
 
+from graphene_federation.utils import get_attributed_fields
+
 
 def get_provides_parent_types(schema: Schema) -> Dict[str, Any]:
     """
@@ -37,3 +39,12 @@ def provides(field, fields: Union[str, List[str]] = None):
             fields = fields.split()
         field._provides = fields
     return field
+
+
+def get_provides_fields(schema: Schema) -> dict:
+    """
+    Find all the extended types from the schema.
+    They can be easily distinguished from the other type as
+    the `@provides` decorator adds a `_provides` attribute to them.
+    """
+    return get_attributed_fields(attribute="_provides", schema=schema)

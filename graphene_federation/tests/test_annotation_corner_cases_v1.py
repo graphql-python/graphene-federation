@@ -4,9 +4,10 @@ from graphql import graphql_sync
 
 from graphene import ObjectType, ID, String, Field
 
-from .. import external, requires
 from ..entity import key
 from ..extend import extend
+from ..external import external
+from ..requires import requires
 from ..main import build_schema
 
 
@@ -30,7 +31,7 @@ def test_similar_field_name():
     class ChatQuery(ObjectType):
         message = Field(ChatMessage, id=ID(required=True))
 
-    chat_schema = build_schema(query=ChatQuery, enable_federation_2=True)
+    chat_schema = build_schema(query=ChatQuery)
     assert (
         str(chat_schema).strip()
         == """schema {
@@ -76,9 +77,7 @@ type _Service {
     assert not result.errors
     assert (
         result.data["_service"]["sdl"].strip()
-        == """extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@extends", "@external", "@key"])
- 
-
+        == """
 type ChatQuery {
   message(id: ID!): ChatMessage
 }
@@ -114,7 +113,7 @@ def test_camel_case_field_name():
     class Query(ObjectType):
         camel = Field(Camel)
 
-    schema = build_schema(query=Query, enable_federation_2=True)
+    schema = build_schema(query=Query)
     assert (
         str(schema).strip()
         == """type Query {
@@ -150,7 +149,7 @@ type _Service {
     assert not result.errors
     assert (
         result.data["_service"]["sdl"].strip()
-        == """ extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@extends", "@external", "@key", "@requires"])
+        == """
 type Query {
   camel: Camel
 }
@@ -180,7 +179,7 @@ def test_camel_case_field_name_without_auto_camelcase():
     class Query(ObjectType):
         camel = Field(Camel)
 
-    schema = build_schema(query=Query, auto_camelcase=False, enable_federation_2=True)
+    schema = build_schema(query=Query, auto_camelcase=False)
     assert (
         str(schema).strip()
         == """type Query {
@@ -216,7 +215,7 @@ type _Service {
     assert not result.errors
     assert (
         result.data["_service"]["sdl"].strip()
-        == """extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@extends", "@external", "@key", "@requires"])
+        == """
 type Query {
   camel: Camel
 }
@@ -249,7 +248,7 @@ def test_annotated_field_also_used_in_filter():
     class Query(ObjectType):
         a = Field(A)
 
-    schema = build_schema(query=Query, enable_federation_2=True)
+    schema = build_schema(query=Query)
     assert (
         str(schema).strip()
         == """type Query {
@@ -287,7 +286,7 @@ type _Service {
     assert not result.errors
     assert (
         result.data["_service"]["sdl"].strip()
-        == """extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@extends", "@external", "@key"])
+        == """
 type Query {
   a: A
 }
@@ -323,7 +322,7 @@ def test_annotate_object_with_meta_name():
     class Query(ObjectType):
         a = Field(A)
 
-    schema = build_schema(query=Query, enable_federation_2=True)
+    schema = build_schema(query=Query)
     assert (
         str(schema).strip()
         == """type Query {
@@ -361,7 +360,7 @@ type _Service {
     assert not result.errors
     assert (
         result.data["_service"]["sdl"].strip()
-        == """extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@extends", "@external", "@key"])
+        == """
 type Query {
   a: Banana
 }
