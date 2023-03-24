@@ -43,7 +43,7 @@ def extend(fields: str) -> Callable:
         if "{" not in fields:  # Check for compound keys
             # Skip valid fields check if the key is a compound key. The validation for compound keys
             # is done on calling get_extended_types()
-            fields_set = set(fields.replace(" ", "").split(","))
+            fields_set = set(fields.split(" "))
             assert check_fields_exist_on_type(
                 fields=fields_set, type_=type_
             ), f'Field "{fields}" does not exist on type "{type_._meta.name}"'
