@@ -5,7 +5,7 @@ from graphene import Schema, ObjectType
 from graphene.types.definitions import GrapheneObjectType
 from graphene.types.union import UnionOptions
 from graphene.utils.str_converters import to_camel_case
-from graphql import parse, GraphQLScalarType
+from graphql import parse, GraphQLScalarType, GraphQLNonNull
 
 
 def field_name_to_type_attribute(schema: Schema, model: Any) -> Callable[[str], str]:
@@ -47,9 +47,11 @@ def is_valid_compound_key(type_name: str, key: str, schema: Schema):
 
     while key_nodes:
         selection_node, parent_object_type = key_nodes[0]
-
-        for field in selection_node.selection_set.selections:
+        if isinstance(parent_object_type, GraphQLNonNull):
+            parent_type_fields = parent_object_type.of_type.fields
+        else:
             parent_type_fields = parent_object_type.fields
+        for field in selection_node.selection_set.selections:
             if schema.auto_camelcase:
                 field_name = to_camel_case(field.name.value)
             else:
@@ -62,14 +64,20 @@ def is_valid_compound_key(type_name: str, key: str, schema: Schema):
             if field.selection_set:
                 # If the field has sub-selections, add it to node mappings to check for valid subfields
 
-                if isinstance(field_type, GraphQLScalarType):
+                if isinstance(field_type, GraphQLScalarType) or (
+                    isinstance(field_type, GraphQLNonNull)
+                    and isinstance(field_type.of_type, GraphQLScalarType)
+                ):
                     # sub-selections are added to a scalar type, key is not valid
                     return False
 
                 key_nodes.append((field, field_type))
             else:
                 # If there are no sub-selections for a field, it should be a scalar
-                if not isinstance(field_type, GraphQLScalarType):
+                if not isinstance(field_type, GraphQLScalarType) and not (
+                    isinstance(field_type, GraphQLNonNull)
+                    and isinstance(field_type.of_type, GraphQLScalarType)
+                ):
                     return False
 
         key_nodes.pop(0)  # Remove the current node as it is fully processed
