@@ -37,7 +37,6 @@ class Query(graphene.ObjectType):
 
 
 schema = build_schema(Query)
-print(schema)
 
 query = '''
     query getSDL {
