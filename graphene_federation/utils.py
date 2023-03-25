@@ -66,8 +66,8 @@ def is_valid_compound_key(type_name: str, key: str, schema: Schema):
                 # If the field has sub-selections, add it to node mappings to check for valid subfields
 
                 if isinstance(field_type, GraphQLScalarType) or (
-                        isinstance(field_type, GraphQLNonNull)
-                        and isinstance(field_type.of_type, GraphQLScalarType)
+                    isinstance(field_type, GraphQLNonNull)
+                    and isinstance(field_type.of_type, GraphQLScalarType)
                 ):
                     # sub-selections are added to a scalar type, key is not valid
                     return False
@@ -76,8 +76,8 @@ def is_valid_compound_key(type_name: str, key: str, schema: Schema):
             else:
                 # If there are no sub-selections for a field, it should be a scalar
                 if not isinstance(field_type, GraphQLScalarType) and not (
-                        isinstance(field_type, GraphQLNonNull)
-                        and isinstance(field_type.of_type, GraphQLScalarType)
+                    isinstance(field_type, GraphQLNonNull)
+                    and isinstance(field_type.of_type, GraphQLScalarType)
                 ):
                     return False
 
@@ -89,10 +89,10 @@ def is_valid_compound_key(type_name: str, key: str, schema: Schema):
 def get_attributed_fields(attribute: str, schema: Schema):
     fields = {}
     for type_name, type_ in schema.graphql_schema.type_map.items():
-        if not hasattr(type_, "graphene_type") or isinstance(
-                type_.graphene_type._meta, UnionOptions
-        ) or isinstance(
-            type_.graphene_type._meta, ScalarOptions
+        if (
+            not hasattr(type_, "graphene_type")
+            or isinstance(type_.graphene_type._meta, UnionOptions)
+            or isinstance(type_.graphene_type._meta, ScalarOptions)
         ):
             continue
         for field in list(type_.graphene_type._meta.fields):
