@@ -3,6 +3,7 @@ from typing import Any, Callable
 import graphene
 from graphene import Schema, ObjectType
 from graphene.types.definitions import GrapheneObjectType
+from graphene.types.enum import EnumOptions
 from graphene.types.scalars import ScalarOptions
 from graphene.types.union import UnionOptions
 from graphene.utils.str_converters import to_camel_case
@@ -93,6 +94,7 @@ def get_attributed_fields(attribute: str, schema: Schema):
             not hasattr(type_, "graphene_type")
             or isinstance(type_.graphene_type._meta, UnionOptions)
             or isinstance(type_.graphene_type._meta, ScalarOptions)
+            or isinstance(type_.graphene_type._meta, EnumOptions)
         ):
             continue
         for field in list(type_.graphene_type._meta.fields):
