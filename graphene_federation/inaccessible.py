@@ -1,11 +1,11 @@
-from typing import Any, Optional
+from typing import Any, Dict, Optional
 
 from graphene import Schema
 
 from graphene_federation.utils import get_attributed_fields
 
 
-def get_inaccessible_types(schema: Schema) -> dict[str, Any]:
+def get_inaccessible_types(schema: Schema) -> Dict[str, Any]:
     """
     Find all the inaccessible types from the schema.
     They can be easily distinguished from the other type as
