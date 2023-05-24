@@ -1,4 +1,5 @@
 import re
+from typing import List
 
 from graphene.types.interface import InterfaceOptions
 from graphene.types.union import UnionOptions
@@ -31,7 +32,7 @@ class MonoFieldType:
         self.fields = {name: field}
 
 
-def convert_fields(schema: Schema, fields: list[str]) -> str:
+def convert_fields(schema: Schema, fields: List[str]) -> str:
     get_field_name = type_attribute_to_field_name(schema)
     return " ".join([get_field_name(field) for field in fields])
 

@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any, Dict, Optional
 
 from graphene import Schema
 from graphene.types.interface import InterfaceOptions
@@ -6,7 +6,7 @@ from graphene.types.interface import InterfaceOptions
 from graphene_federation.utils import get_attributed_fields
 
 
-def get_shareable_types(schema: Schema) -> dict[str, Any]:
+def get_shareable_types(schema: Schema) -> Dict[str, Any]:
     """
     Find all the extended types from the schema.
     They can be easily distinguished from the other type as
