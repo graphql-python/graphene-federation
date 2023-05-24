@@ -70,7 +70,7 @@ def add_entity_fields_decorators(entity, schema: Schema, string_schema: str) -> 
     """
     entity_name = entity._meta.name
     entity_type = schema.graphql_schema.get_type(entity_name)
-    str_fields = []
+    str_fields: List[str] = []
     get_model_attr = field_name_to_type_attribute(schema, entity)
     for field_name, field in (
         entity_type.fields.items() if getattr(entity_type, "fields", None) else []
@@ -83,6 +83,8 @@ def add_entity_fields_decorators(entity, schema: Schema, string_schema: str) -> 
                 decorator_value = getattr(f, decorator, None)
                 if decorator_value:
                     str_field += f" {decorator_resolver(schema, decorator_value)}"
+        if str_fields and str_field.lstrip().startswith('"""'):
+            str_field = f"\n{str_field}"
         str_fields.append(str_field)
     str_fields_annotated = "\n".join(str_fields)
     # Replace the original field declaration by the annotated one
