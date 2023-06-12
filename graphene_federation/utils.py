@@ -2,7 +2,7 @@ from typing import Any, Callable, List, Tuple
 
 import graphene
 from graphene import Schema, ObjectType
-from graphene.types.definitions import GrapheneObjectType
+from graphene.types.definitions import GrapheneObjectType, GrapheneEnumType
 from graphene.types.enum import EnumOptions
 from graphene.types.scalars import ScalarOptions
 from graphene.types.union import UnionOptions
@@ -63,23 +63,27 @@ def is_valid_compound_key(type_name: str, key: str, schema: Schema):
                 return False
 
             field_type = parent_type_fields[field_name].type
+
+            is_scalar_field_type = isinstance(field_type, GraphQLScalarType) or (
+                isinstance(field_type, GraphQLNonNull)
+                and isinstance(field_type.of_type, GraphQLScalarType)
+            )
+
+            is_enum_field_type = isinstance(field_type, GrapheneEnumType) or (
+                isinstance(field_type, GraphQLNonNull)
+                and isinstance(field_type.of_type, GrapheneEnumType)
+            )
+
             if field.selection_set:
                 # If the field has sub-selections, add it to node mappings to check for valid subfields
-
-                if isinstance(field_type, GraphQLScalarType) or (
-                    isinstance(field_type, GraphQLNonNull)
-                    and isinstance(field_type.of_type, GraphQLScalarType)
-                ):
+                if is_scalar_field_type or is_enum_field_type:
                     # sub-selections are added to a scalar type, key is not valid
                     return False
 
                 key_nodes.append((field, field_type))
             else:
-                # If there are no sub-selections for a field, it should be a scalar
-                if not isinstance(field_type, GraphQLScalarType) and not (
-                    isinstance(field_type, GraphQLNonNull)
-                    and isinstance(field_type.of_type, GraphQLScalarType)
-                ):
+                # If there are no sub-selections for a field, it should be a scalar or Enum
+                if not (is_scalar_field_type or is_enum_field_type):
                     return False
 
         key_nodes.pop(0)  # Remove the current node as it is fully processed

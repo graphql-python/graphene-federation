@@ -2,7 +2,7 @@ import pytest
 
 from graphql import graphql_sync
 
-from graphene import ObjectType, ID, String, Field
+from graphene import ObjectType, ID, String, Field, Enum
 
 from ..entity import key
 from ..main import build_schema
@@ -295,3 +295,106 @@ def test_invalid_compound_primary_key_failures():
         build_schema(query=Query, enable_federation_2=True)
 
     assert 'Invalid compound key definition for type "User"' == str(err.value)
+
+
+def test_compound_primary_key_with_enum():
+    class OrgTypeEnum(Enum):
+        LOCAL = 0
+        GLOBAL = 1
+
+    class UserTypeEnum(Enum):
+        ADMIN = "ADMIN"
+        USER = "USER"
+
+    class Organization(ObjectType):
+        registration_number = ID()
+        organization_type = OrgTypeEnum()
+
+    @key("id organization { registration_number organization_type } user_type ")
+    class User(ObjectType):
+        id = ID()
+        user_type = UserTypeEnum()
+        organization = Field(Organization)
+
+    class Query(ObjectType):
+        user = Field(User)
+
+    schema = build_schema(query=Query, enable_federation_2=True)
+    assert (
+        str(schema).strip()
+        == """
+type Query {
+  user: User
+  _entities(representations: [_Any!]!): [_Entity]!
+  _service: _Service!
+}
+
+type User {
+  id: ID
+  userType: UserTypeEnum
+  organization: Organization
+}
+
+enum UserTypeEnum {
+  ADMIN
+  USER
+}
+
+type Organization {
+  registrationNumber: ID
+  organizationType: OrgTypeEnum
+}
+
+enum OrgTypeEnum {
+  LOCAL
+  GLOBAL
+}
+
+union _Entity = User
+
+scalar _Any
+
+type _Service {
+  sdl: String
+}""".strip()
+    )
+    # Check the federation service schema definition language
+    query = """
+    query {
+        _service {
+            sdl
+        }
+    }
+    """
+    result = graphql_sync(schema.graphql_schema, query)
+    assert not result.errors
+    assert (
+        result.data["_service"]["sdl"].strip()
+        == """
+extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key"])
+type Query {
+  user: User
+}
+
+type User @key(fields: "id organization { registrationNumber organizationType } userType ") {
+  id: ID
+  userType: UserTypeEnum
+  organization: Organization
+}
+
+enum UserTypeEnum {
+  ADMIN
+  USER
+}
+
+type Organization {
+  registrationNumber: ID
+  organizationType: OrgTypeEnum
+}
+
+enum OrgTypeEnum {
+  LOCAL
+  GLOBAL
+}
+""".strip()
+    )
