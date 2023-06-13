@@ -1,11 +1,11 @@
-from typing import Any, Callable
+from typing import Any, Callable, Dict
 
 from graphene import Schema
 
 from graphene_federation.utils import check_fields_exist_on_type, is_valid_compound_key
 
 
-def get_extended_types(schema: Schema) -> dict[str, Any]:
+def get_extended_types(schema: Schema) -> Dict[str, Any]:
     """
     Find all the extended types from the schema.
     They can be easily distinguished from the other type as

@@ -1,4 +1,4 @@
-from typing import Any, Callable
+from typing import Any, Callable, List, Tuple
 
 import graphene
 from graphene import Schema, ObjectType
@@ -43,7 +43,7 @@ def is_valid_compound_key(type_name: str, key: str, schema: Schema):
     key_document = parse(f"{{{key}}}")
 
     # List storing tuples of nodes in the key document with its parent types
-    key_nodes: list[tuple[Any, GrapheneObjectType]] = [
+    key_nodes: List[Tuple[Any, GrapheneObjectType]] = [
         (key_document.definitions[0], schema.graphql_schema.type_map[type_name])
     ]
 

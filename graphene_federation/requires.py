@@ -1,11 +1,11 @@
-from typing import Union
+from typing import List, Union
 
 from graphene import Schema
 
 from graphene_federation.utils import get_attributed_fields
 
 
-def requires(field, fields: Union[str, list[str]]):
+def requires(field, fields: Union[str, List[str]]):
     """
     Mark the required fields for a given field.
     The input `fields` can be either a string or a list.
