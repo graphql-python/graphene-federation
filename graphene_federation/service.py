@@ -195,7 +195,7 @@ def get_sdl(schema: Schema) -> str:
                 (
                     " ".join(
                         [
-                            f'@key(fields: "{get_field_name(key)}"'
+                            f' @key(fields: "{get_field_name(key)}"'
                             for key in entity._keys
                         ]
                     )
@@ -206,7 +206,7 @@ def get_sdl(schema: Schema) -> str:
         else:
             type_annotation = (
                 " ".join(
-                    [f'@key(fields: "{get_field_name(key)}")' for key in entity._keys]
+                    [f' @key(fields: "{get_field_name(key)}")' for key in entity._keys]
                 )
             ) + " "
         repl_str = rf"\1{type_annotation}"
@@ -238,7 +238,7 @@ def get_sdl(schema: Schema) -> str:
             pattern = re.compile(type_def_re)
             string_schema = pattern.sub(repl_str, string_schema)
 
-    return _schema + string_schema
+    return re.sub(r"[ ]+", " ", re.sub(r"\n+", "\n", _schema + string_schema))  # noqa
 
 
 def get_service_query(schema: Schema):
