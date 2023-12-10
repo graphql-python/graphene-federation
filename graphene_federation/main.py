@@ -24,7 +24,7 @@ def build_schema(
         query: Optional[ObjectType] = None,
         mutation: Optional[ObjectType] = None,
         enable_federation_2=False,
-        schema: Schema | None = None,
+        schema: Optional[Schema] = None,
         **kwargs
 ) -> Schema:
     schema = schema or Schema(query=query, mutation=mutation, **kwargs)
