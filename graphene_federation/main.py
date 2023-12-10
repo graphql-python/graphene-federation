@@ -30,5 +30,9 @@ def build_schema(
     schema = schema or Schema(query=query, mutation=mutation, **kwargs)
     schema.auto_camelcase = kwargs.get("auto_camelcase", True)
     schema.federation_version = 2 if enable_federation_2 else 1
-    federation_query = _get_query(schema, query)
-    return Schema(query=federation_query, mutation=mutation, **kwargs)
+    federation_query = _get_query(schema, schema.query if schema else query)
+    return Schema(
+        query=federation_query,
+        mutation=schema.mutation if schema else mutation,
+        **kwargs
+    )
