@@ -183,7 +183,7 @@ def get_sdl(schema: Schema) -> str:
     # Add entity keys declarations
     get_field_name = type_attribute_to_field_name(schema)
     for entity_name, entity in entities.items():
-        type_def_re = rf"(type {entity_name} [^\{{]*)" + " "
+        type_def_re = rf"(type {entity_name} [^\{{]*)"
 
         # resolvable argument of @key directive is true by default. If false, we add 'resolvable: false' to sdl.
         if (
@@ -195,21 +195,20 @@ def get_sdl(schema: Schema) -> str:
                 (
                     " ".join(
                         [
-                            f' @key(fields: "{get_field_name(key)}"'
+                            f'@key(fields: "{get_field_name(key)}"'
                             for key in entity._keys
                         ]
                     )
                 )
                 + f", resolvable: {str(entity._resolvable).lower()})"
-                + " "
             )
         else:
             type_annotation = (
                 " ".join(
-                    [f' @key(fields: "{get_field_name(key)}")' for key in entity._keys]
+                    [f'@key(fields: "{get_field_name(key)}")' for key in entity._keys]
                 )
-            ) + " "
-        repl_str = rf"\1{type_annotation}"
+            )
+        repl_str = rf"\1 {type_annotation} "
         pattern = re.compile(type_def_re)
         string_schema = pattern.sub(repl_str, string_schema)
 
@@ -219,22 +218,22 @@ def get_sdl(schema: Schema) -> str:
             if isinstance(type._meta, UnionOptions):
                 type_def_re = rf"(union {type_name})"
             else:
-                type_def_re = rf"(type {type_name} [^\{{]*)" + " "
-            type_annotation = " @shareable"
-            repl_str = rf"\1{type_annotation} "
+                type_def_re = rf"(type {type_name} [^\{{]*)"
+            type_annotation = "@shareable"
+            repl_str = rf"\1 {type_annotation} "
             pattern = re.compile(type_def_re)
             string_schema = pattern.sub(repl_str, string_schema)
 
         for type_name, type in inaccessible_types.items():
             # noinspection PyProtectedMember
             if isinstance(type._meta, InterfaceOptions):
-                type_def_re = rf"(interface {type_name}[^\{{]*)" + " "
+                type_def_re = rf"(interface {type_name}[^\{{]*)"
             elif isinstance(type._meta, UnionOptions):
                 type_def_re = rf"(union {type_name})"
             else:
-                type_def_re = rf"(type {type_name} [^\{{]*)" + " "
-            type_annotation = " @inaccessible"
-            repl_str = rf"\1{type_annotation} "
+                type_def_re = rf"(type {type_name} [^\{{]*)"
+            type_annotation = "@inaccessible"
+            repl_str = rf"\1 {type_annotation} "
             pattern = re.compile(type_def_re)
             string_schema = pattern.sub(repl_str, string_schema)
 
