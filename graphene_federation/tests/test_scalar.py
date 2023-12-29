@@ -1,3 +1,4 @@
+from textwrap import dedent
 from typing import Any
 
 import graphene
@@ -5,6 +6,7 @@ from graphene import Scalar, String, ObjectType
 from graphql import graphql_sync
 
 from graphene_federation import build_schema, shareable, inaccessible
+from graphene_federation.utils import clean_schema
 
 
 def test_custom_scalar():
@@ -40,18 +42,18 @@ def test_custom_scalar():
         }
         """
     result = graphql_sync(schema.graphql_schema, query)
-    assert (
-        result.data["_service"]["sdl"].strip()
-        == """extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@inaccessible", "@shareable"])
-type TestScalar  @shareable {
-  testShareableScalar(x: AddressScalar): String @shareable
-  testInaccessibleScalar(x: AddressScalar): String @inaccessible
-}
-
-scalar AddressScalar
-
-type Query {
-  test(x: AddressScalar): String
-  test2: [AddressScalar]!
-}"""
-    )
+    expected_result = dedent("""
+    extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@inaccessible", "@shareable"])
+    type TestScalar  @shareable {
+      testShareableScalar(x: AddressScalar): String @shareable
+      testInaccessibleScalar(x: AddressScalar): String @inaccessible
+    }
+    
+    scalar AddressScalar
+    
+    type Query {
+      test(x: AddressScalar): String
+      test2: [AddressScalar]!
+    }
+    """)
+    assert clean_schema(result.data["_service"]["sdl"]) == clean_schema(expected_result)

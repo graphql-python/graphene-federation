@@ -1,8 +1,11 @@
+from textwrap import dedent
+
 import graphene
 from graphene import ObjectType
 from graphql import graphql_sync
 
 from graphene_federation import build_schema, shareable, inaccessible
+from graphene_federation.utils import clean_schema
 
 
 def test_custom_enum():
@@ -31,22 +34,22 @@ def test_custom_enum():
         }
         """
     result = graphql_sync(schema.graphql_schema, query)
-    assert (
-        result.data["_service"]["sdl"].strip()
-        == """extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@inaccessible", "@shareable"])
-type TestCustomEnum  @shareable {
-  testShareableScalar: Episode @shareable
-  testInaccessibleScalar: Episode @inaccessible
-}
-
-enum Episode {
-  NEWHOPE
-  EMPIRE
-  JEDI
-}
-
-type Query {
-  test: Episode
-  test2: [TestCustomEnum]!
-}"""
-    )
+    expected_result = dedent("""
+    extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@inaccessible", "@shareable"])
+    type TestCustomEnum  @shareable {
+      testShareableScalar: Episode @shareable
+      testInaccessibleScalar: Episode @inaccessible
+    }
+    
+    enum Episode {
+      NEWHOPE
+      EMPIRE
+      JEDI
+    }
+    
+    type Query {
+      test: Episode
+      test2: [TestCustomEnum]!
+    }
+    """)
+    assert clean_schema(result.data["_service"]["sdl"]) == clean_schema(expected_result)

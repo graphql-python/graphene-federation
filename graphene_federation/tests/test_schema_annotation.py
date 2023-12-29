@@ -1,11 +1,14 @@
+from textwrap import dedent
+
 from graphql import graphql_sync
 
 from graphene import ObjectType, ID, String, NonNull, Field
 
-from .. import external
-from ..entity import key
-from ..extend import extend
-from ..main import build_schema
+from graphene_federation import external
+from graphene_federation.entity import key
+from graphene_federation.extend import extend
+from graphene_federation.main import build_schema
+from graphene_federation.utils import clean_schema
 
 # ------------------------
 # User service
@@ -89,32 +92,33 @@ def test_user_schema():
     Check that the user schema has been annotated correctly
     and that a request to retrieve a user works.
     """
-    assert (
-        str(user_schema).strip()
-        == """schema {
-  query: UserQuery
-}
+    expected_result = dedent("""
+    schema {
+      query: UserQuery
+    }
+    
+    type UserQuery {
+      user(userId: ID!): User
+      _entities(representations: [_Any!]!): [_Entity]!
+      _service: _Service!
+    }
+    
+    type User {
+      userId: ID!
+      email: String!
+      name: String
+    }
+    
+    union _Entity = User
+    
+    scalar _Any
+    
+    type _Service {
+      sdl: String
+    }
+    """)
+    assert clean_schema(user_schema) == clean_schema(expected_result)
 
-type UserQuery {
-  user(userId: ID!): User
-  _entities(representations: [_Any!]!): [_Entity]!
-  _service: _Service!
-}
-
-type User {
-  userId: ID!
-  email: String!
-  name: String
-}
-
-union _Entity = User
-
-scalar _Any
-
-type _Service {
-  sdl: String
-}"""
-    )
     query = """
     query {
         user(userId: "2") {
@@ -135,22 +139,20 @@ type _Service {
     """
     result = graphql_sync(user_schema.graphql_schema, query)
     assert not result.errors
-    assert (
-        result.data["_service"]["sdl"].strip()
-        == """extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key"])
- 
+    expected_result = dedent("""
+    extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key"])
 
-type UserQuery {
-  user(userId: ID!): User
-}
-
-type User @key(fields: "email") @key(fields: "userId") {
-  userId: ID!
-  email: String!
-  name: String
-}
-""".strip()
-    )
+    type UserQuery {
+      user(userId: ID!): User
+    }
+    
+    type User @key(fields: "email") @key(fields: "userId") {
+      userId: ID!
+      email: String!
+      name: String
+    }
+    """)
+    assert clean_schema(result.data["_service"]["sdl"]) == clean_schema(expected_result)
 
 
 def test_chat_schema():
@@ -158,37 +160,37 @@ def test_chat_schema():
     Check that the chat schema has been annotated correctly
     and that a request to retrieve a chat message works.
     """
-    assert (
-        str(chat_schema).strip()
-        == """schema {
-  query: ChatQuery
-}
-
-type ChatQuery {
-  message(id: ID!): ChatMessage
-  _entities(representations: [_Any!]!): [_Entity]!
-  _service: _Service!
-}
-
-type ChatMessage {
-  id: ID!
-  text: String
-  userId: ID
-  user: ChatUser!
-}
-
-type ChatUser {
-  userId: ID!
-}
-
-union _Entity = ChatUser
-
-scalar _Any
-
-type _Service {
-  sdl: String
-}"""
-    )
+    expected_result = dedent("""
+    schema {
+      query: ChatQuery
+    }
+    
+    type ChatQuery {
+      message(id: ID!): ChatMessage
+      _entities(representations: [_Any!]!): [_Entity]!
+      _service: _Service!
+    }
+    
+    type ChatMessage {
+      id: ID!
+      text: String
+      userId: ID
+      user: ChatUser!
+    }
+    
+    type ChatUser {
+      userId: ID!
+    }
+    
+    union _Entity = ChatUser
+    
+    scalar _Any
+    
+    type _Service {
+      sdl: String
+    }
+    """)
+    assert clean_schema(chat_schema) == clean_schema(expected_result)
 
     # Query the message field
     query = """
@@ -213,24 +215,21 @@ type _Service {
     """
     result = graphql_sync(chat_schema.graphql_schema, query)
     assert not result.errors
-    assert (
-        result.data["_service"]["sdl"].strip()
-        == """extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@extends", "@external", "@key"])
- 
-
-type ChatQuery {
-  message(id: ID!): ChatMessage
-}
-
-type ChatMessage {
-  id: ID!
-  text: String
-  userId: ID
-  user: ChatUser!
-}
-
-extend type ChatUser @key(fields: "userId") {
-  userId: ID! @external
-}
-""".strip()
-    )
+    expected_result = dedent("""
+    extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@extends", "@external", "@key"])
+    type ChatQuery {
+      message(id: ID!): ChatMessage
+    }
+    
+    type ChatMessage {
+      id: ID!
+      text: String
+      userId: ID
+      user: ChatUser!
+    }
+    
+    extend type ChatUser @key(fields: "userId") {
+      userId: ID! @external
+    }
+    """)
+    assert clean_schema(result.data["_service"]["sdl"]) == clean_schema(expected_result)

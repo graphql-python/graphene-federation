@@ -1,11 +1,13 @@
 import pytest
+from textwrap import dedent
 
 from graphql import graphql_sync
 
 from graphene import ObjectType, ID, String, Field
 
-from ..entity import key
-from ..main import build_schema
+from graphene_federation.entity import key
+from graphene_federation.main import build_schema
+from graphene_federation.utils import clean_schema
 
 
 def test_multiple_keys():
@@ -19,27 +21,27 @@ def test_multiple_keys():
         user = Field(User)
 
     schema = build_schema(query=Query, enable_federation_2=True)
-    assert (
-        str(schema).strip()
-        == """type Query {
-  user: User
-  _entities(representations: [_Any!]!): [_Entity]!
-  _service: _Service!
-}
-
-type User {
-  identifier: ID
-  email: String
-}
-
-union _Entity = User
-
-scalar _Any
-
-type _Service {
-  sdl: String
-}"""
-    )
+    expected_result = dedent("""
+    type Query {
+      user: User
+      _entities(representations: [_Any!]!): [_Entity]!
+      _service: _Service!
+    }
+    
+    type User {
+      identifier: ID
+      email: String
+    }
+    
+    union _Entity = User
+    
+    scalar _Any
+    
+    type _Service {
+      sdl: String
+    }
+    """)
+    assert clean_schema(schema) == clean_schema(expected_result)
     # Check the federation service schema definition language
     query = """
     query {
@@ -50,19 +52,18 @@ type _Service {
     """
     result = graphql_sync(schema.graphql_schema, query)
     assert not result.errors
-    assert (
-        result.data["_service"]["sdl"].strip()
-        == """extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key"])
-type Query {
-  user: User
-}
-
-type User @key(fields: "email") @key(fields: "identifier") {
-  identifier: ID
-  email: String
-}
-""".strip()
-    )
+    expected_result = dedent("""
+    extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key"])
+    type Query {
+      user: User
+    }
+    
+    type User @key(fields: "email") @key(fields: "identifier") {
+      identifier: ID
+      email: String
+    }
+    """)
+    assert clean_schema(result.data["_service"]["sdl"]) == clean_schema(expected_result)
 
 
 def test_key_non_existing_field_failure():
@@ -91,31 +92,31 @@ def test_compound_primary_key():
         user = Field(User)
 
     schema = build_schema(query=Query, enable_federation_2=True)
-    assert (
-        str(schema).strip()
-        == """type Query {
-  user: User
-  _entities(representations: [_Any!]!): [_Entity]!
-  _service: _Service!
-}
-
-type User {
-  id: ID
-  organization: Organization
-}
-
-type Organization {
-  registrationNumber: ID
-}
-
-union _Entity = User
-
-scalar _Any
-
-type _Service {
-  sdl: String
-}"""
-    )
+    expected_result = dedent("""
+    type Query {
+      user: User
+      _entities(representations: [_Any!]!): [_Entity]!
+      _service: _Service!
+    }
+    
+    type User {
+      id: ID
+      organization: Organization
+    }
+    
+    type Organization {
+      registrationNumber: ID
+    }
+    
+    union _Entity = User
+    
+    scalar _Any
+    
+    type _Service {
+      sdl: String
+    }
+    """)
+    assert clean_schema(schema) == clean_schema(expected_result)
     # Check the federation service schema definition language
     query = """
     query {
@@ -126,24 +127,22 @@ type _Service {
     """
     result = graphql_sync(schema.graphql_schema, query)
     assert not result.errors
-    assert (
-        result.data["_service"]["sdl"].strip()
-        == """
-extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key"])
-type Query {
-  user: User
-}
-
-type User @key(fields: "id organization { registrationNumber }") {
-  id: ID
-  organization: Organization
-}
-
-type Organization {
-  registrationNumber: ID
-}
-""".strip()
-    )
+    expected_result = dedent("""
+    extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key"])
+    type Query {
+      user: User
+    }
+    
+    type User @key(fields: "id organization { registrationNumber }") {
+      id: ID
+      organization: Organization
+    }
+    
+    type Organization {
+      registrationNumber: ID
+    }
+    """)
+    assert clean_schema(result.data["_service"]["sdl"]) == clean_schema(expected_result)
 
 
 def test_compound_primary_key_with_depth():
@@ -164,37 +163,37 @@ def test_compound_primary_key_with_depth():
         user = Field(User)
 
     schema = build_schema(query=Query, enable_federation_2=True)
-    assert (
-        str(schema).strip()
-        == """type Query {
-  user: User
-  _entities(representations: [_Any!]!): [_Entity]!
-  _service: _Service!
-}
-
-type User {
-  id: ID
-  organization: Organization
-}
-
-type Organization {
-  registrationNumber: ID
-  businessUnit: BusinessUnit
-}
-
-type BusinessUnit {
-  id: ID
-  name: String
-}
-
-union _Entity = User
-
-scalar _Any
-
-type _Service {
-  sdl: String
-}"""
-    )
+    expected_result = dedent("""
+    type Query {
+      user: User
+      _entities(representations: [_Any!]!): [_Entity]!
+      _service: _Service!
+    }
+    
+    type User {
+      id: ID
+      organization: Organization
+    }
+    
+    type Organization {
+      registrationNumber: ID
+      businessUnit: BusinessUnit
+    }
+    
+    type BusinessUnit {
+      id: ID
+      name: String
+    }
+    
+    union _Entity = User
+    
+    scalar _Any
+    
+    type _Service {
+      sdl: String
+    }
+    """)
+    assert clean_schema(schema) == clean_schema(expected_result)
     # Check the federation service schema definition language
     query = """
     query {
@@ -205,30 +204,28 @@ type _Service {
     """
     result = graphql_sync(schema.graphql_schema, query)
     assert not result.errors
-    assert (
-        result.data["_service"]["sdl"].strip()
-        == """
-extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key"])
-type Query {
-  user: User
-}
-
-type User @key(fields: "id organization { businessUnit {id name}}") {
-  id: ID
-  organization: Organization
-}
-
-type Organization {
-  registrationNumber: ID
-  businessUnit: BusinessUnit
-}
-
-type BusinessUnit {
-  id: ID
-  name: String
-}
-""".strip()
-    )
+    expected_result = dedent("""
+    extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key"])
+    type Query {
+      user: User
+    }
+    
+    type User @key(fields: "id organization { businessUnit {id name}}") {
+      id: ID
+      organization: Organization
+    }
+    
+    type Organization {
+      registrationNumber: ID
+      businessUnit: BusinessUnit
+    }
+    
+    type BusinessUnit {
+      id: ID
+      name: String
+    }
+    """)
+    assert clean_schema(result.data["_service"]["sdl"]) == clean_schema(expected_result)
 
 
 def test_invalid_compound_primary_key_failures():

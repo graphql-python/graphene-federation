@@ -1,12 +1,15 @@
+from textwrap import dedent
+
 import pytest
 
 from graphql import graphql_sync
 
 from graphene import Field, ID, Int, ObjectType, String
 
-from .. import external, requires
-from ..extend import extend
-from ..main import build_schema
+from graphene_federation import external, requires
+from graphene_federation.extend import extend
+from graphene_federation.main import build_schema
+from graphene_federation.utils import clean_schema
 
 
 def test_chain_requires_failure():
@@ -39,29 +42,29 @@ def test_requires_multiple_fields():
         product = Field(Product)
 
     schema = build_schema(query=Query, enable_federation_2=True)
-    assert (
-        str(schema).strip()
-        == """type Query {
-  product: Product
-  _entities(representations: [_Any!]!): [_Entity]!
-  _service: _Service!
-}
-
-type Product {
-  sku: ID
-  size: Int
-  weight: Int
-  shippingEstimate: String
-}
-
-union _Entity = Product
-
-scalar _Any
-
-type _Service {
-  sdl: String
-}"""
-    )
+    expected_result = dedent("""
+    type Query {
+      product: Product
+      _entities(representations: [_Any!]!): [_Entity]!
+      _service: _Service!
+    }
+    
+    type Product {
+      sku: ID
+      size: Int
+      weight: Int
+      shippingEstimate: String
+    }
+    
+    union _Entity = Product
+    
+    scalar _Any
+    
+    type _Service {
+      sdl: String
+    }
+    """)
+    assert clean_schema(schema) == clean_schema(expected_result)
     # Check the federation service schema definition language
     query = """
     query {
@@ -72,21 +75,20 @@ type _Service {
     """
     result = graphql_sync(schema.graphql_schema, query)
     assert not result.errors
-    assert (
-        result.data["_service"]["sdl"].strip()
-        == """extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@extends", "@external", "@key", "@requires"])
-type Query {
-  product: Product
-}
-
-extend type Product @key(fields: "sku") {
-  sku: ID @external
-  size: Int @external
-  weight: Int @external
-  shippingEstimate: String @requires(fields: "size weight")
-}
-""".strip()
-    )
+    expected_result = dedent("""
+    extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@extends", "@external", "@key", "@requires"])
+    type Query {
+      product: Product
+    }
+    
+    extend type Product @key(fields: "sku") {
+      sku: ID @external
+      size: Int @external
+      weight: Int @external
+      shippingEstimate: String @requires(fields: "size weight")
+    }
+    """)
+    assert clean_schema(result.data["_service"]["sdl"]) == clean_schema(expected_result)
 
 
 def test_requires_multiple_fields_as_list():
@@ -105,29 +107,29 @@ def test_requires_multiple_fields_as_list():
         product = Field(Product)
 
     schema = build_schema(query=Query, enable_federation_2=True)
-    assert (
-        str(schema).strip()
-        == """type Query {
-  product: Product
-  _entities(representations: [_Any!]!): [_Entity]!
-  _service: _Service!
-}
-
-type Product {
-  sku: ID
-  size: Int
-  weight: Int
-  shippingEstimate: String
-}
-
-union _Entity = Product
-
-scalar _Any
-
-type _Service {
-  sdl: String
-}"""
-    )
+    expected_result = dedent("""
+    type Query {
+      product: Product
+      _entities(representations: [_Any!]!): [_Entity]!
+      _service: _Service!
+    }
+    
+    type Product {
+      sku: ID
+      size: Int
+      weight: Int
+      shippingEstimate: String
+    }
+    
+    union _Entity = Product
+    
+    scalar _Any
+    
+    type _Service {
+      sdl: String
+    }
+    """)
+    assert clean_schema(schema) == clean_schema(expected_result)
     # Check the federation service schema definition language
     query = """
     query {
@@ -138,21 +140,20 @@ type _Service {
     """
     result = graphql_sync(schema.graphql_schema, query)
     assert not result.errors
-    assert (
-        result.data["_service"]["sdl"].strip()
-        == """extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@extends", "@external", "@key", "@requires"])
-type Query {
-  product: Product
-}
-
-extend type Product @key(fields: "sku") {
-  sku: ID @external
-  size: Int @external
-  weight: Int @external
-  shippingEstimate: String @requires(fields: "size weight")
-}
-""".strip()
-    )
+    expected_result = dedent("""
+    extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@extends", "@external", "@key", "@requires"])
+    type Query {
+      product: Product
+    }
+    
+    extend type Product @key(fields: "sku") {
+      sku: ID @external
+      size: Int @external
+      weight: Int @external
+      shippingEstimate: String @requires(fields: "size weight")
+    }
+    """)
+    assert clean_schema(result.data["_service"]["sdl"]) == clean_schema(expected_result)
 
 
 def test_requires_with_input():
@@ -170,28 +171,28 @@ def test_requires_with_input():
         acme = Field(Acme)
 
     schema = build_schema(query=Query, enable_federation_2=True)
-    assert (
-        str(schema).strip()
-        == """type Query {
-  acme: Acme
-  _entities(representations: [_Any!]!): [_Entity]!
-  _service: _Service!
-}
-
-type Acme {
-  id: ID!
-  age: Int
-  foo(someInput: String): String
-}
-
-union _Entity = Acme
-
-scalar _Any
-
-type _Service {
-  sdl: String
-}"""
-    )
+    expected_result = dedent("""
+    type Query {
+      acme: Acme
+      _entities(representations: [_Any!]!): [_Entity]!
+      _service: _Service!
+    }
+    
+    type Acme {
+      id: ID!
+      age: Int
+      foo(someInput: String): String
+    }
+    
+    union _Entity = Acme
+    
+    scalar _Any
+    
+    type _Service {
+      sdl: String
+    }
+    """)
+    assert clean_schema(schema) == clean_schema(expected_result)
     # Check the federation service schema definition language
     query = """
     query {
@@ -202,17 +203,16 @@ type _Service {
     """
     result = graphql_sync(schema.graphql_schema, query)
     assert not result.errors
-    assert (
-        result.data["_service"]["sdl"].strip()
-        == """extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@extends", "@external", "@key", "@requires"])
-type Query {
-  acme: Acme
-}
-
-extend type Acme @key(fields: "id") {
-  id: ID! @external
-  age: Int @external
-  foo(someInput: String): String @requires(fields: "age")
-}
-""".strip()
-    )
+    expected_result = dedent("""
+    extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@extends", "@external", "@key", "@requires"])
+    type Query {
+      acme: Acme
+    }
+    
+    extend type Acme @key(fields: "id") {
+      id: ID! @external
+      age: Int @external
+      foo(someInput: String): String @requires(fields: "age")
+    }
+    """)
+    assert clean_schema(result.data["_service"]["sdl"]) == clean_schema(expected_result)

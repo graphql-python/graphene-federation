@@ -1,9 +1,12 @@
+from textwrap import dedent
+
 import graphene
 import pytest
 from graphene import ObjectType
 from graphql import graphql_sync
 
-from .. import shareable, build_schema
+from graphene_federation import shareable, build_schema
+from graphene_federation.utils import clean_schema
 
 
 @pytest.mark.xfail(
@@ -53,18 +56,18 @@ def test_shareable():
         """
     result = graphql_sync(schema.graphql_schema, query)
     assert not result.errors
-    assert (
-        result.data["_service"]["sdl"].strip()
-        == """extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@shareable"])
-type Position  @shareable {
-  x: Int!
-  y: Int! @shareable
-}
-
-type Query {
-  inStockCount: Int!
-}""".strip()
-    )
+    expected_result = dedent("""
+    extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@shareable"])
+    type Position  @shareable {
+      x: Int!
+      y: Int! @shareable
+    }
+    
+    type Query {
+      inStockCount: Int!
+    }
+    """)
+    assert clean_schema(result.data["_service"]["sdl"]) == clean_schema(expected_result)
 
 
 def test_shareable_union():
@@ -102,27 +105,27 @@ def test_shareable_union():
         """
     result = graphql_sync(schema.graphql_schema, query)
     assert not result.errors
-    assert (
-        result.data["_service"]["sdl"].strip()
-        == """extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@shareable"])
-union SearchResult @shareable  = Human | Droid | Starship
-
-type Human  @shareable {
-  name: String
-  bornIn: String
-}
-
-type Droid  @shareable {
-  name: String @shareable
-  primaryFunction: String
-}
-
-type Starship  @shareable {
-  name: String
-  length: Int @shareable
-}
-
-type Query {
-  inStockCount: Int!
-}""".strip()
-    )
+    expected_result = dedent("""
+    extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@shareable"])
+    union SearchResult @shareable  = Human | Droid | Starship
+    
+    type Human  @shareable {
+      name: String
+      bornIn: String
+    }
+    
+    type Droid  @shareable {
+      name: String @shareable
+      primaryFunction: String
+    }
+    
+    type Starship  @shareable {
+      name: String
+      length: Int @shareable
+    }
+    
+    type Query {
+      inStockCount: Int!
+    }
+    """)
+    assert clean_schema(result.data["_service"]["sdl"]) == clean_schema(expected_result)

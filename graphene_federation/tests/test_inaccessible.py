@@ -1,8 +1,11 @@
+from textwrap import dedent
+
 import graphene
 from graphene import ObjectType
 from graphql import graphql_sync
 
-from .. import inaccessible, build_schema
+from graphene_federation import inaccessible, build_schema
+from graphene_federation.utils import clean_schema
 
 
 def test_inaccessible_interface():
@@ -44,18 +47,18 @@ def test_inaccessible():
         """
     result = graphql_sync(schema.graphql_schema, query)
     assert not result.errors
-    assert (
-        result.data["_service"]["sdl"].strip()
-        == """extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@inaccessible"])
-type Position  @inaccessible {
-  x: Int!
-  y: Int! @inaccessible
-}
-
-type Query {
-  inStockCount: Int!
-}""".strip()
-    )
+    expected_result = dedent("""
+    extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@inaccessible"])
+    type Position  @inaccessible {
+      x: Int!
+      y: Int! @inaccessible
+    }
+    
+    type Query {
+      inStockCount: Int!
+    }
+    """)
+    assert clean_schema(result.data["_service"]["sdl"]) == clean_schema(expected_result)
 
 
 def test_inaccessible_union():
@@ -93,27 +96,27 @@ def test_inaccessible_union():
         """
     result = graphql_sync(schema.graphql_schema, query)
     assert not result.errors
-    assert (
-        result.data["_service"]["sdl"].strip()
-        == """extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@inaccessible"])
-union SearchResult @inaccessible  = Human | Droid | Starship
-
-type Human  @inaccessible {
-  name: String
-  bornIn: String
-}
-
-type Droid  @inaccessible {
-  name: String @inaccessible
-  primaryFunction: String
-}
-
-type Starship  @inaccessible {
-  name: String
-  length: Int @inaccessible
-}
-
-type Query {
-  inStockCount: Int!
-}""".strip()
-    )
+    expected_schema = dedent("""
+    extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@inaccessible"])
+    union SearchResult @inaccessible  = Human | Droid | Starship
+    
+    type Human  @inaccessible {
+      name: String
+      bornIn: String
+    }
+    
+    type Droid  @inaccessible {
+      name: String @inaccessible
+      primaryFunction: String
+    }
+    
+    type Starship  @inaccessible {
+      name: String
+      length: Int @inaccessible
+    }
+    
+    type Query {
+      inStockCount: Int!
+    }
+    """)
+    assert clean_schema(result.data["_service"]["sdl"]) == clean_schema(expected_schema)

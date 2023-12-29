@@ -1,11 +1,14 @@
+from textwrap import dedent
+
 from graphql import graphql_sync
 
 from graphene import Field, Int, ObjectType, String
 
-from ..provides import provides
-from ..main import build_schema
-from ..extend import extend
-from ..external import external
+from graphene_federation.provides import provides
+from graphene_federation.main import build_schema
+from graphene_federation.extend import extend
+from graphene_federation.external import external
+from graphene_federation.utils import clean_schema
 
 
 def test_provides():
@@ -28,33 +31,33 @@ def test_provides():
         in_stock_count = Field(InStockCount)
 
     schema = build_schema(query=Query)
-    assert (
-        str(schema).strip()
-        == """type Query {
-  inStockCount: InStockCount
-  _entities(representations: [_Any!]!): [_Entity]!
-  _service: _Service!
-}
-
-type InStockCount {
-  product: Product!
-  quantity: Int!
-}
-
-type Product {
-  sku: String!
-  name: String
-  weight: Int
-}
-
-union _Entity = Product
-
-scalar _Any
-
-type _Service {
-  sdl: String
-}"""
-    )
+    expected_result = dedent("""
+    type Query {
+      inStockCount: InStockCount
+      _entities(representations: [_Any!]!): [_Entity]!
+      _service: _Service!
+    }
+    
+    type InStockCount {
+      product: Product!
+      quantity: Int!
+    }
+    
+    type Product {
+      sku: String!
+      name: String
+      weight: Int
+    }
+    
+    union _Entity = Product
+    
+    scalar _Any
+    
+    type _Service {
+      sdl: String
+    }
+    """)
+    assert clean_schema(schema) == clean_schema(expected_result)
     # Check the federation service schema definition language
     query = """
     query {
@@ -65,25 +68,23 @@ type _Service {
     """
     result = graphql_sync(schema.graphql_schema, query)
     assert not result.errors
-    assert (
-        result.data["_service"]["sdl"].strip()
-        == """
-type Query {
-  inStockCount: InStockCount
-}
-
-type InStockCount  {
-  product: Product! @provides(fields: "name")
-  quantity: Int!
-}
-
-extend type Product @key(fields: "sku") {
-  sku: String! @external
-  name: String @external
-  weight: Int @external
-}
-""".strip()
-    )
+    expected_result = dedent("""
+    type Query {
+      inStockCount: InStockCount
+    }
+    
+    type InStockCount  {
+      product: Product! @provides(fields: "name")
+      quantity: Int!
+    }
+    
+    extend type Product @key(fields: "sku") {
+      sku: String! @external
+      name: String @external
+      weight: Int @external
+    }
+    """)
+    assert clean_schema(result.data["_service"]["sdl"]) == clean_schema(expected_result)
 
 
 def test_provides_multiple_fields():
@@ -106,33 +107,33 @@ def test_provides_multiple_fields():
         in_stock_count = Field(InStockCount)
 
     schema = build_schema(query=Query)
-    assert (
-        str(schema).strip()
-        == """type Query {
-  inStockCount: InStockCount
-  _entities(representations: [_Any!]!): [_Entity]!
-  _service: _Service!
-}
-
-type InStockCount {
-  product: Product!
-  quantity: Int!
-}
-
-type Product {
-  sku: String!
-  name: String
-  weight: Int
-}
-
-union _Entity = Product
-
-scalar _Any
-
-type _Service {
-  sdl: String
-}"""
-    )
+    expected_result = dedent("""
+    type Query {
+      inStockCount: InStockCount
+      _entities(representations: [_Any!]!): [_Entity]!
+      _service: _Service!
+    }
+    
+    type InStockCount {
+      product: Product!
+      quantity: Int!
+    }
+    
+    type Product {
+      sku: String!
+      name: String
+      weight: Int
+    }
+    
+    union _Entity = Product
+    
+    scalar _Any
+    
+    type _Service {
+      sdl: String
+    }
+    """)
+    assert clean_schema(schema) == clean_schema(expected_result)
     # Check the federation service schema definition language
     query = """
     query {
@@ -143,25 +144,23 @@ type _Service {
     """
     result = graphql_sync(schema.graphql_schema, query)
     assert not result.errors
-    assert (
-        result.data["_service"]["sdl"].strip()
-        == """
-type Query {
-  inStockCount: InStockCount
-}
-
-type InStockCount  {
-  product: Product! @provides(fields: "name weight")
-  quantity: Int!
-}
-
-extend type Product @key(fields: "sku") {
-  sku: String! @external
-  name: String @external
-  weight: Int @external
-}
-""".strip()
-    )
+    expected_result = dedent("""
+    type Query {
+      inStockCount: InStockCount
+    }
+    
+    type InStockCount  {
+      product: Product! @provides(fields: "name weight")
+      quantity: Int!
+    }
+    
+    extend type Product @key(fields: "sku") {
+      sku: String! @external
+      name: String @external
+      weight: Int @external
+    }
+    """)
+    assert clean_schema(result.data["_service"]["sdl"]) == clean_schema(expected_result)
 
 
 def test_provides_multiple_fields_as_list():
@@ -184,33 +183,33 @@ def test_provides_multiple_fields_as_list():
         in_stock_count = Field(InStockCount)
 
     schema = build_schema(query=Query)
-    assert (
-        str(schema).strip()
-        == """type Query {
-  inStockCount: InStockCount
-  _entities(representations: [_Any!]!): [_Entity]!
-  _service: _Service!
-}
-
-type InStockCount {
-  product: Product!
-  quantity: Int!
-}
-
-type Product {
-  sku: String!
-  name: String
-  weight: Int
-}
-
-union _Entity = Product
-
-scalar _Any
-
-type _Service {
-  sdl: String
-}"""
-    )
+    expected_result = dedent("""
+    type Query {
+      inStockCount: InStockCount
+      _entities(representations: [_Any!]!): [_Entity]!
+      _service: _Service!
+    }
+    
+    type InStockCount {
+      product: Product!
+      quantity: Int!
+    }
+    
+    type Product {
+      sku: String!
+      name: String
+      weight: Int
+    }
+    
+    union _Entity = Product
+    
+    scalar _Any
+    
+    type _Service {
+      sdl: String
+    }
+    """)
+    assert clean_schema(schema) == clean_schema(expected_result)
     # Check the federation service schema definition language
     query = """
     query {
@@ -221,22 +220,20 @@ type _Service {
     """
     result = graphql_sync(schema.graphql_schema, query)
     assert not result.errors
-    assert (
-        result.data["_service"]["sdl"].strip()
-        == """
-type Query {
-  inStockCount: InStockCount
-}
-
-type InStockCount  {
-  product: Product! @provides(fields: "name weight")
-  quantity: Int!
-}
-
-extend type Product @key(fields: "sku") {
-  sku: String! @external
-  name: String @external
-  weight: Int @external
-}
-""".strip()
-    )
+    expected_result = dedent("""
+    type Query {
+      inStockCount: InStockCount
+    }
+    
+    type InStockCount  {
+      product: Product! @provides(fields: "name weight")
+      quantity: Int!
+    }
+    
+    extend type Product @key(fields: "sku") {
+      sku: String! @external
+      name: String @external
+      weight: Int @external
+    }
+    """)
+    assert clean_schema(result.data["_service"]["sdl"]) == clean_schema(expected_result)

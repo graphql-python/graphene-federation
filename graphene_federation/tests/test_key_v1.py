@@ -1,11 +1,14 @@
+from textwrap import dedent
+
 import pytest
 
 from graphql import graphql_sync
 
 from graphene import ObjectType, ID, String, Field
 
-from ..entity import key
-from ..main import build_schema
+from graphene_federation.entity import key
+from graphene_federation.main import build_schema
+from graphene_federation.utils import clean_schema
 
 
 def test_multiple_keys():
@@ -19,27 +22,27 @@ def test_multiple_keys():
         user = Field(User)
 
     schema = build_schema(query=Query)
-    assert (
-        str(schema).strip()
-        == """type Query {
-  user: User
-  _entities(representations: [_Any!]!): [_Entity]!
-  _service: _Service!
-}
-
-type User {
-  identifier: ID
-  email: String
-}
-
-union _Entity = User
-
-scalar _Any
-
-type _Service {
-  sdl: String
-}"""
-    )
+    expected_result = dedent("""
+    type Query {
+      user: User
+      _entities(representations: [_Any!]!): [_Entity]!
+      _service: _Service!
+    }
+    
+    type User {
+      identifier: ID
+      email: String
+    }
+    
+    union _Entity = User
+    
+    scalar _Any
+    
+    type _Service {
+      sdl: String
+    }
+    """)
+    assert clean_schema(schema) == clean_schema(expected_result)
     # Check the federation service schema definition language
     query = """
     query {
@@ -50,19 +53,17 @@ type _Service {
     """
     result = graphql_sync(schema.graphql_schema, query)
     assert not result.errors
-    assert (
-        result.data["_service"]["sdl"].strip()
-        == """
-type Query {
-  user: User
-}
-
-type User @key(fields: "email") @key(fields: "identifier") {
-  identifier: ID
-  email: String
-}
-""".strip()
-    )
+    expected_result = dedent("""
+    type Query {
+      user: User
+    }
+    
+    type User @key(fields: "email") @key(fields: "identifier") {
+      identifier: ID
+      email: String
+    }
+    """)
+    assert clean_schema(result.data["_service"]["sdl"]) == clean_schema(expected_result)
 
 
 def test_key_non_existing_field_failure():
