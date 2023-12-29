@@ -122,7 +122,7 @@ def get_sdl(schema: Schema) -> str:
 
     _schema = ""
 
-    if schema.federation_version == 2:
+    if schema.federation_version >= 2:
         shareable_types = get_shareable_types(schema)
         inaccessible_types = get_inaccessible_types(schema)
         shareable_fields = get_shareable_fields(schema)
@@ -150,7 +150,7 @@ def get_sdl(schema: Schema) -> str:
         if tagged_fields:
             _schema_import.append('"@tag"')
         schema_import = ", ".join(_schema_import)
-        _schema = f'extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: [{schema_import}])\n'
+        _schema = f'extend schema @link(url: "https://specs.apollo.dev/federation/v{schema.federation_version}", import: [{schema_import}])\n'
 
     # Add fields directives (@external, @provides, @requires, @shareable, @inaccessible)
     entities_ = (
@@ -161,7 +161,7 @@ def get_sdl(schema: Schema) -> str:
         | set(provides_fields.values())
     )
 
-    if schema.federation_version == 2:
+    if schema.federation_version >= 2:
         entities_ = (
             entities_
             | set(shareable_types.values())
@@ -187,7 +187,7 @@ def get_sdl(schema: Schema) -> str:
 
         # resolvable argument of @key directive is true by default. If false, we add 'resolvable: false' to sdl.
         if (
-            schema.federation_version == 2
+            schema.federation_version >= 2
             and hasattr(entity, "_resolvable")
             and not entity._resolvable
         ):
@@ -204,7 +204,7 @@ def get_sdl(schema: Schema) -> str:
         pattern = re.compile(type_def_re)
         string_schema = pattern.sub(repl_str, string_schema)
 
-    if schema.federation_version == 2:
+    if schema.federation_version >= 2:
         for type_name, type in shareable_types.items():
             # noinspection PyProtectedMember
             if isinstance(type._meta, UnionOptions):

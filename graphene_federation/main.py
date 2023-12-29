@@ -23,13 +23,16 @@ def _get_query(schema: Schema, query_cls: Optional[ObjectType] = None) -> Object
 def build_schema(
     query: Optional[ObjectType] = None,
     mutation: Optional[ObjectType] = None,
-    enable_federation_2=False,
+    federation_version: Optional[float] = None,
+    enable_federation_2: bool = False,
     schema: Optional[Schema] = None,
     **kwargs
 ) -> Schema:
     schema = schema or Schema(query=query, mutation=mutation, **kwargs)
     schema.auto_camelcase = kwargs.get("auto_camelcase", True)
-    schema.federation_version = 2 if enable_federation_2 else 1
+    schema.federation_version = float(
+        (federation_version or 2) if (enable_federation_2 or federation_version) else 1
+    )
     federation_query = _get_query(schema, schema.query if schema else query)
     kwargs = schema.__dict__
     kwargs.pop("query")
