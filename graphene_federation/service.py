@@ -192,21 +192,13 @@ def get_sdl(schema: Schema) -> str:
             and not entity._resolvable
         ):
             type_annotation = (
-                (
-                    " ".join(
-                        [
-                            f'@key(fields: "{get_field_name(key)}"'
-                            for key in entity._keys
-                        ]
-                    )
-                )
-                + f", resolvable: {str(entity._resolvable).lower()})"
-            )
-        else:
-            type_annotation = (
                 " ".join(
-                    [f'@key(fields: "{get_field_name(key)}")' for key in entity._keys]
+                    [f'@key(fields: "{get_field_name(key)}"' for key in entity._keys]
                 )
+            ) + f", resolvable: {str(entity._resolvable).lower()})"
+        else:
+            type_annotation = " ".join(
+                [f'@key(fields: "{get_field_name(key)}")' for key in entity._keys]
             )
         repl_str = rf"\1 {type_annotation} "
         pattern = re.compile(type_def_re)

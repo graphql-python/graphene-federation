@@ -43,7 +43,8 @@ def test_requires_multiple_fields():
         product = Field(Product)
 
     schema = build_schema(query=Query)
-    expected_result = dedent("""
+    expected_result = dedent(
+        """
     type Query {
       product: Product
       _entities(representations: [_Any!]!): [_Entity]!
@@ -64,7 +65,8 @@ def test_requires_multiple_fields():
     type _Service {
       sdl: String
     }
-    """)
+    """
+    )
     assert clean_schema(schema) == clean_schema(expected_result)
     # Check the federation service schema definition language
     query = """
@@ -76,7 +78,8 @@ def test_requires_multiple_fields():
     """
     result = graphql_sync(schema.graphql_schema, query)
     assert not result.errors
-    expected_result = dedent("""
+    expected_result = dedent(
+        """
     type Query {
       product: Product
     }
@@ -87,7 +90,8 @@ def test_requires_multiple_fields():
       weight: Int @external
       shippingEstimate: String @requires(fields: "size weight")
     }
-    """)
+    """
+    )
     assert clean_schema(result.data["_service"]["sdl"]) == clean_schema(expected_result)
 
 
@@ -107,7 +111,8 @@ def test_requires_multiple_fields_as_list():
         product = Field(Product)
 
     schema = build_schema(query=Query)
-    expected_result = dedent("""
+    expected_result = dedent(
+        """
     type Query {
       product: Product
       _entities(representations: [_Any!]!): [_Entity]!
@@ -128,7 +133,8 @@ def test_requires_multiple_fields_as_list():
     type _Service {
       sdl: String
     }
-    """)
+    """
+    )
     assert clean_schema(schema) == clean_schema(expected_result)
     # Check the federation service schema definition language
     query = """
@@ -140,7 +146,8 @@ def test_requires_multiple_fields_as_list():
     """
     result = graphql_sync(schema.graphql_schema, query)
     assert not result.errors
-    expected_result = dedent("""
+    expected_result = dedent(
+        """
     type Query {
       product: Product
     }
@@ -151,7 +158,8 @@ def test_requires_multiple_fields_as_list():
       weight: Int @external
       shippingEstimate: String @requires(fields: "size weight")
     }
-    """)
+    """
+    )
     assert clean_schema(result.data["_service"]["sdl"]) == clean_schema(expected_result)
 
 
@@ -170,7 +178,8 @@ def test_requires_with_input():
         acme = Field(Acme)
 
     schema = build_schema(query=Query)
-    expected_result = dedent("""
+    expected_result = dedent(
+        """
     type Query {
       acme: Acme
       _entities(representations: [_Any!]!): [_Entity]!
@@ -190,7 +199,8 @@ def test_requires_with_input():
     type _Service {
       sdl: String
     }
-    """)
+    """
+    )
     assert clean_schema(schema) == clean_schema(expected_result)
     # Check the federation service schema definition language
     query = """
@@ -202,7 +212,8 @@ def test_requires_with_input():
     """
     result = graphql_sync(schema.graphql_schema, query)
     assert not result.errors
-    expected_result = dedent("""
+    expected_result = dedent(
+        """
     type Query {
       acme: Acme
     }
@@ -212,6 +223,6 @@ def test_requires_with_input():
       age: Int @external
       foo(someInput: String): String @requires(fields: "age")
     }
-    """)
+    """
+    )
     assert clean_schema(result.data["_service"]["sdl"]) == clean_schema(expected_result)
-

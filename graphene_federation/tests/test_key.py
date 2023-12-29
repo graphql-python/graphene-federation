@@ -21,7 +21,8 @@ def test_multiple_keys():
         user = Field(User)
 
     schema = build_schema(query=Query, enable_federation_2=True)
-    expected_result = dedent("""
+    expected_result = dedent(
+        """
     type Query {
       user: User
       _entities(representations: [_Any!]!): [_Entity]!
@@ -40,7 +41,8 @@ def test_multiple_keys():
     type _Service {
       sdl: String
     }
-    """)
+    """
+    )
     assert clean_schema(schema) == clean_schema(expected_result)
     # Check the federation service schema definition language
     query = """
@@ -52,7 +54,8 @@ def test_multiple_keys():
     """
     result = graphql_sync(schema.graphql_schema, query)
     assert not result.errors
-    expected_result = dedent("""
+    expected_result = dedent(
+        """
     extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key"])
     type Query {
       user: User
@@ -62,7 +65,8 @@ def test_multiple_keys():
       identifier: ID
       email: String
     }
-    """)
+    """
+    )
     assert clean_schema(result.data["_service"]["sdl"]) == clean_schema(expected_result)
 
 
@@ -92,7 +96,8 @@ def test_compound_primary_key():
         user = Field(User)
 
     schema = build_schema(query=Query, enable_federation_2=True)
-    expected_result = dedent("""
+    expected_result = dedent(
+        """
     type Query {
       user: User
       _entities(representations: [_Any!]!): [_Entity]!
@@ -115,7 +120,8 @@ def test_compound_primary_key():
     type _Service {
       sdl: String
     }
-    """)
+    """
+    )
     assert clean_schema(schema) == clean_schema(expected_result)
     # Check the federation service schema definition language
     query = """
@@ -127,7 +133,8 @@ def test_compound_primary_key():
     """
     result = graphql_sync(schema.graphql_schema, query)
     assert not result.errors
-    expected_result = dedent("""
+    expected_result = dedent(
+        """
     extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key"])
     type Query {
       user: User
@@ -141,7 +148,8 @@ def test_compound_primary_key():
     type Organization {
       registrationNumber: ID
     }
-    """)
+    """
+    )
     assert clean_schema(result.data["_service"]["sdl"]) == clean_schema(expected_result)
 
 
@@ -163,7 +171,8 @@ def test_compound_primary_key_with_depth():
         user = Field(User)
 
     schema = build_schema(query=Query, enable_federation_2=True)
-    expected_result = dedent("""
+    expected_result = dedent(
+        """
     type Query {
       user: User
       _entities(representations: [_Any!]!): [_Entity]!
@@ -192,7 +201,8 @@ def test_compound_primary_key_with_depth():
     type _Service {
       sdl: String
     }
-    """)
+    """
+    )
     assert clean_schema(schema) == clean_schema(expected_result)
     # Check the federation service schema definition language
     query = """
@@ -204,7 +214,8 @@ def test_compound_primary_key_with_depth():
     """
     result = graphql_sync(schema.graphql_schema, query)
     assert not result.errors
-    expected_result = dedent("""
+    expected_result = dedent(
+        """
     extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key"])
     type Query {
       user: User
@@ -224,7 +235,8 @@ def test_compound_primary_key_with_depth():
       id: ID
       name: String
     }
-    """)
+    """
+    )
     assert clean_schema(result.data["_service"]["sdl"]) == clean_schema(expected_result)
 
 

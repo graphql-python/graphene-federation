@@ -92,7 +92,8 @@ def test_user_schema():
     Check that the user schema has been annotated correctly
     and that a request to retrieve a user works.
     """
-    expected_result = dedent("""
+    expected_result = dedent(
+        """
     schema {
       query: UserQuery
     }
@@ -116,7 +117,8 @@ def test_user_schema():
     type _Service {
       sdl: String
     }
-    """)
+    """
+    )
     assert clean_schema(user_schema) == clean_schema(expected_result)
 
     query = """
@@ -139,7 +141,8 @@ def test_user_schema():
     """
     result = graphql_sync(user_schema.graphql_schema, query)
     assert not result.errors
-    expected_result = dedent("""
+    expected_result = dedent(
+        """
     extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key"])
 
     type UserQuery {
@@ -151,7 +154,8 @@ def test_user_schema():
       email: String!
       name: String
     }
-    """)
+    """
+    )
     assert clean_schema(result.data["_service"]["sdl"]) == clean_schema(expected_result)
 
 
@@ -160,7 +164,8 @@ def test_chat_schema():
     Check that the chat schema has been annotated correctly
     and that a request to retrieve a chat message works.
     """
-    expected_result = dedent("""
+    expected_result = dedent(
+        """
     schema {
       query: ChatQuery
     }
@@ -189,7 +194,8 @@ def test_chat_schema():
     type _Service {
       sdl: String
     }
-    """)
+    """
+    )
     assert clean_schema(chat_schema) == clean_schema(expected_result)
 
     # Query the message field
@@ -215,7 +221,8 @@ def test_chat_schema():
     """
     result = graphql_sync(chat_schema.graphql_schema, query)
     assert not result.errors
-    expected_result = dedent("""
+    expected_result = dedent(
+        """
     extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@extends", "@external", "@key"])
     type ChatQuery {
       message(id: ID!): ChatMessage
@@ -231,5 +238,6 @@ def test_chat_schema():
     extend type ChatUser @key(fields: "userId") {
       userId: ID! @external
     }
-    """)
+    """
+    )
     assert clean_schema(result.data["_service"]["sdl"]) == clean_schema(expected_result)

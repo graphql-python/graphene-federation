@@ -31,7 +31,8 @@ def test_provides():
         in_stock_count = Field(InStockCount)
 
     schema = build_schema(query=Query, enable_federation_2=True)
-    expected_result = dedent("""
+    expected_result = dedent(
+        """
     type Query {
       inStockCount: InStockCount
       _entities(representations: [_Any!]!): [_Entity]!
@@ -56,7 +57,8 @@ def test_provides():
     type _Service {
       sdl: String
     }
-    """)
+    """
+    )
     assert clean_schema(schema) == clean_schema(expected_result)
 
     # Check the federation service schema definition language
@@ -69,7 +71,8 @@ def test_provides():
     """
     result = graphql_sync(schema.graphql_schema, query)
     assert not result.errors
-    expected_result = dedent("""
+    expected_result = dedent(
+        """
     extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@extends", "@external", "@key", "@provides"])
     type Query {
       inStockCount: InStockCount
@@ -85,7 +88,8 @@ def test_provides():
       name: String @external
       weight: Int @external
     }
-    """)
+    """
+    )
     assert clean_schema(result.data["_service"]["sdl"]) == clean_schema(expected_result)
 
 
@@ -109,7 +113,8 @@ def test_provides_multiple_fields():
         in_stock_count = Field(InStockCount)
 
     schema = build_schema(query=Query, enable_federation_2=True)
-    expected_result = dedent("""
+    expected_result = dedent(
+        """
     type Query {
       inStockCount: InStockCount
       _entities(representations: [_Any!]!): [_Entity]!
@@ -134,7 +139,8 @@ def test_provides_multiple_fields():
     type _Service {
       sdl: String
     }
-    """)
+    """
+    )
     assert clean_schema(schema) == clean_schema(expected_result)
     # Check the federation service schema definition language
     query = """
@@ -146,7 +152,8 @@ def test_provides_multiple_fields():
     """
     result = graphql_sync(schema.graphql_schema, query)
     assert not result.errors
-    expected_result = dedent("""
+    expected_result = dedent(
+        """
     extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@extends", "@external", "@key", "@provides"])
     type Query {
       inStockCount: InStockCount
@@ -162,7 +169,8 @@ def test_provides_multiple_fields():
       name: String @external
       weight: Int @external
     }
-    """)
+    """
+    )
     assert clean_schema(result.data["_service"]["sdl"]) == clean_schema(expected_result)
 
 
@@ -186,7 +194,8 @@ def test_provides_multiple_fields_as_list():
         in_stock_count = Field(InStockCount)
 
     schema = build_schema(query=Query, enable_federation_2=True)
-    expected_result = dedent("""
+    expected_result = dedent(
+        """
     type Query {
       inStockCount: InStockCount
       _entities(representations: [_Any!]!): [_Entity]!
@@ -211,7 +220,8 @@ def test_provides_multiple_fields_as_list():
     type _Service {
       sdl: String
     }
-    """)
+    """
+    )
     assert clean_schema(schema) == clean_schema(expected_result)
 
     # Check the federation service schema definition language
@@ -224,7 +234,8 @@ def test_provides_multiple_fields_as_list():
     """
     result = graphql_sync(schema.graphql_schema, query)
     assert not result.errors
-    expected_result = dedent("""
+    expected_result = dedent(
+        """
     extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@extends", "@external", "@key", "@provides"])
     type Query {
       inStockCount: InStockCount
@@ -240,6 +251,6 @@ def test_provides_multiple_fields_as_list():
       name: String @external
       weight: Int @external
     }
-    """)
+    """
+    )
     assert clean_schema(result.data["_service"]["sdl"]) == clean_schema(expected_result)
-

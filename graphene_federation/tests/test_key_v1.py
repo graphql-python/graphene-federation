@@ -22,7 +22,8 @@ def test_multiple_keys():
         user = Field(User)
 
     schema = build_schema(query=Query)
-    expected_result = dedent("""
+    expected_result = dedent(
+        """
     type Query {
       user: User
       _entities(representations: [_Any!]!): [_Entity]!
@@ -41,7 +42,8 @@ def test_multiple_keys():
     type _Service {
       sdl: String
     }
-    """)
+    """
+    )
     assert clean_schema(schema) == clean_schema(expected_result)
     # Check the federation service schema definition language
     query = """
@@ -53,7 +55,8 @@ def test_multiple_keys():
     """
     result = graphql_sync(schema.graphql_schema, query)
     assert not result.errors
-    expected_result = dedent("""
+    expected_result = dedent(
+        """
     type Query {
       user: User
     }
@@ -62,7 +65,8 @@ def test_multiple_keys():
       identifier: ID
       email: String
     }
-    """)
+    """
+    )
     assert clean_schema(result.data["_service"]["sdl"]) == clean_schema(expected_result)
 
 

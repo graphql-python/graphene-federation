@@ -33,7 +33,8 @@ def test_similar_field_name():
         message = Field(ChatMessage, id=ID(required=True))
 
     chat_schema = build_schema(query=ChatQuery)
-    expected_result = dedent("""
+    expected_result = dedent(
+        """
     schema {
       query: ChatQuery
     }
@@ -64,7 +65,8 @@ def test_similar_field_name():
     type _Service {
       sdl: String
     }
-    """)
+    """
+    )
     assert clean_schema(chat_schema) == clean_schema(expected_result)
     # Check the federation service schema definition language
     query = """
@@ -76,7 +78,8 @@ def test_similar_field_name():
     """
     result = graphql_sync(chat_schema.graphql_schema, query)
     assert not result.errors
-    expected_result = dedent("""
+    expected_result = dedent(
+        """
     type ChatQuery {
       message(id: ID!): ChatMessage
     }
@@ -93,7 +96,8 @@ def test_similar_field_name():
       iD: ID
       ID: ID
     }
-    """)
+    """
+    )
     assert clean_schema(result.data["_service"]["sdl"]) == clean_schema(expected_result)
 
 
@@ -113,7 +117,8 @@ def test_camel_case_field_name():
         camel = Field(Camel)
 
     schema = build_schema(query=Query)
-    expected_result = dedent("""
+    expected_result = dedent(
+        """
     type Query {
       camel: Camel
       _entities(representations: [_Any!]!): [_Entity]!
@@ -134,7 +139,8 @@ def test_camel_case_field_name():
     type _Service {
       sdl: String
     }
-    """)
+    """
+    )
     assert clean_schema(schema) == clean_schema(expected_result)
     # Check the federation service schema definition language
     query = """
@@ -146,7 +152,8 @@ def test_camel_case_field_name():
     """
     result = graphql_sync(schema.graphql_schema, query)
     assert not result.errors
-    expected_result = dedent("""
+    expected_result = dedent(
+        """
     type Query {
       camel: Camel
     }
@@ -157,7 +164,8 @@ def test_camel_case_field_name():
       aSnake: String
       aCamel: String
     }
-    """)
+    """
+    )
     assert clean_schema(result.data["_service"]["sdl"]) == clean_schema(expected_result)
 
 
@@ -177,7 +185,8 @@ def test_camel_case_field_name_without_auto_camelcase():
         camel = Field(Camel)
 
     schema = build_schema(query=Query, auto_camelcase=False)
-    expected_result = dedent("""
+    expected_result = dedent(
+        """
     type Query {
       camel: Camel
       _entities(representations: [_Any!]!): [_Entity]!
@@ -198,7 +207,8 @@ def test_camel_case_field_name_without_auto_camelcase():
     type _Service {
       sdl: String
     }
-    """)
+    """
+    )
     assert clean_schema(schema) == clean_schema(expected_result)
     # Check the federation service schema definition language
     query = """
@@ -210,7 +220,8 @@ def test_camel_case_field_name_without_auto_camelcase():
     """
     result = graphql_sync(schema.graphql_schema, query)
     assert not result.errors
-    expected_result = dedent("""
+    expected_result = dedent(
+        """
     type Query {
       camel: Camel
     }
@@ -221,7 +232,8 @@ def test_camel_case_field_name_without_auto_camelcase():
       a_snake: String
       aCamel: String
     }
-    """)
+    """
+    )
     assert clean_schema(result.data["_service"]["sdl"]) == clean_schema(expected_result)
 
 
@@ -244,7 +256,8 @@ def test_annotated_field_also_used_in_filter():
         a = Field(A)
 
     schema = build_schema(query=Query)
-    expected_result = dedent("""
+    expected_result = dedent(
+        """
     type Query {
       a: A
       _entities(representations: [_Any!]!): [_Entity]!
@@ -267,7 +280,8 @@ def test_annotated_field_also_used_in_filter():
     type _Service {
       sdl: String
     }
-    """)
+    """
+    )
     assert clean_schema(schema) == clean_schema(expected_result)
     # Check the federation service schema definition language
     query = """
@@ -279,7 +293,8 @@ def test_annotated_field_also_used_in_filter():
     """
     result = graphql_sync(schema.graphql_schema, query)
     assert not result.errors
-    expected_result = dedent("""
+    expected_result = dedent(
+        """
     type Query {
       a: A
     }
@@ -292,7 +307,8 @@ def test_annotated_field_also_used_in_filter():
     type B @key(fields: "id") {
       id: ID
     }
-    """)
+    """
+    )
     assert clean_schema(result.data["_service"]["sdl"]) == clean_schema(expected_result)
 
 
@@ -316,7 +332,8 @@ def test_annotate_object_with_meta_name():
         a = Field(A)
 
     schema = build_schema(query=Query)
-    expected_result = dedent("""
+    expected_result = dedent(
+        """
     type Query {
       a: Banana
       _entities(representations: [_Any!]!): [_Entity]!
@@ -339,7 +356,8 @@ def test_annotate_object_with_meta_name():
     type _Service {
       sdl: String
     }
-    """)
+    """
+    )
     assert clean_schema(schema) == clean_schema(expected_result)
     # Check the federation service schema definition language
     query = """
@@ -351,7 +369,8 @@ def test_annotate_object_with_meta_name():
     """
     result = graphql_sync(schema.graphql_schema, query)
     assert not result.errors
-    expected_result = dedent("""
+    expected_result = dedent(
+        """
     type Query {
       a: Banana
     }
@@ -364,5 +383,6 @@ def test_annotate_object_with_meta_name():
     type Potato @key(fields: "id") {
       id: ID
     }
-    """)
+    """
+    )
     assert clean_schema(result.data["_service"]["sdl"]) == clean_schema(expected_result)

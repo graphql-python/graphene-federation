@@ -56,7 +56,8 @@ def test_shareable():
         """
     result = graphql_sync(schema.graphql_schema, query)
     assert not result.errors
-    expected_result = dedent("""
+    expected_result = dedent(
+        """
     extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@shareable"])
     type Position  @shareable {
       x: Int!
@@ -66,7 +67,8 @@ def test_shareable():
     type Query {
       inStockCount: Int!
     }
-    """)
+    """
+    )
     assert clean_schema(result.data["_service"]["sdl"]) == clean_schema(expected_result)
 
 
@@ -105,7 +107,8 @@ def test_shareable_union():
         """
     result = graphql_sync(schema.graphql_schema, query)
     assert not result.errors
-    expected_result = dedent("""
+    expected_result = dedent(
+        """
     extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@shareable"])
     union SearchResult @shareable  = Human | Droid | Starship
     
@@ -127,5 +130,6 @@ def test_shareable_union():
     type Query {
       inStockCount: Int!
     }
-    """)
+    """
+    )
     assert clean_schema(result.data["_service"]["sdl"]) == clean_schema(expected_result)

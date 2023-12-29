@@ -42,7 +42,8 @@ def test_custom_scalar():
         }
         """
     result = graphql_sync(schema.graphql_schema, query)
-    expected_result = dedent("""
+    expected_result = dedent(
+        """
     extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@inaccessible", "@shareable"])
     type TestScalar  @shareable {
       testShareableScalar(x: AddressScalar): String @shareable
@@ -55,5 +56,6 @@ def test_custom_scalar():
       test(x: AddressScalar): String
       test2: [AddressScalar]!
     }
-    """)
+    """
+    )
     assert clean_schema(result.data["_service"]["sdl"]) == clean_schema(expected_result)

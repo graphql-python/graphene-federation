@@ -34,7 +34,8 @@ def test_custom_enum():
         }
         """
     result = graphql_sync(schema.graphql_schema, query)
-    expected_result = dedent("""
+    expected_result = dedent(
+        """
     extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@inaccessible", "@shareable"])
     type TestCustomEnum  @shareable {
       testShareableScalar: Episode @shareable
@@ -51,5 +52,6 @@ def test_custom_enum():
       test: Episode
       test2: [TestCustomEnum]!
     }
-    """)
+    """
+    )
     assert clean_schema(result.data["_service"]["sdl"]) == clean_schema(expected_result)
