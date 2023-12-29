@@ -1,3 +1,4 @@
+import re
 from typing import Any, Callable, List, Tuple
 
 import graphene
@@ -102,3 +103,7 @@ def get_attributed_fields(attribute: str, schema: Schema):
                 fields[type_name] = type_.graphene_type
                 continue
     return fields
+
+
+def clean_schema(schema):
+    return re.sub(r"[ \n]+", " ", str(schema)).strip()
