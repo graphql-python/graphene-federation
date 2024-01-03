@@ -33,8 +33,9 @@ def build_schema(
     schema.federation_version = float(
         (federation_version or 2) if (enable_federation_2 or federation_version) else 1
     )
-    federation_query = _get_query(schema, schema.query if schema else query)
-    kwargs = schema.__dict__
+    federation_query = _get_query(schema, schema.query)
+    # Use shallow copy to prevent recursion error
+    kwargs = schema.__dict__.copy()
     kwargs.pop("query")
     kwargs.pop("graphql_schema")
     kwargs.pop("federation_version")
