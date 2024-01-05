@@ -1,20 +1,18 @@
 from __future__ import annotations
 
+import collections.abc
 from typing import Any, Callable, Dict
 
-from graphene import List, NonNull, Union
-
+from graphene import Field, List, NonNull, ObjectType, Union
 from graphene.types.schema import Schema
 from graphene.types.schema import TypeMap
 
 from .types import _Any
 from .utils import (
-    field_name_to_type_attribute,
     check_fields_exist_on_type,
+    field_name_to_type_attribute,
     is_valid_compound_key,
 )
-
-import collections.abc
 
 
 def update(d, u):
@@ -80,7 +78,7 @@ def get_entity_query(schema: Schema):
             required=True,
         )
 
-        def resolve_entities(self, info, representations):
+        def resolve_entities(self, info, representations, sub_field_resolution=False):
             entities = []
             for representation in representations:
                 type_ = schema.graphql_schema.get_type(representation["__typename"])
@@ -92,12 +90,53 @@ def get_entity_query(schema: Schema):
                     model_arguments = {
                         get_model_attr(k): v for k, v in model_arguments.items()
                     }
+
+                # convert subfields of models from dict to a corresponding graphql type
+                for model_field, value in model_arguments.items():
+                    if not hasattr(model, model_field):
+                        continue
+
+                    field = getattr(model, model_field)
+                    if isinstance(field, Field) and isinstance(value, dict):
+                        if value.get("__typename") is None:
+                            value["__typename"] = field.type.of_type._meta.name
+                        model_arguments[model_field] = EntityQuery.resolve_entities(
+                            self,
+                            info,
+                            representations=[value],
+                            sub_field_resolution=True,
+                        ).pop()
+                    elif all(
+                        [
+                            isinstance(field, List),
+                            isinstance(value, list),
+                            any(
+                                [
+                                    (
+                                        hasattr(field, "of_type")
+                                        and issubclass(field.of_type, ObjectType)
+                                    ),
+                                    (
+                                        hasattr(field, "of_type")
+                                        and issubclass(field.of_type, Union)
+                                    ),
+                                ]
+                            ),
+                        ]
+                    ):
+                        for sub_value in value:
+                            if sub_value.get("__typename") is None:
+                                sub_value["__typename"] = field.type.of_type._meta.name
+                        model_arguments[model_field] = EntityQuery.resolve_entities(
+                            self, info, representations=value, sub_field_resolution=True
+                        )
+
                 model_instance = model(**model_arguments)
 
                 resolver = getattr(
                     model, "_%s__resolve_reference" % model.__name__, None
                 ) or getattr(model, "_resolve_reference", None)
-                if resolver:
+                if resolver and not sub_field_resolution:
                     model_instance = resolver(model_instance, info)
 
                 entities.append(model_instance)

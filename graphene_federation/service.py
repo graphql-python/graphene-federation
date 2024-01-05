@@ -38,10 +38,25 @@ def convert_fields(schema: Schema, fields: List[str]) -> str:
     return " ".join([get_field_name(field) for field in fields])
 
 
+def convert_fields_for_requires(schema: Schema, fields: List[str]) -> str:
+    """
+    Adds __typename for resolving union,sub-field types
+    """
+    get_field_name = type_attribute_to_field_name(schema)
+    new_fields = []
+    for field in fields:
+        if "typename" not in field.lower():  # skip user defined typename
+            new_fields.append(get_field_name(field))
+        if "{" in field:
+            new_fields.append("__typename")
+
+    return " ".join(new_fields)
+
+
 DECORATORS = {
     "_external": lambda schema, fields: "@external",
     "_requires": lambda schema, fields: f'@requires(fields: "{convert_fields(schema, fields)}")',
-    "_provides": lambda schema, fields: f'@provides(fields: "{convert_fields(schema, fields)}")',
+    "_provides": lambda schema, fields: f'@provides(fields: "{convert_fields_for_requires(schema, fields)}")',
     "_shareable": lambda schema, fields: "@shareable",
     "_inaccessible": lambda schema, fields: "@inaccessible",
     "_override": lambda schema, from_: f'@override(from: "{from_}")',
