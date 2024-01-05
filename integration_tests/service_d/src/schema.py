@@ -9,7 +9,7 @@ https://github.com/preply/graphene-federation/issues/26#issuecomment-572127271
 """
 
 
-@extend(fields='id')
+@extend(fields="id")
 class Article(ObjectType):
     id = external(Int(required=True))
 

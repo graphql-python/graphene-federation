@@ -2,7 +2,7 @@ import graphene
 from graphene_federation import build_schema, extend, external
 
 
-@extend(fields='id')
+@extend(fields="id")
 class Message(graphene.ObjectType):
     id = external(graphene.Int(required=True))
 
@@ -19,13 +19,13 @@ class Query(graphene.ObjectType):
 
 schema = build_schema(Query)
 
-query = '''
+query = """
     query getSDL {
       _service {
          sdl
       }
     }
-'''
+"""
 result = schema.execute(query)
 print(result.data)
 # {'sdl': 'type Query {\n  message: Message\n}\n\nextend type Message @key(fields: "id") {\n  id: Int! @external\n}'}}

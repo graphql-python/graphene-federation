@@ -8,27 +8,27 @@ class TextInterface(Interface):
     body = String(required=True)
 
 
-@key(fields='id')
+@key(fields="id")
 class FunnyText(ObjectType):
     class Meta:
         interfaces = (TextInterface,)
 
     def __resolve_reference(self, info, **kwargs):
-        return FunnyText(id=self.id, body=f'funny_text_{self.id}')
+        return FunnyText(id=self.id, body=f"funny_text_{self.id}")
 
 
-@key(fields='id')
+@key(fields="id")
 class FileNode(ObjectType):
     id = Int(required=True)
     name = String(required=True)
 
     def __resolve_reference(self, info, **kwargs):
         # todo test raise exception here
-        return FileNode(id=self.id, name=f'file_{self.id}')
+        return FileNode(id=self.id, name=f"file_{self.id}")
 
 
-@key('id')
-@key('primary_email')
+@key("id")
+@key("primary_email")
 class User(ObjectType):
     id = Int(required=True)
     primary_email = String()
@@ -39,10 +39,13 @@ class User(ObjectType):
 
     def __resolve_reference(self, info, **kwargs):
         if self.id is not None:
-            return User(id=self.id, primary_email=f'name_{self.id}@gmail.com')
+            return User(id=self.id, primary_email=f"name_{self.id}@gmail.com")
 
-        user_id = 1001 if self.primary_email == "frank@frank.com" else \
-            hash(self.primary_email) % 10000000
+        user_id = (
+            1001
+            if self.primary_email == "frank@frank.com"
+            else hash(self.primary_email) % 10000000
+        )
 
         return User(id=user_id, primary_email=self.primary_email)
 
@@ -58,18 +61,13 @@ class FunnyMutation(Mutation):
 
     @classmethod
     def mutate(cls, root, info, **data):
-        return FunnyMutation(result='Funny')
+        return FunnyMutation(result="Funny")
 
 
 class Mutation(ObjectType):
     funny_mutation = FunnyMutation.Field()
 
 
-types = [
-    FileNode,
-    FunnyText,
-    FileNodeAnother,
-    User
-]
+types = [FileNode, FunnyText, FileNodeAnother, User]
 
 schema = build_schema(mutation=Mutation, types=types)

@@ -42,13 +42,13 @@ class Query(graphene.ObjectType):
 
 schema = build_schema(Query, enable_federation_2=True, types=(SearchResult,))
 
-query = '''
+query = """
     query getSDL {
       _service {
          sdl
       }
     }
-'''
+"""
 result = schema.execute(query)
 print(result.data)
 # {'_service': {'sdl': 'extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@shareable"])\ntype Query {\n  position: Position\n}\n\ntype Position  @shareable {\n  x: Int!\n  y: Int! @shareable\n}'}}

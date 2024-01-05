@@ -1,6 +1,13 @@
 import graphene
 
-from graphene_federation import build_schema, shareable, external, key, override, inaccessible
+from graphene_federation import (
+    build_schema,
+    shareable,
+    external,
+    key,
+    override,
+    inaccessible,
+)
 
 
 @key(fields="id")
@@ -16,13 +23,13 @@ class Query(graphene.ObjectType):
 
 schema = build_schema(Query, enable_federation_2=True)
 
-query = '''
+query = """
     query getSDL {
       _service {
          sdl
       }
     }
-'''
+"""
 result = schema.execute(query)
 print(result.data)
 # {'_service': {'sdl': 'extend schema @link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key", "@override", "@inaccessible"])\ntype Query {\n  position: Product\n}\n\ntype Product @key(fields: "id") {\n  id: ID!\n  inStock: Boolean! @override(from: "Products")\n  outStock: Boolean! @inaccessible\n}'}}
