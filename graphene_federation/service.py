@@ -166,7 +166,7 @@ def get_sdl(schema: Schema) -> str:
         if tagged_fields:
             federation_spec_import.append('"@tag"')
 
-        if schema.federation_version >= 2.1:
+        if schema.federation_version >= 2.1 and hasattr(schema, "directives"):
             preserved_directives = [
                 directive for directive in schema.directives if is_composable(directive)
             ]
