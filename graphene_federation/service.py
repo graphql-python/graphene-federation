@@ -212,7 +212,7 @@ def get_sdl(schema: Schema) -> str:
     # Add entity keys declarations
     get_field_name = type_attribute_to_field_name(schema)
     for entity_name, entity in entities.items():
-        type_def_re = rf"(type {entity_name} [^\{{]*)"
+        type_def_re = rf"(type {entity_name} [^\{{]*)" + " "
 
         # resolvable argument of @key directive is true by default. If false, we add 'resolvable: false' to sdl.
         if (
@@ -221,15 +221,25 @@ def get_sdl(schema: Schema) -> str:
             and not entity._resolvable
         ):
             type_annotation = (
-                " ".join(
-                    [f'@key(fields: "{get_field_name(key)}"' for key in entity._keys]
+                (
+                    " ".join(
+                        [
+                            f'@key(fields: "{get_field_name(key)}"'
+                            for key in entity._keys
+                        ]
+                    )
                 )
-            ) + f", resolvable: {str(entity._resolvable).lower()})"
-        else:
-            type_annotation = " ".join(
-                [f'@key(fields: "{get_field_name(key)}")' for key in entity._keys]
+                + f", resolvable: {str(entity._resolvable).lower()})"
+                + " "
             )
-        repl_str = rf"\1 {type_annotation} "
+        else:
+            type_annotation = (
+                " ".join(
+                    [f'@key(fields: "{get_field_name(key)}")' for key in entity._keys]
+                )
+                + " "
+            )
+        repl_str = rf"\1{type_annotation}"
         pattern = re.compile(type_def_re)
         string_schema = pattern.sub(repl_str, string_schema)
 
@@ -239,9 +249,9 @@ def get_sdl(schema: Schema) -> str:
             if isinstance(type._meta, UnionOptions):
                 type_def_re = rf"(union {type_name})"
             else:
-                type_def_re = rf"(type {type_name} [^\{{]*)"
-            type_annotation = "@shareable"
-            repl_str = rf"\1 {type_annotation} "
+                type_def_re = rf"(type {type_name} [^\{{]*)" + " "
+            type_annotation = " @shareable"
+            repl_str = rf"\1{type_annotation} "
             pattern = re.compile(type_def_re)
             string_schema = pattern.sub(repl_str, string_schema)
 
@@ -252,17 +262,18 @@ def get_sdl(schema: Schema) -> str:
             elif isinstance(type._meta, UnionOptions):
                 type_def_re = rf"(union {type_name})"
             else:
-                type_def_re = rf"(type {type_name} [^\{{]*)"
-            type_annotation = "@inaccessible"
-            repl_str = rf"\1 {type_annotation} "
+                type_def_re = rf"(type {type_name} [^\{{]*)" + " "
+            type_annotation = " @inaccessible"
+            repl_str = rf"\1{type_annotation} "
             pattern = re.compile(type_def_re)
             string_schema = pattern.sub(repl_str, string_schema)
 
     if schema_extensions:
         string_schema = (
-            "extend schema\n " + "\n ".join(schema_extensions) + "\n" + string_schema
+            "extend schema\n " + "\n".join(schema_extensions) + "\n" + string_schema
         )
-    return re.sub(r"[ ]+", " ", re.sub(r"\n+", "\n", string_schema))  # noqa
+
+    return string_schema
 
 
 def get_service_query(schema: Schema):
