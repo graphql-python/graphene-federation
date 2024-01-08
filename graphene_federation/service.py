@@ -55,8 +55,8 @@ def convert_fields_for_requires(schema: Schema, fields: List[str]) -> str:
 
 DECORATORS = {
     "_external": lambda schema, fields: "@external",
-    "_requires": lambda schema, fields: f'@requires(fields: "{convert_fields(schema, fields)}")',
-    "_provides": lambda schema, fields: f'@provides(fields: "{convert_fields_for_requires(schema, fields)}")',
+    "_requires": lambda schema, fields: f'@requires(fields: "{convert_fields_for_requires(schema, fields)}")',
+    "_provides": lambda schema, fields: f'@provides(fields: "{convert_fields(schema, fields)}")',
     "_shareable": lambda schema, fields: "@shareable",
     "_inaccessible": lambda schema, fields: "@inaccessible",
     "_override": lambda schema, from_: f'@override(from: "{from_}")',
