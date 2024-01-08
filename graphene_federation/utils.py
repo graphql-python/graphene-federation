@@ -1,14 +1,13 @@
 import re
 from typing import Any, Callable, List, Tuple
 
-import graphene
-from graphene import Schema, ObjectType
+from graphene import ObjectType, Schema
 from graphene.types.definitions import GrapheneObjectType
 from graphene.types.enum import EnumOptions
 from graphene.types.scalars import ScalarOptions
 from graphene.types.union import UnionOptions
 from graphene.utils.str_converters import to_camel_case
-from graphql import parse, GraphQLScalarType, GraphQLNonNull
+from graphql import GraphQLEnumType, GraphQLNonNull, GraphQLScalarType, parse
 
 
 def field_name_to_type_attribute(schema: Schema, model: Any) -> Callable[[str], str]:
@@ -76,10 +75,21 @@ def is_valid_compound_key(type_name: str, key: str, schema: Schema):
 
                 key_nodes.append((field, field_type))
             else:
-                # If there are no sub-selections for a field, it should be a scalar
-                if not isinstance(field_type, GraphQLScalarType) and not (
-                    isinstance(field_type, GraphQLNonNull)
-                    and isinstance(field_type.of_type, GraphQLScalarType)
+                # If there are no sub-selections for a field, it should be a scalar or enum
+                if not any(
+                    [
+                        (
+                            isinstance(field_type, GraphQLScalarType)
+                            or isinstance(field_type, GraphQLEnumType)
+                        ),
+                        (
+                            isinstance(field_type, GraphQLNonNull)
+                            and (
+                                isinstance(field_type.of_type, GraphQLScalarType)
+                                or isinstance(field_type.of_type, GraphQLEnumType)
+                            )
+                        ),
+                    ]
                 ):
                     return False
 
