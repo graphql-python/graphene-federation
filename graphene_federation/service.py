@@ -6,7 +6,7 @@ from graphene.types.union import UnionOptions
 from graphql import GraphQLInterfaceType, GraphQLObjectType
 
 from .compose_directive import is_composable, compose_directive_schema_extensions
-from .external import get_external_fields
+from .external import get_external_fields, get_external_object_types
 from .inaccessible import get_inaccessible_types, get_inaccessible_fields
 from .override import get_override_fields
 from .requires import get_required_fields
@@ -134,6 +134,7 @@ def get_sdl(schema: Schema) -> str:
     entities = get_entities(schema)
     required_fields = get_required_fields(schema)
     external_fields = get_external_fields(schema)
+    external_object_types = get_external_object_types(schema)
     override_fields = get_override_fields(schema)
 
     schema_extensions = []
@@ -147,7 +148,7 @@ def get_sdl(schema: Schema) -> str:
 
         federation_spec_import = []
 
-        if extended_types:
+        if extended_types or external_object_types:
             federation_spec_import.append('"@extends"')
         if external_fields:
             federation_spec_import.append('"@external"')
@@ -244,6 +245,12 @@ def get_sdl(schema: Schema) -> str:
         string_schema = pattern.sub(repl_str, string_schema)
 
     if schema.federation_version >= 2:
+        # Add `@external` keyword to the type definition of external object types
+        for object_type_name, _ in external_object_types.items():
+            type_def = re.compile(rf"type {object_type_name} ([^{{]*)")
+            repl_str = rf"type {object_type_name} @external \1"
+            string_schema = type_def.sub(repl_str, string_schema)
+
         for type_name, type in shareable_types.items():
             # noinspection PyProtectedMember
             if isinstance(type._meta, UnionOptions):
