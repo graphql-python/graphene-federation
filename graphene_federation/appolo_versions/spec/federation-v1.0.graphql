@@ -1,0 +1,9 @@
+directive @key(fields: _FieldSet!) repeatable on OBJECT | INTERFACE
+directive @requires(fields: _FieldSet!) on FIELD_DEFINITION
+directive @provides(fields: _FieldSet!) on FIELD_DEFINITION
+directive @external on FIELD_DEFINITION
+scalar _FieldSet
+
+# this is an optional directive 
+# used in frameworks that don't natively support GraphQL extend syntax
+directive @extends on OBJECT | INTERFACE

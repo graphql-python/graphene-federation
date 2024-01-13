@@ -1,27 +1,31 @@
 from __future__ import annotations
 
-import collections.abc
-from typing import Any, Callable, Dict
+from typing import Any, Callable
+from typing import Dict, Type
 
 from graphene import Field, List, NonNull, ObjectType, Union
-from graphene.types.schema import Schema
+from graphene import Schema
 from graphene.types.schema import TypeMap
+from graphene.utils.str_converters import to_camel_case
+from graphene_directives.utils import has_non_field_attribute
 
-from .types import _Any
-from .utils import (
-    check_fields_exist_on_type,
-    field_name_to_type_attribute,
-    is_valid_compound_key,
-)
+from .appolo_versions import LATEST_VERSION, get_directive_from_name
+from .scalars import _Any
 
 
-def update(d, u):
-    for k, v in u.items():
-        if isinstance(v, collections.abc.Mapping):
-            d[k] = update(d.get(k, {}), v)
-        else:
-            d[k] = v
-    return d
+def field_name_to_type_attribute(schema: Schema, model: Any) -> Callable[[str], str]:
+    """
+    Create field name conversion method (from schema name to actual graphene_type attribute name).
+    """
+    field_names = {}
+    if schema.auto_camelcase:
+        field_names = {
+            to_camel_case(attr_name): attr_name
+            for attr_name in getattr(model._meta, "fields", [])
+        }
+    return lambda schema_field_name: field_names.get(
+        schema_field_name, schema_field_name
+    )
 
 
 def get_entities(schema: Schema) -> Dict[str, Any]:
@@ -32,25 +36,27 @@ def get_entities(schema: Schema) -> Dict[str, Any]:
     """
     type_map: TypeMap = schema.graphql_schema.type_map
     entities = {}
+    key_directive = get_directive_from_name("key", LATEST_VERSION)
+    extends_directive = get_directive_from_name("extends", LATEST_VERSION)
     for type_name, type_ in type_map.items():
         if not hasattr(type_, "graphene_type"):
             continue
-        if getattr(type_.graphene_type, "_keys", None):
-            entities[type_name] = type_.graphene_type
 
-            # Validation for compound keys
-            key_str = " ".join(type_.graphene_type._keys)
-            type_name = type_.graphene_type._meta.name
-            if "{" in key_str:  # checking for subselection to identify compound key
-                assert is_valid_compound_key(
-                    type_name, key_str, schema
-                ), f'Invalid compound key definition for type "{type_name}"'
+        graphene_type = type_.graphene_type
+        is_entity = any(
+            [
+                has_non_field_attribute(graphene_type, key_directive),
+                has_non_field_attribute(graphene_type, extends_directive),
+            ]
+        )
+        if is_entity:
+            entities[type_name] = graphene_type
     return entities
 
 
-def get_entity_cls(entities: Dict[str, Any]) -> Union:
+def get_entity_cls(entities: Dict[str, Any]) -> Type[Union]:
     """
-    Create _Entity type which is a union of all the entities types.
+    Create _Entity type which is a union of all the entity types.
     """
 
     class _Entity(Union):
@@ -136,40 +142,12 @@ def get_entity_query(schema: Schema):
                 resolver = getattr(
                     model, "_%s__resolve_reference" % model.__name__, None
                 ) or getattr(model, "_resolve_reference", None)
+
                 if resolver and not sub_field_resolution:
                     model_instance = resolver(model_instance, info)
 
                 entities.append(model_instance)
+
             return entities
 
     return EntityQuery
-
-
-def key(fields: str, resolvable: bool = True) -> Callable:
-    """
-    Take as input a field that should be used as key for that entity.
-    See specification: https://www.apollographql.com/docs/federation/federation-spec/#key
-    """
-
-    def decorator(type_):
-        # Check the provided fields actually exist on the Type.
-        if " " not in fields:
-            assert (
-                fields in type_._meta.fields
-            ), f'Field "{fields}" does not exist on type "{type_._meta.name}"'
-        if "{" not in fields:
-            # Skip valid fields check if the key is a compound key. The validation for compound keys
-            # is done on calling get_entities()
-            fields_set = set(fields.split(" "))
-            assert check_fields_exist_on_type(
-                fields=fields_set, type_=type_
-            ), f'Field "{fields}" does not exist on type "{type_._meta.name}"'
-
-        keys = getattr(type_, "_keys", [])
-        keys.append(fields)
-        setattr(type_, "_keys", keys)
-        setattr(type_, "_resolvable", resolvable)
-
-        return type_
-
-    return decorator

@@ -1,0 +1,10 @@
+type Query {
+  camel: Camel
+}
+
+type Camel  @extends {
+  auto_camel: String @external
+  forcedCamel: String @requires(fields: "auto_camel")
+  a_snake: String
+  aCamel: String
+}

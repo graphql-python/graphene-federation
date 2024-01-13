@@ -1,0 +1,23 @@
+extend schema
+	@link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@inaccessible", "@shareable"])
+
+type TestCustomEnum  @shareable {
+  testShareableScalar: Episode @shareable
+  testInaccessibleScalar: Episode @inaccessible
+}
+
+enum Episode  @inaccessible {
+  NEWHOPE @inaccessible
+  EMPIRE
+  JEDI
+}
+
+type Query {
+  test: Episode
+  test2: [TestCustomEnum]!
+  _service: _Service!
+}
+
+type _Service {
+  sdl: String
+}

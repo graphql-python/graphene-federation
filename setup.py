@@ -1,4 +1,5 @@
 import os
+
 from setuptools import find_packages, setup
 
 
@@ -35,6 +36,7 @@ setup(
     install_requires=[
         "graphene>=3.1",
         "graphql-core>=3.1",
+        "graphene-directives>=0.4.3",
     ],
     classifiers=[
         "Development Status :: 5 - Production/Stable",

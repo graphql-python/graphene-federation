@@ -1,0 +1,20 @@
+schema {
+  query: ChatQuery
+}
+
+type ChatQuery {
+  message(id: ID!): ChatMessage
+}
+
+type ChatMessage {
+  id: ID!
+  user: ChatUser
+}
+
+type ChatUser  @key(fields: "id") @extends {
+  uid: ID
+  identified: ID
+  id: ID @external
+  iD: ID
+  ID: ID
+}

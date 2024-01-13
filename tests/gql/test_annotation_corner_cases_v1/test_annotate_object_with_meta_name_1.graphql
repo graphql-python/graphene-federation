@@ -1,0 +1,22 @@
+type Query {
+  a: Banana
+  _entities(representations: [_Any!]!): [_Entity]!
+  _service: _Service!
+}
+
+type Banana  @extends {
+  id: ID @external
+  b(id: ID ): Potato
+}
+
+type Potato @key(fields: "id") {
+  id: ID
+}
+
+union _Entity = Banana | Potato
+
+scalar _Any
+
+type _Service {
+  sdl: String
+}

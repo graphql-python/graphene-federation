@@ -1,0 +1,12 @@
+type Query {
+  a: A
+}
+
+type A  @extends {
+  id: ID @external
+  b(id: ID ): B
+}
+
+type B @key(fields: "id") {
+  id: ID
+}
