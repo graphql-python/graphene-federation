@@ -28,3 +28,5 @@ scalar _Any
 type _Service {
   sdl: String
 }
+
+scalar _FieldSet

@@ -3,7 +3,7 @@ from typing import Union
 from graphene import Field, Interface, ObjectType
 from graphene_directives import Schema
 
-from .utils import build_ast, evaluate_ast, to_case
+from .utils import InternalNamespace, build_ast, evaluate_ast, to_case
 
 
 def validate_requires(
@@ -12,20 +12,17 @@ def validate_requires(
     inputs: dict,
     schema: Schema,
 ) -> bool:
-    ast_node = build_ast(
-        input_str=to_case(inputs.get("fields"), schema), valid_special_chars='_()"'
-    )
-
-    errors = []
+    errors: list[str] = []
+    ast_node = build_ast(to_case(inputs.get("fields"), schema))
     evaluate_ast(
         directive_name="requires",
         nodes=ast_node,
-        type_=parent_type.graphene_type,
-        ignore_fields=["__typename", "_Typename"],
+        type_=parent_type,
+        ignore_fields=["__typename", InternalNamespace.UNION.value],
         errors=errors,
         entity_types=schema.graphql_schema.type_map,
     )
-    if len(errors) != 0:
+    if errors:
         raise ValueError("\n".join(errors))
 
     return True

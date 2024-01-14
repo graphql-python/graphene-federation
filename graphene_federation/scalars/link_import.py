@@ -1,4 +1,3 @@
-from math import isfinite
 from typing import Any
 
 from graphql import (
@@ -9,6 +8,7 @@ from graphql import (
     print_ast,
 )
 from graphql.pyutils import inspect
+from math import isfinite
 
 
 def _serialize_string(output_value: Any) -> str:

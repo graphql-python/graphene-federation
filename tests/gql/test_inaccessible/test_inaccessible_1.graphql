@@ -1,0 +1,22 @@
+extend schema
+	@link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@inaccessible"])
+
+type Position  @inaccessible {
+  x: Int!
+  y: Int! @inaccessible
+}
+
+type Query {
+  inStockCount: Int!
+  _service: _Service!
+}
+
+type _Service {
+  sdl: String
+}
+
+scalar FieldSet
+
+scalar Scope
+
+scalar federation__Policy

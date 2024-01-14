@@ -1,0 +1,15 @@
+schema {
+  query: UserQuery
+}
+
+type UserQuery {
+  user(userId: ID!): User
+}
+
+type User @key(fields: "email") @key(fields: "userId") {
+  userId: ID!
+  email: String!
+  name: String
+}
+
+scalar _FieldSet

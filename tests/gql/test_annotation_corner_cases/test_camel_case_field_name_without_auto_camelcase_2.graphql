@@ -1,5 +1,5 @@
 extend schema
-	@link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@extends", "@external", "@requires"])
+	@link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@extends", "@external", "@requires"])
 
 type Query {
   camel: Camel
@@ -11,3 +11,9 @@ type Camel  @extends {
   a_snake: String
   aCamel: String
 }
+
+scalar FieldSet
+
+scalar Scope
+
+scalar federation__Policy

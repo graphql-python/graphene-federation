@@ -1,18 +1,36 @@
-from typing import Any, Callable
+from typing import Callable
 
 from graphene_directives import directive_decorator
 
-from ..appolo_versions import FederationVersion, LATEST_VERSION, get_directive_from_name
+from .utils import is_non_field
+from ..apollo_versions import FederationVersion, LATEST_VERSION, get_directive_from_name
 
 
 def extends(
-    non_field: Any = None,
+    graphene_type=None,
     *,
     federation_version: FederationVersion = LATEST_VERSION,
 ) -> Callable:
     directive = get_directive_from_name("extends", federation_version)
+    decorator = directive_decorator(directive)
 
-    if non_field:
-        return directive_decorator(directive)(field=None)(non_field)
+    def wrapper(field_or_type):
+        if is_non_field(field_or_type):
+            return decorator(field=None)(field_or_type)
+        raise TypeError(
+            "\n".join(
+                [
+                    f"\nInvalid Usage of {directive}.",
+                    "Must be applied on a class of ObjectType|InterfaceType",
+                    "Example:",
+                    f"{directive}",
+                    "class Product(graphene.ObjectType)",
+                    "\t...",
+                ]
+            )
+        )
 
-    return directive_decorator(directive)
+    if graphene_type:
+        return wrapper(graphene_type)
+
+    return wrapper

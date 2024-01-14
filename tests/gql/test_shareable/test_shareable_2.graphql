@@ -1,0 +1,17 @@
+extend schema
+	@link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@shareable"])
+
+type Position  @shareable {
+  x: Int!
+  y: Int! @shareable
+}
+
+type Query {
+  inStockCount: Int!
+}
+
+scalar FieldSet
+
+scalar Scope
+
+scalar federation__Policy

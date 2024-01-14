@@ -1,18 +1,20 @@
-from graphene import ObjectType, String, Int, List, NonNull, Field, Interface
+from graphene import Field, Int, Interface, List, NonNull, ObjectType, String
 
-from graphene_federation import build_schema, extend, external
+from graphene_federation import build_schema, extends, external, key
 
 
 class DecoratedText(Interface):
     color = Int(required=True)
 
 
-@extend(fields="id")
+@key(fields="id")
+@extends
 class FileNode(ObjectType):
     id = external(Int(required=True))
 
 
-@extend(fields="id")
+@key(fields="id")
+@extends
 class FunnyText(ObjectType):
     class Meta:
         interfaces = (DecoratedText,)
@@ -37,7 +39,8 @@ class FunnyTextAnother(ObjectType):
         return self.id + 2
 
 
-@extend(fields="primaryEmail")
+@key(fields="primaryEmail")
+@extends
 class User(ObjectType):
     primaryEmail = external(String())
 

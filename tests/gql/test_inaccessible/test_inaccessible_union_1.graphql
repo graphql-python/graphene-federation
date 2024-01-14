@@ -1,0 +1,34 @@
+extend schema
+	@link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@inaccessible"])
+
+union SearchResult @inaccessible = Human | Droid | Starship
+
+type Human @inaccessible {
+  name: String
+  bornIn: String
+}
+
+type Droid  @inaccessible {
+  name: String @inaccessible
+  primaryFunction: String
+}
+
+type Starship  @inaccessible {
+  name: String
+  length: Int @inaccessible
+}
+
+type Query {
+  inStockCount: Int!
+  _service: _Service!
+}
+
+type _Service {
+  sdl: String
+}
+
+scalar FieldSet
+
+scalar Scope
+
+scalar federation__Policy

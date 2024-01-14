@@ -1,31 +1,15 @@
 from __future__ import annotations
 
-from typing import Any, Callable
+from typing import Any
 from typing import Dict, Type
 
 from graphene import Field, List, NonNull, ObjectType, Union
-from graphene import Schema
 from graphene.types.schema import TypeMap
-from graphene.utils.str_converters import to_camel_case
+from graphene_directives import Schema
 from graphene_directives.utils import has_non_field_attribute
 
-from .appolo_versions import LATEST_VERSION, get_directive_from_name
+from .apollo_versions import LATEST_VERSION, get_directive_from_name
 from .scalars import _Any
-
-
-def field_name_to_type_attribute(schema: Schema, model: Any) -> Callable[[str], str]:
-    """
-    Create field name conversion method (from schema name to actual graphene_type attribute name).
-    """
-    field_names = {}
-    if schema.auto_camelcase:
-        field_names = {
-            to_camel_case(attr_name): attr_name
-            for attr_name in getattr(model._meta, "fields", [])
-        }
-    return lambda schema_field_name: field_names.get(
-        schema_field_name, schema_field_name
-    )
 
 
 def get_entities(schema: Schema) -> Dict[str, Any]:
@@ -92,7 +76,7 @@ def get_entity_query(schema: Schema):
                 model_arguments = representation.copy()
                 model_arguments.pop("__typename")
                 if schema.auto_camelcase:
-                    get_model_attr = field_name_to_type_attribute(schema, model)
+                    get_model_attr = schema.field_name_to_type_attribute(model)
                     model_arguments = {
                         get_model_attr(k): v for k, v in model_arguments.items()
                     }

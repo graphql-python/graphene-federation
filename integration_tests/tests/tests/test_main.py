@@ -1,4 +1,5 @@
 import json
+
 import requests
 
 
@@ -70,9 +71,7 @@ def test_external_types():
     assert {
         "id": 1001,
         "primaryEmail": "frank@frank.com",
-    } == posts[
-        3
-    ]["author"]
+    } == posts[3]["author"]
 
     assert articles == [
         {
@@ -127,7 +126,7 @@ def test_multiple_key_decorators_apply_multiple_key_annotations():
 
 def test_avoid_duplication_of_key_decorator():
     sdl = fetch_sdl("service_a")
-    assert 'extend type FileNode @key(fields: "id") {' in sdl
+    assert 'type FileNode  @key(fields: "id") @extends {' in sdl
 
 
 def test_requires():

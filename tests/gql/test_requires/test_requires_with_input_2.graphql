@@ -1,0 +1,18 @@
+extend schema
+	@link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@extends", "@external", "@key", "@requires"])
+
+type Query {
+  acme: Acme
+}
+
+type Acme  @key(fields: "id") @extends {
+  id: ID! @external
+  age: Int @external
+  foo(someInput: String ): String @requires(fields: "age")
+}
+
+scalar FieldSet
+
+scalar Scope
+
+scalar federation__Policy

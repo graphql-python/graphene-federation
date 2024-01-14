@@ -1,0 +1,22 @@
+extend schema
+	@link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@key"])
+
+schema {
+  query: UserQuery
+}
+
+type UserQuery {
+  user(userId: ID!): User
+}
+
+type User @key(fields: "email") @key(fields: "userId") {
+  userId: ID!
+  email: String!
+  name: String
+}
+
+scalar FieldSet
+
+scalar Scope
+
+scalar federation__Policy

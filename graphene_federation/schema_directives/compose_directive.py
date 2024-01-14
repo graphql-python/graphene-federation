@@ -1,6 +1,6 @@
 from graphene_directives import SchemaDirective
 
-from ..appolo_versions import FederationVersion, LATEST_VERSION, get_directive_from_name
+from ..apollo_versions import FederationVersion, LATEST_VERSION, get_directive_from_name
 
 
 def compose_directive(

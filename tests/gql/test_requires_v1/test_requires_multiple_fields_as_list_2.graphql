@@ -1,0 +1,12 @@
+type Query {
+  product: Product
+}
+
+type Product  @key(fields: "sku") @extends {
+  sku: ID @external
+  size: Int @external
+  weight: Int @external
+  shippingEstimate: String @requires(fields: "size weight")
+}
+
+scalar _FieldSet

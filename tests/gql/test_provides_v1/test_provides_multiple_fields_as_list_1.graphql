@@ -1,0 +1,26 @@
+type Query {
+  inStockCount: InStockCount
+  _entities(representations: [_Any!]!): [_Entity]!
+  _service: _Service!
+}
+
+type InStockCount  {
+  product: Product! @provides(fields: "name weight")
+  quantity: Int!
+}
+
+type Product  @key(fields: "sku") @extends {
+  sku: String! @external
+  name: String @external
+  weight: Int @external
+}
+
+union _Entity = Product
+
+scalar _Any
+
+type _Service {
+  sdl: String
+}
+
+scalar _FieldSet

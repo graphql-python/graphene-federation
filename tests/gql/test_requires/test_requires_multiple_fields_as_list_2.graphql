@@ -1,0 +1,19 @@
+extend schema
+	@link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@extends", "@external", "@key", "@requires"])
+
+type Query {
+  product: Product
+}
+
+type Product  @key(fields: "sku") @extends {
+  sku: ID @external
+  size: Int @external
+  weight: Int @external
+  shippingEstimate: String @requires(fields: "size weight")
+}
+
+scalar FieldSet
+
+scalar Scope
+
+scalar federation__Policy

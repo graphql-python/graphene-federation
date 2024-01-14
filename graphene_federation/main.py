@@ -10,13 +10,13 @@ from graphene_directives import (
 from graphene_directives.schema import Schema
 
 from . import FederationDirective
-from .appolo_versions import (
+from .apollo_versions import (
     FederationVersion,
     LATEST_VERSION,
     get_directive_from_name,
     get_directives_based_on_version,
 )
-from .appolo_versions.v2_1 import compose_directive as ComposeDirective
+from .apollo_versions.v2_1 import compose_directive as ComposeDirective
 from .entity import get_entity_query
 from .schema_directives import compose_directive, link_directive
 from .service import get_service_query
@@ -34,7 +34,7 @@ def _get_query(
         type_name = query_cls.__name__
         bases.append(query_cls)
     federated_query_cls = type(type_name, tuple(bases), {})
-    return federated_query_cls
+    return federated_query_cls  # noqa
 
 
 def build_schema(
@@ -43,11 +43,39 @@ def build_schema(
     subscription: Union[ObjectType, Type[ObjectType]] = None,
     types: Collection[Union[ObjectType, Type[ObjectType]]] = None,
     directives: Union[Collection[FederationDirective], None] = None,
+    include_graphql_spec_directives: bool = True,
     schema_directives: Collection[SchemaDirective] = None,
     auto_camelcase: bool = True,
-    enable_federation_2: bool = True,
+    enable_federation_2: bool = False,
     federation_version: FederationVersion = None,
 ) -> Schema:
+    """
+    Build Schema.
+
+    Args:
+        query (Type[ObjectType]): Root query *ObjectType*. Describes entry point for fields to *read*
+            data in your Schema.
+        mutation (Optional[Type[ObjectType]]): Root mutation *ObjectType*. Describes entry point for
+            fields to *create, update or delete* data in your API.
+        subscription (Optional[Type[ObjectType]]): Root subscription *ObjectType*. Describes entry point
+            for fields to receive continuous updates.
+        types (Optional[Collection[Type[ObjectType]]]): List of any types to include in schema that
+            may not be introspected through root types.
+        directives (List[GraphQLDirective], optional): List of custom directives to include in the
+            GraphQL schema.
+        auto_camelcase (bool): Fieldnames will be transformed in Schema's TypeMap from snake_case
+            to camelCase (preferred by GraphQL standard). Default True.
+        schema_directives (Collection[SchemaDirective]): Directives that can be defined at DIRECTIVE_LOCATION.SCHEMA
+            with their argument values.
+        include_graphql_spec_directives (bool): Includes directives defined by GraphQL spec (@include, @skip,
+            @deprecated, @specifiedBy)
+        enable_federation_2 (bool): Whether to enable federation 2 directives (default False)
+        federation_version (FederationVersion): Specify the version explicit (default LATEST_VERSION)
+
+        In case both enable_federation_2 and federation_version are specified, federation_version is given
+        higher priority
+    """
+
     federation_version = (
         federation_version
         if federation_version
@@ -70,6 +98,7 @@ def build_schema(
         "types": _types,
         "directives": _directives.values(),
         "auto_camelcase": auto_camelcase,
+        "include_graphql_spec_directives": include_graphql_spec_directives,
     }
 
     schema: Schema = build_directive_schema(query=query, **schema_args)

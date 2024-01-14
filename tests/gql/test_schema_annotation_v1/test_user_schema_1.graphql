@@ -1,0 +1,25 @@
+schema {
+  query: UserQuery
+}
+
+type UserQuery {
+  user(userId: ID!): User
+  _entities(representations: [_Any!]!): [_Entity]!
+  _service: _Service!
+}
+
+type User @key(fields: "email") @key(fields: "userId") {
+  userId: ID!
+  email: String!
+  name: String
+}
+
+union _Entity = User
+
+scalar _Any
+
+type _Service {
+  sdl: String
+}
+
+scalar _FieldSet

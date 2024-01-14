@@ -1,8 +1,5 @@
 from graphene import Field, ObjectType, String
 from graphene_directives.schema import Schema
-from graphql.utilities.print_schema import print_scalar
-
-from .scalars import FieldSet, _FieldSet
 
 
 def get_sdl(schema) -> str:
@@ -11,10 +8,6 @@ def get_sdl(schema) -> str:
     """
 
     string_schema = str(schema)
-    # Remove All Scalar definitions
-    for scalar in [_FieldSet, FieldSet]:
-        string_schema = string_schema.replace(print_scalar(scalar), "")
-
     return string_schema.strip()
 
 

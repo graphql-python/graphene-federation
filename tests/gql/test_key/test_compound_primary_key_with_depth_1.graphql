@@ -1,0 +1,37 @@
+extend schema
+	@link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@key"])
+
+type Query {
+  user: User
+  _entities(representations: [_Any!]!): [_Entity]!
+  _service: _Service!
+}
+
+type User @key(fields: "id organization { businessUnit { id name } }") {
+  id: ID
+  organization: Organization
+}
+
+type Organization {
+  registrationNumber: ID
+  businessUnit: BusinessUnit
+}
+
+type BusinessUnit {
+  id: ID
+  name: String
+}
+
+union _Entity = User
+
+scalar _Any
+
+type _Service {
+  sdl: String
+}
+
+scalar FieldSet
+
+scalar Scope
+
+scalar federation__Policy

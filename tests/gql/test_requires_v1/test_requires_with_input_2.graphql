@@ -1,0 +1,11 @@
+type Query {
+  acme: Acme
+}
+
+type Acme  @key(fields: "id") @extends {
+  id: ID! @external
+  age: Int @external
+  foo(someInput: String ): String @requires(fields: "age")
+}
+
+scalar _FieldSet

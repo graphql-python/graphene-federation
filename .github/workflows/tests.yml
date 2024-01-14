@@ -8,7 +8,7 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        python-version: ["3.9", "3.10"]
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
 
     steps:
     - uses: actions/checkout@v1
@@ -21,7 +21,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install -e ".[test]"
     - name: Run Unit Tests
-      run: py.test graphene_federation --cov=graphene_federation -vv
+      run: py.test tests --cov=graphene_federation -vv
     - name: Upload Coverage
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -10,3 +10,5 @@ type A  @extends {
 type B @key(fields: "id") {
   id: ID
 }
+
+scalar _FieldSet

@@ -1,39 +1,46 @@
-from typing import Any, Callable, Union
+from typing import Callable
+from typing import Union
 
 from graphene_directives import directive_decorator
 
-from ..appolo_versions import FederationVersion, LATEST_VERSION, get_directive_from_name
-from ..validators import build_ast
-
-
-def add_typename(fields: dict, level: int = 0) -> str:
-    new_fields = []
-    if level != 0:
-        new_fields.append("__typename")
-    for field, value in fields.items():
-        if "typename" in field.lower():
-            continue
-        elif len(value) == 0:
-            new_fields.append(field)
-        else:
-            new_fields.extend([field, "{", add_typename(value, level + 1), "}"])
-
-    return " ".join(new_fields)
+from .utils import is_non_field
+from ..apollo_versions import FederationVersion, LATEST_VERSION, get_directive_from_name
+from ..validators import ast_to_str, build_ast
 
 
 def requires(
-    field: Any,
+    graphene_type,
     fields: Union[str, list[str]],
+    *,
     federation_version: FederationVersion = LATEST_VERSION,
 ) -> Callable:
     directive = get_directive_from_name("requires", federation_version)
-    fields = add_typename(
+    decorator = directive_decorator(directive)
+    fields = ast_to_str(
         build_ast(
-            input_str=fields if isinstance(fields, str) else " ".join(fields),
-            valid_special_chars='_()"',
-        )
+            fields if isinstance(fields, str) else " ".join(fields),
+        ),
+        add_type_name=True,  # When resolvers receive the data, it will be type-casted as __typename info is added
     )
-    return directive_decorator(directive)(
-        field=field,
-        fields=fields,
-    )
+
+    def wrapper(field_or_type):
+        if is_non_field(field_or_type):
+            raise TypeError(
+                "\n".join(
+                    [
+                        f"\nInvalid Usage of {directive}.",
+                        "Must be applied on a field level",
+                        "Example:",
+                        "class Product(graphene.ObjectType)",
+                        "\tid = graphene.ID()",
+                        "\torders = graphene.List(Order)"
+                        '\torder_count = requires(graphene.Int(),fields="id orders { id }")',
+                    ]
+                )
+            )
+        return decorator(field=field_or_type, fields=fields)
+
+    if graphene_type:
+        return wrapper(graphene_type)
+
+    return wrapper

@@ -1,0 +1,27 @@
+extend schema
+	@link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@extends", "@external", "@key"])
+
+schema {
+  query: ChatQuery
+}
+
+type ChatQuery {
+  message(id: ID!): ChatMessage
+}
+
+type ChatMessage {
+  id: ID!
+  text: String
+  userId: ID
+  user: ChatUser!
+}
+
+type ChatUser  @key(fields: "userId") @extends {
+  userId: ID! @external
+}
+
+scalar FieldSet
+
+scalar Scope
+
+scalar federation__Policy

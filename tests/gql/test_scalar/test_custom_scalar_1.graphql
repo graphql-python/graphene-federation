@@ -1,0 +1,25 @@
+extend schema
+	@link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@inaccessible", "@shareable"])
+
+type TestScalar  @shareable {
+  testShareableScalar(x: AddressScalar): String @shareable
+  testInaccessibleScalar(x: AddressScalar): String @inaccessible
+}
+
+scalar AddressScalar
+
+type Query {
+  test(x: AddressScalar): String
+  test2: [AddressScalar]!
+  _service: _Service!
+}
+
+type _Service {
+  sdl: String
+}
+
+scalar FieldSet
+
+scalar Scope
+
+scalar federation__Policy

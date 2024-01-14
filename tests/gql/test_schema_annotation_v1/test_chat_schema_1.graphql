@@ -1,0 +1,30 @@
+schema {
+  query: ChatQuery
+}
+
+type ChatQuery {
+  message(id: ID!): ChatMessage
+  _entities(representations: [_Any!]!): [_Entity]!
+  _service: _Service!
+}
+
+type ChatMessage {
+  id: ID!
+  text: String
+  userId: ID
+  user: ChatUser!
+}
+
+type ChatUser  @key(fields: "userId") @extends {
+  userId: ID! @external
+}
+
+union _Entity = ChatUser
+
+scalar _Any
+
+type _Service {
+  sdl: String
+}
+
+scalar _FieldSet

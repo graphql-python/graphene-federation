@@ -8,3 +8,5 @@ type Camel  @extends {
   a_snake: String
   aCamel: String
 }
+
+scalar _FieldSet

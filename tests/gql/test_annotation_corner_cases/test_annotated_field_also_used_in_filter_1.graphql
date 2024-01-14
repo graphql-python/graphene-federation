@@ -1,5 +1,5 @@
 extend schema
-	@link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@extends", "@external", "@key"])
+	@link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@extends", "@external", "@key"])
 
 type Query {
   a: A
@@ -23,3 +23,9 @@ scalar _Any
 type _Service {
   sdl: String
 }
+
+scalar FieldSet
+
+scalar Scope
+
+scalar federation__Policy

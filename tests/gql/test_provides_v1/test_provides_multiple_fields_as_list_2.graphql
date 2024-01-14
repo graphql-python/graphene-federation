@@ -1,0 +1,16 @@
+type Query {
+  inStockCount: InStockCount
+}
+
+type InStockCount  {
+  product: Product! @provides(fields: "name weight")
+  quantity: Int!
+}
+
+type Product  @key(fields: "sku") @extends {
+  sku: String! @external
+  name: String @external
+  weight: Int @external
+}
+
+scalar _FieldSet

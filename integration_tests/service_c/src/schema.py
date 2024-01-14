@@ -1,9 +1,10 @@
-from graphene import ObjectType, String, Int, List, NonNull, Field
+from graphene import Field, Int, List, NonNull, ObjectType, String
 
-from graphene_federation import build_schema, extend, external, requires, key, provides
+from graphene_federation import build_schema, extends, external, key, provides, requires
 
 
-@extend(fields="id")
+@key(fields="id")
+@extends
 class User(ObjectType):
     id = external(Int(required=True))
     primary_email = external(String())
@@ -27,7 +28,6 @@ class Article(ObjectType):
         return Article(id=self.id, text=f"text_{self.id}")
 
 
-@provides
 class ArticleThatProvideAuthorAge(ObjectType):
     """
     should not contain other graphene-federation decorators to proper test test-case

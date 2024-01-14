@@ -1,15 +1,18 @@
 from graphene_directives import DirectiveLocation
 
-from .appolo_versions import FederationVersion, LATEST_VERSION
+from .apollo_versions import FederationVersion, LATEST_VERSION
 from .directives import (
+    authenticated,
     extends,
     external,
     inaccessible,
     interface_object,
     key,
     override,
+    policy,
     provides,
     requires,
+    requires_scope,
     shareable,
     tag,
 )
@@ -24,6 +27,7 @@ __all__ = [
     "build_schema",
     "FederationDirective",
     "DirectiveLocation",
+    "authenticated",
     "extends",
     "external",
     "inaccessible",
@@ -31,7 +35,9 @@ __all__ = [
     "key",
     "override",
     "provides",
+    "policy",
     "requires",
+    "requires_scope",
     "shareable",
     "tag",
     "compose_directive",

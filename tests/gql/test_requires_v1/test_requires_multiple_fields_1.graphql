@@ -1,0 +1,22 @@
+type Query {
+  product: Product
+  _entities(representations: [_Any!]!): [_Entity]!
+  _service: _Service!
+}
+
+type Product  @key(fields: "sku") @extends {
+  sku: ID @external
+  size: Int @external
+  weight: Int @external
+  shippingEstimate: String @requires(fields: "size weight")
+}
+
+union _Entity = Product
+
+scalar _Any
+
+type _Service {
+  sdl: String
+}
+
+scalar _FieldSet

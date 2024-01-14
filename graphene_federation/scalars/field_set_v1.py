@@ -1,9 +1,3 @@
-from graphql import GraphQLString
+from graphql import GraphQLScalarType
 
-# _FieldSet = GraphQLScalarType(name="_FieldSet")
-
-"""
-To avoid _FieldSet from coming into schema we are defining it as String
-"""
-
-_FieldSet = GraphQLString
+_FieldSet = GraphQLScalarType(name="_FieldSet")

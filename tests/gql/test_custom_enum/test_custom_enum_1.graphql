@@ -1,5 +1,5 @@
 extend schema
-	@link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@inaccessible", "@shareable"])
+	@link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@inaccessible", "@shareable"])
 
 type TestCustomEnum  @shareable {
   testShareableScalar: Episode @shareable
@@ -21,3 +21,9 @@ type Query {
 type _Service {
   sdl: String
 }
+
+scalar FieldSet
+
+scalar Scope
+
+scalar federation__Policy
