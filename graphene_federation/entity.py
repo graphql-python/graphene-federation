@@ -81,7 +81,8 @@ def get_entity_query(schema: Schema):
                         get_model_attr(k): v for k, v in model_arguments.items()
                     }
 
-                # convert subfields of models from dict to a corresponding graphql type
+                # convert subfields of models from dict to a corresponding graphql type,
+                # This will be useful when @requires is used
                 for model_field, value in model_arguments.items():
                     if not hasattr(model, model_field):
                         continue
@@ -89,7 +90,7 @@ def get_entity_query(schema: Schema):
                     field = getattr(model, model_field)
                     if isinstance(field, Field) and isinstance(value, dict):
                         if value.get("__typename") is None:
-                            value["__typename"] = field.type.of_type._meta.name
+                            value["__typename"] = field.type.of_type._meta.name  # noqa
                         model_arguments[model_field] = EntityQuery.resolve_entities(
                             self,
                             info,
@@ -116,7 +117,7 @@ def get_entity_query(schema: Schema):
                     ):
                         for sub_value in value:
                             if sub_value.get("__typename") is None:
-                                sub_value["__typename"] = field.of_type._meta.name
+                                sub_value["__typename"] = field.of_type._meta.name  # noqa
                         model_arguments[model_field] = EntityQuery.resolve_entities(
                             self, info, representations=value, sub_field_resolution=True
                         )

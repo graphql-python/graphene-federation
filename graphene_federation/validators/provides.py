@@ -21,8 +21,10 @@ def validate_provides(
     Used to validate the inputs and graphene_type of @provides
     """
     errors: list[str] = []
+    auto_case = InternalNamespace.NO_AUTO_CASE.value not in inputs.get("fields")
     ast_node = build_ast(
-        fields=to_case(inputs.get("fields"), schema), directive_name="@provides"
+        fields=to_case(inputs.get("fields"), schema, auto_case),
+        directive_name="@provides",
     )
 
     # Get the parent type of the field
@@ -41,7 +43,10 @@ def validate_provides(
         directive_name="@provides",
         ast=ast_node,
         graphene_type=field_parent_type,
-        ignore_fields=[InternalNamespace.UNION.value],
+        ignore_fields=[
+            InternalNamespace.UNION.value,
+            InternalNamespace.NO_AUTO_CASE.value,
+        ],
         errors=errors,
         entity_types=schema.graphql_schema.type_map,
     )

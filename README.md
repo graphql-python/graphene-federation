@@ -172,9 +172,59 @@ There is also a cool [example](https://github.com/preply/graphene-federation/iss
 
 ------------------------
 
-## Known issues
+## Custom field name
 
-1. decorators will not work properly on fields with custom names for example `some_field = String(name='another_name')`
+When using decorator on a field with custom name
+
+1. Case 1 (auto_camelcase=False)
+
+```python
+@key("identifier")
+@key("validEmail")
+class User(ObjectType):
+    identifier = ID()
+    email = String(name="validEmail")
+
+class Query(ObjectType):
+    user = Field(User)
+
+schema = build_schema(query=Query, enable_federation_2=True, auto_camelcase=False) # Disable auto_camelcase
+```
+
+This works correctly.
+By default `fields` of `@key`,`@requires` and `@provides` are not converted to camel case if `auto_camelcase` is set to `False`
+
+2. Case 2 (auto_camelcase=True)
+```python
+@key("identifier")
+@key("valid_email")
+class User(ObjectType):
+    identifier = ID()
+    email = String(name="valid_email")
+
+class Query(ObjectType):
+    user = Field(User)
+
+schema = build_schema(query=Query, enable_federation_2=True) # auto_camelcase Enabled
+```
+
+This will raise an error `@key, field "validEmail" does not exist on type "User"`. 
+Because The decorator auto camel-cased the `field` value of key, as schema has `auto_camelcase=True` (default)
+
+To fix this, pass `auto_case=False` in the `@key`, `@requires` or `@provides` argument
+
+```python
+@key("identifier")
+@key("valid_email", auto_case=False)
+class User(ObjectType):
+    identifier = ID()
+    email = String(name="valid_email")
+
+class Query(ObjectType):
+    user = Field(User)
+
+schema = build_schema(query=Query, enable_federation_2=True) # auto_camelcase=True
+```
 
 ------------------------
 

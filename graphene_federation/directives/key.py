@@ -7,7 +7,7 @@ from graphene_federation.apollo_versions import (
     LATEST_VERSION,
     get_directive_from_name,
 )
-from graphene_federation.validators import ast_to_str, build_ast
+from graphene_federation.validators import InternalNamespace, ast_to_str, build_ast
 from .utils import is_non_field
 
 
@@ -15,6 +15,7 @@ def key(
     fields: Union[str, list[str]],
     resolvable: bool = None,
     *,
+    auto_case: bool = True,
     federation_version: FederationVersion = LATEST_VERSION,
 ) -> Any:
     """
@@ -34,11 +35,16 @@ def key(
         )
     )
 
+    if not auto_case:
+        fields = f"{InternalNamespace.NO_AUTO_CASE.value} {fields}"
+
     def wrapper(field_or_type):
         if is_non_field(field_or_type):
-            return decorator(field=None, fields=fields, resolvable=resolvable)(
-                field_or_type
-            )
+            return decorator(
+                field=None,
+                fields=fields,
+                resolvable=resolvable,
+            )(field_or_type)
         raise TypeError(
             "\n".join(
                 [

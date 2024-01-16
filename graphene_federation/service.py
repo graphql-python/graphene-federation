@@ -12,6 +12,9 @@ def get_sdl(schema) -> str:
 
 
 def get_service_query(schema: Schema):
+    """
+    Gets the Service Query for federation
+    """
     sdl_str = get_sdl(schema)
 
     class _Service(ObjectType):

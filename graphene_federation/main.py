@@ -22,9 +22,12 @@ from .schema_directives import compose_directive, link_directive
 from .service import get_service_query
 
 
-def _get_query(
+def _get_federation_query(
     schema: Schema, query_cls: Optional[ObjectType] = None
 ) -> Type[ObjectType]:
+    """
+    Add Federation required _service and _entities to Query(ObjectType)
+    """
     type_name = "Query"
     bases = [get_service_query(schema)]
     entity_cls = get_entity_query(schema)
@@ -35,6 +38,26 @@ def _get_query(
         bases.append(query_cls)
     federated_query_cls = type(type_name, tuple(bases), {})
     return federated_query_cls  # noqa
+
+
+def _add_sharable_to_page_info_type(
+    schema: Schema,
+    federation_version: FederationVersion,
+    types: list[ObjectType | Type[ObjectType]],
+):
+    """
+    Add @sharable directive to PageInfo type
+    """
+    if PageInfo.__name__ in schema.graphql_schema.type_map:
+        try:
+            # PageInfo needs @sharable directive
+            sharable = get_directive_from_name("shareable", federation_version)
+            types.append(
+                directive_decorator(target_directive=sharable)(field=None)(PageInfo)
+            )
+        except ValueError:
+            # Federation Version does not support @sharable
+            pass
 
 
 def build_schema(
@@ -76,6 +99,8 @@ def build_schema(
         higher priority
     """
 
+    # In case both enable_federation_2 and federation_version are specified,
+    # federation_version is given higher priority
     federation_version = (
         federation_version
         if federation_version
@@ -89,7 +114,7 @@ def build_schema(
 
     _directives = get_directives_based_on_version(federation_version)
     federation_directives = set(_directives.keys())
-    if directives is not None:
+    if directives is not None:  # Add custom directives
         _directives.update({directive.name: directive for directive in directives})
 
     schema_args = {
@@ -103,17 +128,9 @@ def build_schema(
 
     schema: Schema = build_directive_schema(query=query, **schema_args)
 
-    if "PageInfo" in schema.graphql_schema.type_map:
-        # PageInfo needs @sharable directive
-        try:
-            sharable = get_directive_from_name("shareable", federation_version)
-
-            _types.append(
-                directive_decorator(target_directive=sharable)(field=None)(PageInfo)
-            )
-        except ValueError:
-            # Federation Version does not support @sharable
-            pass
+    _add_sharable_to_page_info_type(
+        schema=schema, federation_version=federation_version, types=_types
+    )
 
     _schema_directives = []
     directives_used = schema.get_directives_used()
@@ -123,6 +140,7 @@ def build_schema(
                 f"Schema Directives & Directives are not supported on {federation_version=}. Use >=2.0 "
             )
 
+        # Check if @ComposeDirective needs to be added to schema
         if (
             any(
                 schema_directive.target_directive == ComposeDirective
@@ -146,6 +164,7 @@ def build_schema(
                 )
             )
 
+    # Add @link directive for Custom Directives provided
     if directives:
         url__imports: dict[str, list[str]] = {}
         for directive in directives:
@@ -162,9 +181,11 @@ def build_schema(
             else:
                 url__imports[directive.spec_url] = [str(directive)]
 
+        # Add @link schema directives
         for spec, imports in url__imports.items():
             _schema_directives.append(link_directive(url=spec, import_=sorted(imports)))
 
+        # Add @ComposeDirective to schema directives
         for directive in directives:
             if not directive.add_to_schema_directives:
                 continue
@@ -174,5 +195,12 @@ def build_schema(
         _schema_directives.extend(list(schema_directives))
 
     schema_args["schema_directives"] = _schema_directives if enable_federation_2 else []
+
+    # Call it again to rebuild the schema using the schema directives
     schema = build_directive_schema(query=query, **schema_args)
-    return build_directive_schema(query=_get_query(schema, schema.query), **schema_args)
+
+    # Add Federation required _service and _entities to Query
+    return build_directive_schema(
+        query=_get_federation_query(schema, schema.query),
+        **schema_args,
+    )

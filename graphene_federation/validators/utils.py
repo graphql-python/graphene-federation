@@ -35,6 +35,7 @@ is internally represented as
 class InternalNamespace(Enum):
     UNION = "__union__"
     ARG = "__arg__"
+    NO_AUTO_CASE = "__no_auto_case__"
 
 
 def check_fields_exist_on_type(
@@ -356,7 +357,7 @@ For Schema Field Casing Parsing
 """
 
 
-def to_case(fields: Union[str, None], schema: Schema) -> str:
+def to_case(fields: Union[str, None], schema: Schema, auto_case: bool = True) -> str:
     """
     Converts field str to correct casing according to the schema.auto_camelcase value
     """
@@ -365,7 +366,7 @@ def to_case(fields: Union[str, None], schema: Schema) -> str:
 
     skip_next = False
 
-    if schema.auto_camelcase:
+    if schema.auto_camelcase and auto_case:
         data_fields = []
         for field in fields.split():
             if field == InternalNamespace.UNION.value:

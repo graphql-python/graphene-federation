@@ -12,16 +12,31 @@ class FederationDirective(GraphQLDirective):
     def __init__(
         self,
         name: str,
-        spec_url: str,
         locations: Collection[DirectiveLocation],
         args: Optional[Dict[str, GraphQLArgument]] = None,
         is_repeatable: bool = False,
         description: Optional[str] = None,
         extensions: Optional[Dict[str, Any]] = None,
         ast_node: Optional[DirectiveDefinitionNode] = None,
+        spec_url: str = None,
         add_to_schema_directives: bool = True,
     ) -> None:
-        assert spec_url is not None, "FederationDirective requires spec_url"
+        """
+        Creates a Federation Supported GraphQLDirective
+
+        :param name: (GraphQLDirective param)
+        :param args: (GraphQLDirective param)
+        :param is_repeatable: (GraphQLDirective param)
+        :param description: (GraphQLDirective param)
+        :param extensions: (GraphQLDirective param)
+        :param ast_node: (GraphQLDirective param)
+
+        :param spec_url: url of the directive to be set in url of @link
+        :param add_to_schema_directives: Adds schema_directives @composeDirective and @link to schema automatically
+        """
+        if add_to_schema_directives:
+            assert spec_url is not None, "FederationDirective requires spec_url"
+
         self.spec_url = spec_url
         self.add_to_schema_directives = add_to_schema_directives
 

@@ -12,10 +12,12 @@ def field_set_case_transform(inputs: dict, schema: Schema) -> dict:
         __arg__ for representing (arg1: value1, arg2: value2)
     """
     fields = inputs.get("fields")
+    auto_case = InternalNamespace.NO_AUTO_CASE.value not in inputs.get("fields")
     if fields:
         inputs["fields"] = (
-            to_case(fields, schema)
+            to_case(fields, schema, auto_case)
             .replace(InternalNamespace.UNION.value, "... on")
             .replace(InternalNamespace.ARG.value, "")
+            .replace(InternalNamespace.NO_AUTO_CASE.value, "")
         )
     return inputs
