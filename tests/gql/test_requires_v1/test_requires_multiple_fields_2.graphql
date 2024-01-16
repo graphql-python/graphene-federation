@@ -9,4 +9,7 @@ type Product  @key(fields: "sku") @extends {
   shippingEstimate: String @requires(fields: "size weight")
 }
 
+"""
+A string-serialized scalar represents a set of fields that's passed to a federated directive, such as @key, @requires, or @provides
+"""
 scalar _FieldSet

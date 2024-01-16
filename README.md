@@ -83,7 +83,7 @@ directive @authenticated on
   | INTERFACE
   | SCALAR
   | ENUM
-directive @requiresScopes(scopes: [[Scope!]!]!) on
+directive @requiresScopes(scopes: [[federation__Scope!]!]!) on
     FIELD_DEFINITION
   | OBJECT
   | INTERFACE
@@ -96,7 +96,7 @@ directive @policy(policies: [[federation__Policy!]!]!) on
   | SCALAR
   | ENUM
 scalar federation__Policy
-scalar Scope
+scalar federation__Scope
 scalar FieldSet
 
 ```

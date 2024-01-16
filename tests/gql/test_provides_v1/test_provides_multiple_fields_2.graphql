@@ -13,4 +13,7 @@ type Product  @key(fields: "sku") {
   weight: Int @external
 }
 
+"""
+A string-serialized scalar represents a set of fields that's passed to a federated directive, such as @key, @requires, or @provides
+"""
 scalar _FieldSet

@@ -11,8 +11,13 @@ type Acme  @key(fields: "id") @extends {
   foo(someInput: String ): String @requires(fields: "age")
 }
 
+"""
+A string-serialized scalar represents a set of fields that's passed to a federated directive, such as @key, @requires, or @provides
+"""
 scalar FieldSet
 
-scalar Scope
+"""This string-serialized scalar represents a JWT scope"""
+scalar federation__Scope
 
+"""This string-serialized scalar represents an authorization policy."""
 scalar federation__Policy

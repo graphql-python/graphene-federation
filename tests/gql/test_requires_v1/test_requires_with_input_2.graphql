@@ -8,4 +8,7 @@ type Acme  @key(fields: "id") @extends {
   foo(someInput: String ): String @requires(fields: "age")
 }
 
+"""
+A string-serialized scalar represents a set of fields that's passed to a federated directive, such as @key, @requires, or @provides
+"""
 scalar _FieldSet

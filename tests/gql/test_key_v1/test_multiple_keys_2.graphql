@@ -7,4 +7,7 @@ type User @key(fields: "email") @key(fields: "identifier") {
   email: String
 }
 
+"""
+A string-serialized scalar represents a set of fields that's passed to a federated directive, such as @key, @requires, or @provides
+"""
 scalar _FieldSet

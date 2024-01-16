@@ -49,10 +49,14 @@ def _parse_string_literal(value_node: ValueNode, _variables: Any = None) -> str:
     return value_node.value
 
 
-# Reference: https://www.apollographql.com/docs/federation/subgraph-spec/
-
 link_import = GraphQLScalarType(
     name="link__Import",
+    description=" ".join(
+        (
+            "A string serialized scalar specify which directives from an external federation specification",
+            "should be imported into the current schema when using @link",
+        )
+    ),
     serialize=_serialize_string,
     parse_value=_coerce_string,
     parse_literal=_parse_string_literal,

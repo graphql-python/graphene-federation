@@ -35,11 +35,11 @@ directive @authenticated on
   | INTERFACE
   | SCALAR
   | ENUM
-directive @requiresScopes(scopes: [[Scope!]!]!) on
+directive @requiresScopes(scopes: [[federation__Scope!]!]!) on
     FIELD_DEFINITION
   | OBJECT
   | INTERFACE
   | SCALAR
   | ENUM
-scalar Scope
+scalar federation__Scope
 scalar FieldSet

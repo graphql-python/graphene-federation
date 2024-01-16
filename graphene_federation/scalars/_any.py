@@ -5,7 +5,7 @@ from graphene import Scalar, String
 class _Any(Scalar):
     name = "_Any"
     __typename = String(required=True)
-    description = None
+    description = "A JSON serialized used for entity representations"
     specified_by_url = None
 
     @staticmethod

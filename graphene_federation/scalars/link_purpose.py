@@ -4,6 +4,7 @@ from graphql import GraphQLEnumType, GraphQLEnumValue
 
 link_purpose = GraphQLEnumType(
     name="link__Purpose",
+    description="An Enum to clarify the type of directives (security, execution) in the specification",
     values={
         "SECURITY": GraphQLEnumValue(
             value="SECURITY",
