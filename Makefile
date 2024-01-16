@@ -15,7 +15,7 @@ integration-tests: ## Run integration tests
 # -------------------------
 
 dev-setup: ## Install development dependencies
-	docker-compose up -d && docker-compose exec graphene_federation pip install -e ".[dev]"
+	docker-compose up --build -d
 .PHONY: dev-setup
 
 tests: ## Run unit tests
