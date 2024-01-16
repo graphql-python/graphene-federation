@@ -432,6 +432,10 @@ schema = build_schema(query=Query, enable_federation_2=True) # auto_camelcase=Tr
 
 ------------------------
 
+## Known Issues
+
+- Using `@composeDirective` with `@link` in Federation `v2.6` shows error in rover, rover cli only supports upto `v2.5` as of 16/01/2024
+
 ## Contributing
 
 * You can run the unit tests by doing: `make tests`.
