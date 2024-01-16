@@ -2,7 +2,7 @@ from graphene_directives import CustomDirective, DirectiveLocation
 from graphql import GraphQLArgument, GraphQLDirective, GraphQLList, GraphQLNonNull
 
 from .v2_5 import get_directives as get_directives_v2_5
-from ..scalars import FederationPolicy
+from graphene_federation.scalars import FederationPolicy
 
 policy_directive = CustomDirective(
     name="policy",

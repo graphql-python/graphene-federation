@@ -1,6 +1,10 @@
 from graphene_directives import SchemaDirective
 
-from ..apollo_versions import FederationVersion, LATEST_VERSION, get_directive_from_name
+from graphene_federation.apollo_versions import (
+    FederationVersion,
+    LATEST_VERSION,
+    get_directive_from_name,
+)
 
 
 def compose_directive(

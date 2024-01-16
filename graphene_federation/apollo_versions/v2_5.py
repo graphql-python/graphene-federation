@@ -2,7 +2,7 @@ from graphene_directives import CustomDirective, DirectiveLocation
 from graphql import GraphQLArgument, GraphQLDirective, GraphQLList, GraphQLNonNull
 
 from .v2_4 import get_directives as get_directives_v2_4
-from ..scalars import Scope
+from graphene_federation.scalars import Scope
 
 authenticated_directive = CustomDirective(
     name="authenticated",

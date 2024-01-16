@@ -2,12 +2,12 @@ from typing import Callable
 
 from graphene_directives import directive_decorator
 
-from .utils import is_non_field
-from ..apollo_versions import (
+from graphene_federation.apollo_versions import (
     FederationVersion,
     LATEST_VERSION,
     get_directive_from_name,
 )
+from .utils import is_non_field
 
 
 def authenticated(

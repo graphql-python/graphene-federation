@@ -1,6 +1,6 @@
 from graphene_directives import Schema
 
-from ..validators import InternalNamespace, to_case
+from graphene_federation.validators import InternalNamespace, to_case
 
 
 def field_set_case_transform(inputs: dict, schema: Schema) -> dict:

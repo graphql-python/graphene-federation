@@ -4,8 +4,12 @@ from typing import Union
 from graphene_directives import directive_decorator
 
 from .utils import is_non_field
-from ..apollo_versions import FederationVersion, LATEST_VERSION, get_directive_from_name
-from ..validators import ast_to_str, build_ast
+from graphene_federation.apollo_versions import (
+    FederationVersion,
+    LATEST_VERSION,
+    get_directive_from_name,
+)
+from graphene_federation.validators import ast_to_str, build_ast
 
 
 def requires(

@@ -8,7 +8,7 @@ from graphql import (
     GraphQLString,
 )
 
-from ..scalars import link_import, link_purpose
+from graphene_federation.scalars import link_import, link_purpose
 
 _link_directive = CustomDirective(
     name="link",

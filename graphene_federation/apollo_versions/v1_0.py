@@ -1,9 +1,9 @@
 from graphene_directives import CustomDirective, DirectiveLocation
 from graphql import GraphQLArgument, GraphQLDirective, GraphQLNonNull
 
-from ..scalars import _FieldSet
-from ..transform import field_set_case_transform
-from ..validators import validate_key, validate_requires
+from graphene_federation.scalars import _FieldSet
+from graphene_federation.transform import field_set_case_transform
+from graphene_federation.validators import validate_key, validate_requires
 
 key_directive = CustomDirective(
     name="key",
