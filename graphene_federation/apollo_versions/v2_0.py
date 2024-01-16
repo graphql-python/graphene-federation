@@ -7,10 +7,14 @@ from graphql import (
     GraphQLString,
 )
 
-from .v1_0 import extends_directive
 from graphene_federation.scalars import FieldSet
 from graphene_federation.transform import field_set_case_transform
-from graphene_federation.validators import validate_key, validate_requires
+from graphene_federation.validators import (
+    validate_key,
+    validate_provides,
+    validate_requires,
+)
+from .v1_0 import extends_directive
 
 key_directive = CustomDirective(
     name="key",
@@ -20,7 +24,7 @@ key_directive = CustomDirective(
     ],
     args={
         "fields": GraphQLArgument(GraphQLNonNull(FieldSet)),
-        # Changed
+        # Changed from v1.0
         "resolvable": GraphQLArgument(GraphQLBoolean, default_value=True),
     },
     description="Federation @key directive",
@@ -35,7 +39,9 @@ requires_directive = CustomDirective(
     locations=[
         DirectiveLocation.FIELD_DEFINITION,
     ],
-    args={"fields": GraphQLArgument(GraphQLNonNull(FieldSet))},
+    args={
+        "fields": GraphQLArgument(GraphQLNonNull(FieldSet))
+    },  # Changed _FieldSet -> FieldSet
     description="Federation @requires directive",
     add_definition_to_schema=False,
     field_validator=validate_requires,
@@ -48,9 +54,12 @@ provides_directive = CustomDirective(
     locations=[
         DirectiveLocation.FIELD_DEFINITION,
     ],
-    args={"fields": GraphQLArgument(GraphQLNonNull(FieldSet))},
+    args={
+        "fields": GraphQLArgument(GraphQLNonNull(FieldSet))
+    },  # Changed _FieldSet -> FieldSet
     description="Federation @provides directive",
     add_definition_to_schema=False,
+    field_validator=validate_provides,
     input_transform=field_set_case_transform,
 )
 
@@ -58,7 +67,7 @@ provides_directive = CustomDirective(
 external_directive = CustomDirective(
     name="external",
     locations=[
-        DirectiveLocation.OBJECT,
+        DirectiveLocation.OBJECT,  # Changed from v1.0
         DirectiveLocation.FIELD_DEFINITION,
     ],
     description="Federation @external directive",
@@ -135,7 +144,7 @@ def get_directives() -> dict[str, GraphQLDirective]:
             provides_directive,
             external_directive,
             shareable_directive,
-            extends_directive,
+            extends_directive,  # From v1.0
             override_directive,
             inaccessible_directive,
             tag_directive,

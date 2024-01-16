@@ -2,12 +2,12 @@ from typing import Callable
 
 from graphene_directives import directive_decorator
 
-from .utils import is_non_field
 from graphene_federation.apollo_versions import (
     FederationVersion,
     LATEST_VERSION,
     get_directive_from_name,
 )
+from .utils import is_non_field
 
 
 def override(
@@ -16,6 +16,12 @@ def override(
     *,
     federation_version: FederationVersion = LATEST_VERSION,
 ) -> Callable:
+    """
+    Indicates that an object field is now resolved by this subgraph instead of another subgraph where it's also defined.
+    This enables you to migrate a field from one subgraph to another.
+
+    Reference: https://www.apollographql.com/docs/federation/federated-types/federated-directives/#override
+    """
     directive = get_directive_from_name(
         "override", federation_version=federation_version
     )

@@ -12,7 +12,7 @@ shareable_directive = CustomDirective(
     ],
     description="Federation @shareable directive",
     add_definition_to_schema=False,
-    is_repeatable=True,  # Changed
+    is_repeatable=True,  # Changed from v2.1
 )
 
 

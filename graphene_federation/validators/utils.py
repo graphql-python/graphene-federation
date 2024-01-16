@@ -19,6 +19,18 @@ from graphql import (
     GraphQLType,
 )
 
+"""
+@requires, @key, @provides 's field is represented internally in a different way
+
+A field definition
+
+"id currency(curreny_value: usd) products{ ... on Bag { id } ... on Cloth { id } }"
+
+is internally represented as
+
+"id currency __arg__(curreny_value: usd) products{ __union__ Bag { id } __union__ Cloth { id } }"
+"""
+
 
 class InternalNamespace(Enum):
     UNION = "__union__"
@@ -27,40 +39,54 @@ class InternalNamespace(Enum):
 
 def check_fields_exist_on_type(
     field: str,
-    type_: Union[ObjectType, Interface, Field, NonNull],
+    graphene_type: Union[ObjectType, Interface, Field, NonNull],
     ignore_fields: list[str],
     entity_types: dict[str, ObjectType],
 ) -> Union[GraphQLType, GraphQLField, bool]:
+    """
+    Checks if the given field exists on the graphene_type
+
+    :param field: field that needs to be checked for existence
+    :param graphene_type: Union[ObjectType, Interface, Field, NonNull]
+    :param ignore_fields: fields that can be ignored for checking example __typename
+    :param entity_types: A dictionary of [entity_name, graphene_type]
+    """
     if field in ignore_fields or field.startswith(
-        "__arg__"  # todo handle argument validations
+        "__arg__"  # todo handle argument type validations
     ):
         return True
 
-    if isinstance(type_, GraphQLField):
+    if isinstance(graphene_type, GraphQLField):
         return check_fields_exist_on_type(
             field,
-            type_.type,  # noqa
+            graphene_type.type,  # noqa
             ignore_fields,
             entity_types,
         )
-    if isinstance(type_, GraphQLNonNull):
+    if isinstance(graphene_type, GraphQLNonNull):
         return check_fields_exist_on_type(
-            field, type_.of_type, ignore_fields, entity_types
+            field, graphene_type.of_type, ignore_fields, entity_types
         )
-    if isinstance(type_, GrapheneObjectType):
-        if field in type_.fields:
-            return type_.fields[field]
-    if isinstance(type_, GraphQLList):
+    if isinstance(graphene_type, GrapheneObjectType):
+        if field in graphene_type.fields:
+            return graphene_type.fields[field]
+    if isinstance(graphene_type, GraphQLList):
         return check_fields_exist_on_type(
-            field, type_.of_type, ignore_fields, entity_types
+            field, graphene_type.of_type, ignore_fields, entity_types
         )
-    if isinstance(type_, GrapheneUnionType):
-        for union_type in type_.types:
+    if isinstance(graphene_type, GrapheneUnionType):
+        for union_type in graphene_type.types:
             if union_type.name.lower() == field.lower():
                 return union_type
     try:
-        if issubclass(type_, ObjectType) or issubclass(type_, Interface):  # noqa
-            entity_fields = entity_types.get(type_._meta.name)  # noqa
+        if issubclass(
+            graphene_type,  # noqa
+            ObjectType,
+        ) or issubclass(
+            graphene_type,  # noqa
+            Interface,
+        ):
+            entity_fields = entity_types.get(graphene_type._meta.name)  # noqa
             if entity_fields is not None:
                 entity_fields = entity_fields.fields  # noqa
                 if field in entity_fields:
@@ -72,7 +98,7 @@ def check_fields_exist_on_type(
 
 
 def get_type_for_field(
-    type_,
+    graphene_field,
 ) -> tuple[
     Union[
         GrapheneObjectType,
@@ -84,45 +110,53 @@ def get_type_for_field(
     bool,
 ]:
     """
-    Returns the type,is_selectable
-    """
-    if isinstance(type_, GraphQLField):
-        return get_type_for_field(type_.type)
-    if isinstance(type_, GraphQLNonNull):
-        return get_type_for_field(type_.of_type)
-    if isinstance(type_, GraphQLList):
-        return get_type_for_field(type_.of_type)
-    if (
-        isinstance(type_, GrapheneObjectType)
-        or isinstance(type_, GrapheneInterfaceType)
-        or isinstance(type_, GrapheneUnionType)
-    ):
-        return type_, True
-    if isinstance(type_, GraphQLScalarType) or isinstance(type_, GrapheneEnumType):
-        return type_, False
+    Finds the base type for a given graphene_field
 
-    raise NotImplementedError("get_type_for_field", type_)
+    Returns the graphene_field_type, is_selectable (indicates whether the type has sub selections)
+    """
+    if isinstance(graphene_field, GraphQLField):
+        return get_type_for_field(graphene_field.type)
+    if isinstance(graphene_field, GraphQLNonNull):
+        return get_type_for_field(graphene_field.of_type)
+    if isinstance(graphene_field, GraphQLList):
+        return get_type_for_field(graphene_field.of_type)
+    if (
+        isinstance(graphene_field, GrapheneObjectType)
+        or isinstance(graphene_field, GrapheneInterfaceType)
+        or isinstance(graphene_field, GrapheneUnionType)
+    ):
+        return graphene_field, True
+    if isinstance(graphene_field, GraphQLScalarType) or isinstance(
+        graphene_field, GrapheneEnumType
+    ):
+        return graphene_field, False
+
+    raise NotImplementedError("get_type_for_field", graphene_field)
 
 
 """"
 AST FUNCTIONS 
 
-For FieldSet Parsing
+For @key, @provides, @requires FieldSet Parsing
 """
 
 
-def _tokenize(input_string):
-    input_string = input_string.strip()
+def _tokenize_field_set(fields: str, directive_name: str) -> list[str]:
+    """
+    Splits the fields string to tokens
+    """
+
+    fields = fields.strip()
     tokens = []
     current_token = ""
     open_braces_count = 0
 
-    if input_string.startswith("{"):
-        raise ValueError("@requires cannot start with {")
+    if fields.startswith("{"):
+        raise ValueError(f"{directive_name} cannot start with " + "{")
 
     index = 0
-    while index < len(input_string):
-        char = input_string[index]
+    while index < len(fields):
+        char = fields[index]
         if char.isalnum():
             current_token += char
         elif char == "{":
@@ -148,8 +182,8 @@ def _tokenize(input_string):
             current_token = f"{char}"
             index += 1
             mismatched_parenthesis = True
-            while index < len(input_string):
-                char = input_string[index]
+            while index < len(fields):
+                char = fields[index]
                 if char.isalnum() or char == ",":
                     current_token += char
                 elif char.isspace():
@@ -167,15 +201,15 @@ def _tokenize(input_string):
                     break
                 else:
                     ValueError(
-                        f"@requires({input_string}) has unknown character {char} at argument {current_token}"
+                        f"{directive_name}({fields}) has unknown character {char} at argument {current_token}"
                     )
                 index += 1
             if mismatched_parenthesis:
                 raise ValueError(
-                    f"@requires({input_string}) has mismatched parenthesis"
+                    f"{directive_name}({fields}) has mismatched parenthesis"
                 )
         elif char == ")":
-            raise ValueError(f"@requires({input_string}) has mismatched parenthesis")
+            raise ValueError(f"{directive_name}({fields}) has mismatched parenthesis")
         elif char.isspace():
             if current_token == "on":
                 tokens.append("__union__")
@@ -193,23 +227,28 @@ def _tokenize(input_string):
         tokens.append(current_token)
 
     if open_braces_count != 0:
-        raise ValueError(f"@requires({input_string}) has mismatched brackets")
+        raise ValueError(f"{directive_name}({fields}) has mismatched brackets")
 
     return tokens
 
 
 def evaluate_ast(
     directive_name: str,
-    nodes: dict,
-    type_: ObjectType,
+    ast: dict,
+    graphene_type: ObjectType,
     ignore_fields: list[str],
     errors: list[str],
     entity_types: dict[str, ObjectType],
 ) -> None:
-    for field_name, value in nodes.items():
+    """
+    Checks if the given AST is valid for the graphene_type
+
+    It recursively checks if the fields at a node exist on the graphene_type
+    """
+    for field_name, value in ast.items():
         field_type = check_fields_exist_on_type(
             field_name,
-            type_,
+            graphene_type,
             ignore_fields,
             entity_types,
         )
@@ -217,7 +256,7 @@ def evaluate_ast(
 
         if not field_type:
             errors.append(
-                f'@{directive_name}, field "{field_name}" does not exist on type "{type_}"'
+                f'{directive_name}, field "{field_name}" does not exist on type "{graphene_type}"'
             )
             continue
 
@@ -232,13 +271,13 @@ def evaluate_ast(
 
         if is_selectable and not has_selections:
             errors.append(
-                f'@{directive_name}, type {type_}, field "{field_name}" needs sub selections.'
+                f'{directive_name}, type {graphene_type}, field "{field_name}" needs sub selections.'
             )
             continue
 
         if not is_selectable and has_selections:
             errors.append(
-                f'@{directive_name}, type {type_}, field "{field_name}" cannot have sub selections.'
+                f'{directive_name}, type {graphene_type}, field "{field_name}" cannot have sub selections.'
             )
             continue
 
@@ -253,8 +292,14 @@ def evaluate_ast(
             )
 
 
-def build_ast(input_str: str) -> dict:
-    cleaned_fields = _tokenize(input_str)
+def build_ast(fields: str, directive_name: str) -> dict:
+    """
+    Converts the fields string to an AST tree
+
+    :param fields: string fields
+    :param directive_name: name of the directive
+    """
+    cleaned_fields = _tokenize_field_set(fields, directive_name)
 
     parent: dict[str, dict] = {}
     field_stack: list[str] = []
@@ -271,6 +316,14 @@ def build_ast(input_str: str) -> dict:
 
 
 def ast_to_str(fields: dict, add_type_name: bool = False, level: int = 0) -> str:
+    """
+    Converts the AST of fields to the original string
+
+    :param fields: AST of fields
+    :param add_type_name: adds __typename to sub ast nodes (for @requires)
+    :param level: for internal use only
+    """
+
     new_fields = []
     union_type = False
     if level != 0 and add_type_name:
@@ -304,6 +357,9 @@ For Schema Field Casing Parsing
 
 
 def to_case(fields: Union[str, None], schema: Schema) -> str:
+    """
+    Converts field str to correct casing according to the schema.auto_camelcase value
+    """
     if not fields:
         return ""
 

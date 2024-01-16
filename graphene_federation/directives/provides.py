@@ -3,13 +3,13 @@ from typing import Union
 
 from graphene_directives import directive_decorator
 
-from .utils import is_non_field
 from graphene_federation.apollo_versions import (
     FederationVersion,
     LATEST_VERSION,
     get_directive_from_name,
 )
 from graphene_federation.validators import ast_to_str, build_ast
+from .utils import is_non_field
 
 
 def provides(
@@ -18,13 +18,23 @@ def provides(
     *,
     federation_version: FederationVersion = LATEST_VERSION,
 ) -> Callable:
+    """
+    Specifies a set of entity fields that a subgraph can resolve, but only at a particular schema path
+    (at other paths, the subgraph can't resolve those fields).
+
+    If a subgraph can always resolve a particular entity field, do not apply this directive.
+
+    Reference: https://www.apollographql.com/docs/federation/federated-types/federated-directives/#provides
+    """
+
     directive = get_directive_from_name(
         "provides", federation_version=federation_version
     )
     decorator = directive_decorator(directive)
     fields = ast_to_str(
         build_ast(
-            fields if isinstance(fields, str) else " ".join(fields),
+            fields=fields if isinstance(fields, str) else " ".join(fields),
+            directive_name=str(directive),
         )
     )
 

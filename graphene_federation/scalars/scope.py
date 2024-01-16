@@ -39,6 +39,7 @@ def _parse_string_literal(value_node: ValueNode, _variables: Any = None) -> str:
     return value_node.value
 
 
+# Reference: https://www.apollographql.com/docs/federation/subgraph-spec/
 Scope = GraphQLScalarType(
     name="Scope",
     serialize=_serialize_string,

@@ -1,6 +1,7 @@
 from graphene import Scalar, String
 
 
+# Reference: https://www.apollographql.com/docs/federation/subgraph-spec/
 class _Any(Scalar):
     name = "_Any"
     __typename = String(required=True)

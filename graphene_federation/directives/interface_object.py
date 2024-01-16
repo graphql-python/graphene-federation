@@ -15,6 +15,15 @@ def interface_object(
     *,
     federation_version: FederationVersion = LATEST_VERSION,
 ) -> Callable:
+    """
+    Indicates that an object definition serves as an abstraction of another subgraph's entity interface.
+
+    This abstraction enables a subgraph to automatically contribute fields to all entities that implement
+    a particular entity interface.
+
+    Reference: https://www.apollographql.com/docs/federation/federated-types/federated-directives/#interfaceobject
+    """
+
     directive = get_directive_from_name("interfaceObject", federation_version)
     decorator = directive_decorator(directive)
 

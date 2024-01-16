@@ -43,6 +43,7 @@ def _parse_string_literal(value_node: ValueNode, _variables: Any = None) -> str:
     return value_node.value
 
 
+# Reference: https://www.apollographql.com/docs/federation/subgraph-spec/
 FederationPolicy = GraphQLScalarType(
     name="federation__Policy",
     serialize=_serialize_string,

@@ -16,6 +16,11 @@ LATEST_VERSION = FederationVersion.VERSION_2_6
 def get_directives_based_on_version(
     federation_version: FederationVersion,
 ) -> dict[str, GraphQLDirective]:
+    """
+    Returns a dictionary of [directive_name, directive] for the specified federation version
+
+    If no match is found for the specified federation version, latest is taken
+    """
     if federation_version == FederationVersion.VERSION_1_0:
         return get_directives_v1_0()
     if federation_version == FederationVersion.VERSION_2_0:
@@ -39,6 +44,9 @@ def get_directives_based_on_version(
 def get_directive_from_name(
     directive_name: str, federation_version: FederationVersion
 ) -> GraphQLDirective:
+    """
+    Get the GraphQL directive for the specified name with the given federation version
+    """
     directive = get_directives_based_on_version(federation_version).get(
         directive_name, None
     )

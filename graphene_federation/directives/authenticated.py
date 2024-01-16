@@ -15,6 +15,12 @@ def authenticated(
     *,
     federation_version: FederationVersion = LATEST_VERSION,
 ) -> Callable:
+    """
+    Indicates to composition that the target element is accessible only to the authenticated supergraph users.
+    For more granular access control, see the @requiresScopes directive.
+
+    Reference: https://www.apollographql.com/docs/federation/federated-types/federated-directives/#authenticated
+    """
     directive = get_directive_from_name("authenticated", federation_version)
     decorator = directive_decorator(directive)
 

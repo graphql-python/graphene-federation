@@ -7,14 +7,19 @@ from .utils import build_ast, evaluate_ast, to_case
 
 
 def validate_key(
-    type_: Union[ObjectType, Interface, Field], inputs: dict, schema: Schema
+    graphene_type: Union[ObjectType, Interface, Field], inputs: dict, schema: Schema
 ) -> bool:
+    """
+    Used to validate the inputs and graphene_type of @key
+    """
     errors: list[str] = []
-    ast_node = build_ast(input_str=to_case(inputs.get("fields"), schema))
+    ast_node = build_ast(
+        fields=to_case(inputs.get("fields"), schema), directive_name="@key"
+    )
     evaluate_ast(
-        directive_name="key",
-        nodes=ast_node,
-        type_=type_,
+        directive_name="@key",
+        ast=ast_node,
+        graphene_type=graphene_type,
         ignore_fields=[],
         errors=errors,
         entity_types=schema.graphql_schema.type_map,

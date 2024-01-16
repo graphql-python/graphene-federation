@@ -3,7 +3,11 @@ from graphql import GraphQLArgument, GraphQLDirective, GraphQLNonNull
 
 from graphene_federation.scalars import _FieldSet
 from graphene_federation.transform import field_set_case_transform
-from graphene_federation.validators import validate_key, validate_requires
+from graphene_federation.validators import (
+    validate_key,
+    validate_provides,
+    validate_requires,
+)
 
 key_directive = CustomDirective(
     name="key",
@@ -40,6 +44,7 @@ provides_directive = CustomDirective(
     args={"fields": GraphQLArgument(GraphQLNonNull(_FieldSet))},
     description="Federation @provides directive",
     add_definition_to_schema=False,
+    field_validator=validate_provides,
     input_transform=field_set_case_transform,
 )
 

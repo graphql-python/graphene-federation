@@ -2,12 +2,12 @@ from typing import Callable
 
 from graphene_directives import directive_decorator
 
-from .utils import is_non_field
 from graphene_federation.apollo_versions import (
     FederationVersion,
     LATEST_VERSION,
     get_directive_from_name,
 )
+from .utils import is_non_field
 
 
 def extends(
@@ -15,6 +15,11 @@ def extends(
     *,
     federation_version: FederationVersion = LATEST_VERSION,
 ) -> Callable:
+    """
+    Indicates that an object or interface definition is an extension of another definition of that same type.
+
+    Reference: https://www.apollographql.com/docs/federation/federated-types/federated-directives/#extends
+    """
     directive = get_directive_from_name("extends", federation_version)
     decorator = directive_decorator(directive)
 

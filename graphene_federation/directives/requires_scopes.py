@@ -2,12 +2,12 @@ from typing import Callable
 
 from graphene_directives import directive_decorator
 
-from .utils import is_non_field
 from graphene_federation.apollo_versions import (
     FederationVersion,
     LATEST_VERSION,
     get_directive_from_name,
 )
+from .utils import is_non_field
 
 
 def requires_scope(
@@ -16,6 +16,12 @@ def requires_scope(
     scopes: list[list[str]],
     federation_version: FederationVersion = LATEST_VERSION,
 ) -> Callable:
+    """
+    Indicates to composition that the target element is accessible only to the authenticated supergraph users with
+    the appropriate JWT scopes.
+
+    Reference: https://www.apollographql.com/docs/federation/federated-types/federated-directives/#requiresscopes
+    """
     directive = get_directive_from_name(
         "requiresScopes", federation_version=federation_version
     )

@@ -12,12 +12,17 @@ def validate_requires(
     inputs: dict,
     schema: Schema,
 ) -> bool:
+    """
+    Used to validate the inputs and graphene_type of @requires
+    """
     errors: list[str] = []
-    ast_node = build_ast(to_case(inputs.get("fields"), schema))
+    ast_node = build_ast(
+        fields=to_case(inputs.get("fields"), schema), directive_name="@requires"
+    )
     evaluate_ast(
-        directive_name="requires",
-        nodes=ast_node,
-        type_=parent_type,
+        directive_name="@requires",
+        ast=ast_node,
+        graphene_type=parent_type,
         ignore_fields=["__typename", InternalNamespace.UNION.value],
         errors=errors,
         entity_types=schema.graphql_schema.type_map,
