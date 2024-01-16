@@ -117,7 +117,9 @@ def get_entity_query(schema: Schema):
                     ):
                         for sub_value in value:
                             if sub_value.get("__typename") is None:
-                                sub_value["__typename"] = field.of_type._meta.name  # noqa
+                                sub_value[
+                                    "__typename"
+                                ] = field.of_type._meta.name  # noqa
                         model_arguments[model_field] = EntityQuery.resolve_entities(
                             self, info, representations=value, sub_field_resolution=True
                         )

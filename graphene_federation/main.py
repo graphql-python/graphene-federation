@@ -43,7 +43,7 @@ def _get_federation_query(
 def _add_sharable_to_page_info_type(
     schema: Schema,
     federation_version: FederationVersion,
-    types: list[ObjectType | Type[ObjectType]],
+    types: list[Union[ObjectType, Type[ObjectType]]],
 ):
     """
     Add @sharable directive to PageInfo type
@@ -173,6 +173,9 @@ def build_schema(
             ), "directives must be of instance FederationDirective"
 
             if not directive.add_to_schema_directives:
+                continue
+
+            if not directive.spec_url:
                 continue
 
             _imports = url__imports.get(directive.spec_url)

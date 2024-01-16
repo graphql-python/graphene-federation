@@ -71,7 +71,9 @@ def test_external_types():
     assert {
         "id": 1001,
         "primaryEmail": "frank@frank.com",
-    } == posts[3]["author"]
+    } == posts[
+        3
+    ]["author"]
 
     assert articles == [
         {

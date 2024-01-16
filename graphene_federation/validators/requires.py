@@ -8,7 +8,7 @@ from .utils import InternalNamespace, build_ast, evaluate_ast, to_case
 
 def validate_requires(
     parent_type: Union[ObjectType, Interface],
-    field: Field,
+    _field: Field,
     inputs: dict,
     schema: Schema,
 ) -> bool:
@@ -16,7 +16,7 @@ def validate_requires(
     Used to validate the inputs and graphene_type of @requires
     """
     errors: list[str] = []
-    auto_case = InternalNamespace.NO_AUTO_CASE.value not in inputs.get("fields")
+    auto_case = InternalNamespace.NO_AUTO_CASE.value not in inputs.get("fields", ())
     ast_node = build_ast(
         fields=to_case(inputs.get("fields"), schema, auto_case),
         directive_name="@requires",

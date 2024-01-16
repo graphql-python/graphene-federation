@@ -21,7 +21,7 @@ def validate_provides(
     Used to validate the inputs and graphene_type of @provides
     """
     errors: list[str] = []
-    auto_case = InternalNamespace.NO_AUTO_CASE.value not in inputs.get("fields")
+    auto_case = InternalNamespace.NO_AUTO_CASE.value not in inputs.get("fields", ())
     ast_node = build_ast(
         fields=to_case(inputs.get("fields"), schema, auto_case),
         directive_name="@provides",
