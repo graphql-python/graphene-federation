@@ -39,7 +39,7 @@ def link_directive(
 
     Use this in the `schema_directives` argument of `build_schema`
 
-    It is not recommended to use this directive directly, instead use the FederationDirective class to build
+    It is not recommended to use this directive directly, instead use the ComposableDirective class to build
     a custom directive. It will automatically add the compose and link directive to schema
 
     Also, the apollo directives such as @key, @external, ... are automatically added to the schema via the link directive

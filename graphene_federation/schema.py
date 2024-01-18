@@ -9,7 +9,6 @@ from graphene_directives import (
 )
 from graphene_directives.schema import Schema
 
-from . import FederationDirective
 from .apollo_versions import (
     FederationVersion,
     LATEST_VERSION,
@@ -17,6 +16,7 @@ from .apollo_versions import (
     get_directives_based_on_version,
 )
 from .apollo_versions.v2_1 import compose_directive as ComposeDirective
+from .composable_directive import ComposableDirective
 from .entity import get_entity_query
 from .schema_directives import compose_directive, link_directive
 from .service import get_service_query
@@ -65,7 +65,7 @@ def build_schema(
     mutation: Union[ObjectType, Type[ObjectType]] = None,
     subscription: Union[ObjectType, Type[ObjectType]] = None,
     types: Collection[Union[ObjectType, Type[ObjectType]]] = None,
-    directives: Union[Collection[FederationDirective], None] = None,
+    directives: Union[Collection[ComposableDirective], None] = None,
     include_graphql_spec_directives: bool = True,
     schema_directives: Collection[SchemaDirective] = None,
     auto_camelcase: bool = True,
@@ -169,8 +169,8 @@ def build_schema(
         url__imports: dict[str, list[str]] = {}
         for directive in directives:
             assert isinstance(
-                directive, FederationDirective
-            ), "directives must be of instance FederationDirective"
+                directive, ComposableDirective
+            ), "directives must be of instance ComposableDirective"
 
             if not directive.add_to_schema_directives:
                 continue

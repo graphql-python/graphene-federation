@@ -8,7 +8,7 @@ from graphql import (
 )
 
 
-class FederationDirective(GraphQLDirective):
+class ComposableDirective(GraphQLDirective):
     def __init__(
         self,
         name: str,
@@ -35,7 +35,7 @@ class FederationDirective(GraphQLDirective):
         :param add_to_schema_directives: Adds schema_directives @composeDirective and @link to schema automatically
         """
         if add_to_schema_directives:
-            assert spec_url is not None, "FederationDirective requires spec_url"
+            assert spec_url is not None, "ComposableDirective requires spec_url"
 
         self.spec_url = spec_url
         self.add_to_schema_directives = add_to_schema_directives

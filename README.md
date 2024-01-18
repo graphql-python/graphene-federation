@@ -273,10 +273,10 @@ You can define custom directives as follows
 from graphene import Field, ObjectType, String
 from graphql import GraphQLArgument, GraphQLInt, GraphQLNonNull
 
-from graphene_federation import DirectiveLocation, FederationDirective
+from graphene_federation import DirectiveLocation, ComposableDirective
 from graphene_federation import build_schema
 
-CacheDirective = FederationDirective(
+CacheDirective = ComposableDirective(
     name="cache",
     locations=[DirectiveLocation.FIELD_DEFINITION, DirectiveLocation.OBJECT],
     args={
@@ -339,9 +339,9 @@ You can pass the `add_to_schema_directives` as `False`
 from graphene import Field, ObjectType, String
 from graphql import GraphQLArgument, GraphQLInt, GraphQLNonNull
 
-from graphene_federation import DirectiveLocation, FederationDirective, build_schema, compose_directive, link_directive
+from graphene_federation import DirectiveLocation, ComposableDirective, build_schema, compose_directive, link_directive
 
-CacheDirective = FederationDirective(
+CacheDirective = ComposableDirective(
     name="cache",
     locations=[DirectiveLocation.FIELD_DEFINITION, DirectiveLocation.OBJECT],
     args={

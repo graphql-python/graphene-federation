@@ -19,7 +19,7 @@ def compose_directive(
 
     Use this in the `schema_directives` argument of `build_schema`
 
-    It is not recommended to use this directive directly, instead use the FederationDirective class to build
+    It is not recommended to use this directive directly, instead use the ComposableDirective class to build
     a custom directive. It will automatically add the compose and link directive to schema
 
     Reference: https://www.apollographql.com/docs/federation/federated-types/federated-directives/#composedirective
