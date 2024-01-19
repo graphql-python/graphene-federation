@@ -11,6 +11,7 @@ from .v2_6 import get_directives as get_directives_v2_6
 from .version import FederationVersion
 
 LATEST_VERSION = FederationVersion.VERSION_2_6
+STABLE_VERSION = FederationVersion.VERSION_2_5
 
 
 def get_directives_based_on_version(

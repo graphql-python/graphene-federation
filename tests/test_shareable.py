@@ -5,7 +5,7 @@ import pytest
 from graphene import ObjectType
 from graphene_directives import DirectiveValidationError
 
-from graphene_federation import build_schema
+from graphene_federation import LATEST_VERSION, build_schema
 from graphene_federation import shareable
 from tests.util import file_handlers, sdl_query
 
@@ -31,7 +31,9 @@ def test_shareable_interface_failures():
             in_stock_count = graphene.Int(required=True)
 
         build_schema(
-            query=Query, enable_federation_2=True, types=(ReviewInterface, Review)
+            query=Query,
+            federation_version=LATEST_VERSION,
+            types=(ReviewInterface, Review),
         )
 
     assert "@shareable cannot be used for ReviewInterface" in str(err.value)
@@ -46,7 +48,9 @@ def test_shareable():
     class Query(ObjectType):
         in_stock_count = graphene.Int(required=True)
 
-    schema = build_schema(query=Query, enable_federation_2=True, types=(Position,))
+    schema = build_schema(
+        query=Query, federation_version=LATEST_VERSION, types=(Position,)
+    )
 
     assert open_file("1") == str(schema)
     assert open_file("2") == sdl_query(schema)
@@ -78,6 +82,8 @@ def test_shareable_union():
         class Query(ObjectType):
             in_stock_count = graphene.Int(required=True)
 
-        _ = build_schema(query=Query, enable_federation_2=True, types=(SearchResult,))
+        _ = build_schema(
+            query=Query, federation_version=LATEST_VERSION, types=(SearchResult,)
+        )
 
     assert "@shareable cannot be used for SearchResult" in str(err.value)

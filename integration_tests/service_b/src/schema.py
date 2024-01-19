@@ -1,6 +1,6 @@
-from graphene import ObjectType, String, Int, Interface, Mutation
+from graphene import Int, Interface, Mutation, ObjectType, String
 
-from graphene_federation import build_schema, key
+from graphene_federation import FederationVersion, build_schema, key
 
 
 class TextInterface(Interface):
@@ -70,4 +70,6 @@ class Mutation(ObjectType):
 
 types = [FileNode, FunnyText, FileNodeAnother, User]
 
-schema = build_schema(mutation=Mutation, types=types)
+schema = build_schema(
+    mutation=Mutation, types=types, federation_version=FederationVersion.VERSION_1_0
+)

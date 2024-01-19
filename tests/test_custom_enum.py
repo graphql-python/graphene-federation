@@ -3,7 +3,7 @@ from pathlib import Path
 import graphene
 from graphene import ObjectType
 
-from graphene_federation import build_schema
+from graphene_federation import LATEST_VERSION, build_schema
 from graphene_federation import inaccessible, shareable
 from tests.util import file_handlers, sdl_query
 
@@ -29,7 +29,7 @@ def test_custom_enum():
         test2 = graphene.List(TestCustomEnum, required=True)
 
     schema = build_schema(
-        query=Query, enable_federation_2=True, types=(TestCustomEnum,)
+        query=Query, federation_version=LATEST_VERSION, types=(TestCustomEnum,)
     )
 
     assert open_file("1") == str(schema)

@@ -37,8 +37,8 @@ If you need to use a version compatible with `graphene` v2 I recommend using the
 - [x] v2.2
 - [x] v2.3
 - [x] v2.4
-- [x] v2.5
-- [x] v2.6
+- [x] v2.5 `STABLE_VERSION` . Rover dev supports only upto v2.5
+- [x] v2.6 `LATEST_VERSION`
 
 All directives could be easily integrated with the help of [graphene-directives](https://github.com/strollby/graphene-directives). 
 Now every directive's values are validated at run time itself by [graphene-directives](https://github.com/strollby/graphene-directives).
@@ -128,7 +128,7 @@ First add an account service that expose a `User` type that can then be referenc
 ```python
 from graphene import Field, Int, ObjectType, String
 
-from graphene_federation import build_schema, key
+from graphene_federation import LATEST_VERSION, build_schema, key
 
 
 @key("id")
@@ -147,7 +147,7 @@ class Query(ObjectType):
     me = Field(User)
 
 
-schema = build_schema(query=Query, enable_federation_2=True)
+schema = build_schema(query=Query, federation_version=LATEST_VERSION)
 ```
 
 ### Product
@@ -156,7 +156,7 @@ The product service exposes a `Product` type that can be used by other services 
 ```python
 from graphene import Argument, Int, List, ObjectType, String
 
-from graphene_federation import build_schema, key
+from graphene_federation import LATEST_VERSION, build_schema, key
 
 
 @key("upc")
@@ -176,7 +176,7 @@ class Query(ObjectType):
     topProducts = List(Product, first=Argument(Int, default_value=5))
 
 
-schema = build_schema(query=Query, enable_federation_2=True)
+schema = build_schema(query=Query, federation_version=LATEST_VERSION)
 ```
 
 ### Reviews
@@ -187,7 +187,7 @@ On top of that it adds to the `User`/`Product` types (that are both defined in o
 ```python
 from graphene import Field, Int, List, ObjectType, String
 
-from graphene_federation import build_schema, external, key, provides
+from graphene_federation import LATEST_VERSION, build_schema, external, key, provides
 
 
 @key("id")
@@ -218,7 +218,7 @@ class Query(ObjectType):
     review = Field(Review)
 
 
-schema = build_schema(query=Query, enable_federation_2=True)
+schema = build_schema(query=Query, federation_version=LATEST_VERSION)
 ```
 
 ### Federation
@@ -254,10 +254,7 @@ There is also a cool [example](https://github.com/preply/graphene-federation/iss
 
 - `schema_directives` (`Collection[SchemaDirective]`): Directives that can be defined at `DIRECTIVE_LOCATION.SCHEMA` with their argument values.
 - `include_graphql_spec_directives` (`bool`): Includes directives defined by GraphQL spec (`@include`, `@skip`, `@deprecated`, `@specifiedBy`)
-- `enable_federation_2` (`bool`): Whether to enable federation 2 directives (default False)
-- `federation_version` (`FederationVersion`): Specify the version explicit (default LATEST_VERSION)
-
-In case both enable_federation_2 and federation_version are specified, federation_version is given higher priority
+- `federation_version` (`FederationVersion`): Specify the version explicit (default STABLE_VERSION)
 
 ### Directives Additional arguments
 
@@ -273,7 +270,7 @@ You can define custom directives as follows
 from graphene import Field, ObjectType, String
 from graphql import GraphQLArgument, GraphQLInt, GraphQLNonNull
 
-from graphene_federation import DirectiveLocation, ComposableDirective
+from graphene_federation import ComposableDirective, DirectiveLocation, LATEST_VERSION
 from graphene_federation import build_schema
 
 CacheDirective = ComposableDirective(
@@ -293,7 +290,7 @@ cache = CacheDirective.decorator()
 
 @cache(max_age=20)
 class Review(ObjectType):
-    body = cache(field=String(),max_age=100)
+    body = cache(field=String(), max_age=100)
 
 
 class Query(ObjectType):
@@ -303,7 +300,7 @@ class Query(ObjectType):
 schema = build_schema(
     query=Query,
     directives=(CacheDirective,),
-    enable_federation_2=True,
+    federation_version=LATEST_VERSION ,
 )
 ```
 
@@ -339,7 +336,8 @@ You can pass the `add_to_schema_directives` as `False`
 from graphene import Field, ObjectType, String
 from graphql import GraphQLArgument, GraphQLInt, GraphQLNonNull
 
-from graphene_federation import DirectiveLocation, ComposableDirective, build_schema, compose_directive, link_directive
+from graphene_federation import (ComposableDirective, DirectiveLocation, LATEST_VERSION, build_schema,
+                                 compose_directive, link_directive)
 
 CacheDirective = ComposableDirective(
     name="cache",
@@ -372,7 +370,7 @@ schema = build_schema(
         link_directive(url="https://specs.example.dev/directives/v1.0", import_=['@cache']),
         compose_directive(name='@cache'),
     ),
-    enable_federation_2=True,
+    federation_version=LATEST_VERSION,
 )
 ```
 
@@ -392,7 +390,7 @@ class User(ObjectType):
 class Query(ObjectType):
     user = Field(User)
 
-schema = build_schema(query=Query, enable_federation_2=True, auto_camelcase=False) # Disable auto_camelcase
+schema = build_schema(query=Query, federation_version=LATEST_VERSION, auto_camelcase=False) # Disable auto_camelcase
 ```
 
 This works correctly.
@@ -409,7 +407,7 @@ class User(ObjectType):
 class Query(ObjectType):
     user = Field(User)
 
-schema = build_schema(query=Query, enable_federation_2=True) # auto_camelcase Enabled
+schema = build_schema(query=Query, federation_version=LATEST_VERSION) # auto_camelcase Enabled
 ```
 
 This will raise an error `@key, field "validEmail" does not exist on type "User"`. 
@@ -427,7 +425,7 @@ class User(ObjectType):
 class Query(ObjectType):
     user = Field(User)
 
-schema = build_schema(query=Query, enable_federation_2=True) # auto_camelcase=True
+schema = build_schema(query=Query, federation_version=LATEST_VERSION) # auto_camelcase=True
 ```
 
 ------------------------

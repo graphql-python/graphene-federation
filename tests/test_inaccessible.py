@@ -3,7 +3,7 @@ from pathlib import Path
 import graphene
 from graphene import ObjectType
 
-from graphene_federation import build_schema, inaccessible
+from graphene_federation import LATEST_VERSION, build_schema, inaccessible
 from tests.util import file_handlers, sdl_query
 
 save_file, open_file = file_handlers(Path(__file__))
@@ -25,7 +25,9 @@ def test_inaccessible_interface():
     class Query(ObjectType):
         in_stock_count = graphene.Int(required=True)
 
-    build_schema(query=Query, enable_federation_2=True, types=(ReviewInterface, Review))
+    build_schema(
+        query=Query, federation_version=LATEST_VERSION, types=(ReviewInterface, Review)
+    )
 
 
 def test_inaccessible():
@@ -37,7 +39,9 @@ def test_inaccessible():
     class Query(ObjectType):
         in_stock_count = graphene.Int(required=True)
 
-    schema = build_schema(query=Query, enable_federation_2=True, types=(Position,))
+    schema = build_schema(
+        query=Query, federation_version=LATEST_VERSION, types=(Position,)
+    )
 
     assert open_file("1") == str(schema)
     assert open_file("2") == sdl_query(schema)
@@ -67,7 +71,9 @@ def test_inaccessible_union():
     class Query(ObjectType):
         in_stock_count = graphene.Int(required=True)
 
-    schema = build_schema(query=Query, enable_federation_2=True, types=(SearchResult,))
+    schema = build_schema(
+        query=Query, federation_version=LATEST_VERSION, types=(SearchResult,)
+    )
 
     assert open_file("1") == str(schema)
     assert open_file("2") == sdl_query(schema)

@@ -11,7 +11,7 @@ from graphene_directives.schema import Schema
 
 from .apollo_versions import (
     FederationVersion,
-    LATEST_VERSION,
+    STABLE_VERSION,
     get_directive_from_name,
     get_directives_based_on_version,
 )
@@ -69,7 +69,6 @@ def build_schema(
     include_graphql_spec_directives: bool = True,
     schema_directives: Collection[SchemaDirective] = None,
     auto_camelcase: bool = True,
-    enable_federation_2: bool = False,
     federation_version: FederationVersion = None,
 ) -> Schema:
     """
@@ -92,23 +91,13 @@ def build_schema(
             with their argument values.
         include_graphql_spec_directives (bool): Includes directives defined by GraphQL spec (@include, @skip,
             @deprecated, @specifiedBy)
-        enable_federation_2 (bool): Whether to enable federation 2 directives (default False)
-        federation_version (FederationVersion): Specify the version explicit (default LATEST_VERSION)
-
-        In case both enable_federation_2 and federation_version are specified, federation_version is given
-        higher priority
+        federation_version (FederationVersion): Specify the version explicit (default STABLE_VERSION)
     """
 
-    # In case both enable_federation_2 and federation_version are specified,
-    # federation_version is given higher priority
-    federation_version = (
-        federation_version
-        if federation_version
-        else LATEST_VERSION
-        if enable_federation_2
-        else FederationVersion.VERSION_1_0
+    federation_version = federation_version if federation_version else STABLE_VERSION
+    federation_2_enabled = (
+        federation_version.value > FederationVersion.VERSION_1_0.value
     )
-    enable_federation_2 = federation_version.value > FederationVersion.VERSION_1_0.value
 
     _types = list(types) if types is not None else []
 
@@ -135,7 +124,7 @@ def build_schema(
     _schema_directives = []
     directives_used = schema.get_directives_used()
     if schema_directives or directives:
-        if not enable_federation_2:
+        if not federation_2_enabled:
             raise ValueError(
                 f"Schema Directives & Directives are not supported on {federation_version=}. Use >=2.0 "
             )
@@ -150,7 +139,7 @@ def build_schema(
         ):
             directives_used.append(ComposeDirective)
 
-    if directives_used and enable_federation_2:
+    if directives_used and federation_2_enabled:
         imports = [
             str(directive)
             for directive in directives_used
@@ -197,7 +186,9 @@ def build_schema(
     if schema_directives:
         _schema_directives.extend(list(schema_directives))
 
-    schema_args["schema_directives"] = _schema_directives if enable_federation_2 else []
+    schema_args["schema_directives"] = (
+        _schema_directives if federation_2_enabled else []
+    )
 
     # Call it again to rebuild the schema using the schema directives
     schema = build_directive_schema(query=query, **schema_args)

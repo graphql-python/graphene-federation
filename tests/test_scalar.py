@@ -5,7 +5,7 @@ import graphene
 from graphene import ObjectType, String
 from graphene import Scalar
 
-from graphene_federation import build_schema
+from graphene_federation import LATEST_VERSION, build_schema
 from graphene_federation import inaccessible, shareable
 from tests.util import file_handlers, sdl_query
 
@@ -36,7 +36,7 @@ def test_custom_scalar():
         test = String(x=AddressScalar())
         test2 = graphene.List(AddressScalar, required=True)
 
-    schema = build_schema(query=Query, enable_federation_2=True, types=(TestScalar,))
+    schema = build_schema(query=Query, federation_version=LATEST_VERSION, types=(TestScalar,))
 
     assert open_file("1") == str(schema)
     assert open_file("2") == sdl_query(schema)

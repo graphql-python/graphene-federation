@@ -2,7 +2,14 @@ from pathlib import Path
 
 from graphene import Field, ID, ObjectType, String
 
-from graphene_federation import build_schema, extends, external, key, requires
+from graphene_federation import (
+    FederationVersion,
+    build_schema,
+    extends,
+    external,
+    key,
+    requires,
+)
 from tests.util import file_handlers, sdl_query
 
 save_file, open_file = file_handlers(Path(__file__))
@@ -29,7 +36,9 @@ def test_similar_field_name():
     class ChatQuery(ObjectType):
         message = Field(ChatMessage, id=ID(required=True))
 
-    schema = build_schema(query=ChatQuery, enable_federation_2=False)
+    schema = build_schema(
+        query=ChatQuery, federation_version=FederationVersion.VERSION_1_0
+    )
 
     assert open_file("1") == str(schema)
     assert open_file("2") == sdl_query(schema)
@@ -51,7 +60,7 @@ def test_camel_case_field_name():
     class Query(ObjectType):
         camel = Field(Camel)
 
-    schema = build_schema(query=Query, enable_federation_2=False)
+    schema = build_schema(query=Query, federation_version=FederationVersion.VERSION_1_0)
 
     assert open_file("1") == str(schema)
     assert open_file("2") == sdl_query(schema)
@@ -72,7 +81,11 @@ def test_camel_case_field_name_without_auto_camelcase():
     class Query(ObjectType):
         camel = Field(Camel)
 
-    schema = build_schema(query=Query, auto_camelcase=False, enable_federation_2=False)
+    schema = build_schema(
+        query=Query,
+        auto_camelcase=False,
+        federation_version=FederationVersion.VERSION_1_0,
+    )
 
     assert open_file("1") == str(schema)
     assert open_file("2") == sdl_query(schema)
@@ -96,7 +109,7 @@ def test_annotated_field_also_used_in_filter():
     class Query(ObjectType):
         a = Field(A)
 
-    schema = build_schema(query=Query, enable_federation_2=False)
+    schema = build_schema(query=Query, federation_version=FederationVersion.VERSION_1_0)
 
     assert open_file("1") == str(schema)
     assert open_file("2") == sdl_query(schema)
@@ -121,7 +134,7 @@ def test_annotate_object_with_meta_name():
     class Query(ObjectType):
         a = Field(A)
 
-    schema = build_schema(query=Query, enable_federation_2=False)
+    schema = build_schema(query=Query, federation_version=FederationVersion.VERSION_1_0)
 
     assert open_file("1") == str(schema)
     assert open_file("2") == sdl_query(schema)

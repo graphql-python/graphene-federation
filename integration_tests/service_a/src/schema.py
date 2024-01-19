@@ -1,6 +1,6 @@
 from graphene import Field, Int, Interface, List, NonNull, ObjectType, String
 
-from graphene_federation import build_schema, extends, external, key
+from graphene_federation import FederationVersion, build_schema, extends, external, key
 
 
 class DecoratedText(Interface):
@@ -79,4 +79,9 @@ class Query(ObjectType):
         return "See ya!"
 
 
-schema = build_schema(query=Query, types=[FunnyTextAnother], auto_camelcase=False)
+schema = build_schema(
+    query=Query,
+    types=[FunnyTextAnother],
+    federation_version=FederationVersion.VERSION_1_0,
+    auto_camelcase=False,
+)

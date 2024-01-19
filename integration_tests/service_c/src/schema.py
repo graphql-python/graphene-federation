@@ -1,6 +1,14 @@
 from graphene import Field, Int, List, NonNull, ObjectType, String
 
-from graphene_federation import build_schema, extends, external, key, provides, requires
+from graphene_federation import (
+    FederationVersion,
+    build_schema,
+    extends,
+    external,
+    key,
+    provides,
+    requires,
+)
 
 
 @key(fields="id")
@@ -54,4 +62,4 @@ class Query(ObjectType):
         return [ArticleThatProvideAuthorAge(id=1, text="some text", author=User(id=5))]
 
 
-schema = build_schema(Query)
+schema = build_schema(Query, federation_version=FederationVersion.VERSION_1_0)

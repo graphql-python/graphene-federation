@@ -1,6 +1,6 @@
 from graphene import Field, Int, ObjectType
 
-from graphene_federation import build_schema, extends, external, key
+from graphene_federation import FederationVersion, build_schema, extends, external, key
 
 """
 Alphabet order - matters
@@ -28,4 +28,4 @@ class Query(ObjectType):
     y = Field(Y)
 
 
-schema = build_schema(query=Query)
+schema = build_schema(query=Query, federation_version=FederationVersion.VERSION_1_0)

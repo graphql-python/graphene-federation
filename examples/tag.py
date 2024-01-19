@@ -1,7 +1,7 @@
 import graphene
-
-from graphene_federation import build_schema, key, inaccessible, shareable
 from graphene_federation.tag import tag
+
+from graphene_federation import LATEST_VERSION, build_schema, inaccessible, shareable
 
 
 class Product(graphene.ObjectType):
@@ -15,7 +15,7 @@ class Query(graphene.ObjectType):
     position = graphene.Field(Product)
 
 
-schema = build_schema(Query, enable_federation_2=True)
+schema = build_schema(Query, federation_version=LATEST_VERSION)
 
 query = """
     query getSDL {

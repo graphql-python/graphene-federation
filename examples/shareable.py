@@ -3,7 +3,7 @@ from graphene import Interface
 
 from graphene_federation.shareable import shareable
 
-from graphene_federation import build_schema
+from graphene_federation import LATEST_VERSION, build_schema
 
 
 @shareable
@@ -40,7 +40,7 @@ class Query(graphene.ObjectType):
     position = graphene.Field(Position)
 
 
-schema = build_schema(Query, enable_federation_2=True, types=(SearchResult,))
+schema = build_schema(Query, federation_version=LATEST_VERSION, types=(SearchResult,))
 
 query = """
     query getSDL {

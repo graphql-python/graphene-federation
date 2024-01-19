@@ -4,7 +4,7 @@ from graphene import Field, ID, ObjectType, String
 from graphene import NonNull
 from graphql import graphql_sync
 
-from graphene_federation import build_schema, key
+from graphene_federation import LATEST_VERSION, build_schema, key
 from graphene_federation import extends, external
 from tests.util import file_handlers, sdl_query
 
@@ -42,7 +42,7 @@ class UserQuery(ObjectType):
         return User(**next(filter(lambda x: x["user_id"] == user_id, users)))
 
 
-user_schema = build_schema(query=UserQuery, enable_federation_2=True)
+user_schema = build_schema(query=UserQuery, federation_version=LATEST_VERSION)
 
 # ------------------------
 # Chat service
@@ -80,7 +80,7 @@ class ChatQuery(ObjectType):
         return ChatMessage(**next(filter(lambda x: x["id"] == id, chat_messages)))
 
 
-chat_schema = build_schema(query=ChatQuery, enable_federation_2=True)
+chat_schema = build_schema(query=ChatQuery, federation_version=LATEST_VERSION)
 
 
 # ------------------------

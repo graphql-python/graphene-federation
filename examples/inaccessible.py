@@ -1,7 +1,7 @@
 import graphene
 
 from graphene_federation import (
-    inaccessible,
+    LATEST_VERSION, inaccessible,
     external,
     provides,
     key,
@@ -64,7 +64,7 @@ class Query(graphene.ObjectType):
 
 
 schema = build_schema(
-    Query, enable_federation_2=True, types=(ReviewInterface, SearchResult, Review)
+    Query, federation_version=LATEST_VERSION, types=(ReviewInterface, SearchResult, Review)
 )
 
 query = """

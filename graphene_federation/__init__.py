@@ -1,6 +1,6 @@
 from graphene_directives import DirectiveLocation
 
-from .apollo_versions import FederationVersion, LATEST_VERSION
+from .apollo_versions import FederationVersion, LATEST_VERSION, STABLE_VERSION
 from .composable_directive import ComposableDirective
 from .directives import (
     authenticated,
@@ -24,6 +24,7 @@ from .service import get_sdl
 __all__ = [
     "FederationVersion",
     "LATEST_VERSION",
+    "STABLE_VERSION",
     "build_schema",
     "ComposableDirective",
     "DirectiveLocation",

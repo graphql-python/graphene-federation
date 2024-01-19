@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 from graphene import Field, ID, ObjectType, String
 
-from graphene_federation import build_schema, key
+from graphene_federation import LATEST_VERSION, build_schema, key
 from tests.util import file_handlers, sdl_query
 
 save_file, open_file = file_handlers(Path(__file__))
@@ -19,7 +19,7 @@ def test_multiple_keys():
     class Query(ObjectType):
         user = Field(User)
 
-    schema = build_schema(query=Query, enable_federation_2=True)
+    schema = build_schema(query=Query, federation_version=LATEST_VERSION)
 
     assert open_file("1") == str(schema)
     assert open_file("2") == sdl_query(schema)
@@ -35,7 +35,7 @@ def test_key_non_existing_field_failure():
         class A(ObjectType):
             id = ID()
 
-        build_schema(types=(A,), enable_federation_2=True)
+        build_schema(types=(A,), federation_version=LATEST_VERSION)
 
     assert '@key, field "potato" does not exist on type "A"' == str(err.value)
 
@@ -52,7 +52,7 @@ def test_compound_primary_key():
     class Query(ObjectType):
         user = Field(User)
 
-    schema = build_schema(query=Query, enable_federation_2=True)
+    schema = build_schema(query=Query, federation_version=LATEST_VERSION)
 
     assert open_file("1") == str(schema)
     assert open_file("2") == sdl_query(schema)
@@ -75,7 +75,7 @@ def test_compound_primary_key_with_depth():
     class Query(ObjectType):
         user = Field(User)
 
-    schema = build_schema(query=Query, enable_federation_2=True)
+    schema = build_schema(query=Query, federation_version=LATEST_VERSION)
     assert open_file("1") == str(schema)
     assert open_file("2") == sdl_query(schema)
 
@@ -99,7 +99,7 @@ def test_invalid_compound_primary_key_failures():
 
     with pytest.raises(ValueError) as err:
         # Field name absent on User ObjectType
-        build_schema(query=Query, enable_federation_2=True)
+        build_schema(query=Query, federation_version=LATEST_VERSION)
 
     assert '@key, field "name" does not exist on type "User"' == str(err.value)
 
@@ -113,7 +113,7 @@ def test_invalid_compound_primary_key_failures():
 
     with pytest.raises(ValueError) as err:
         # Presence of invalid field in organization field key
-        build_schema(query=Query, enable_federation_2=True)
+        build_schema(query=Query, federation_version=LATEST_VERSION)
 
     assert '@key, field "name" does not exist on type "Organization"' == str(err.value)
 
@@ -127,7 +127,7 @@ def test_invalid_compound_primary_key_failures():
 
     with pytest.raises(ValueError) as err:
         # Presence of BusinessUnit in the key without subselection
-        build_schema(query=Query, enable_federation_2=True)
+        build_schema(query=Query, federation_version=LATEST_VERSION)
 
     assert '@key, type Organization, field "bu" needs sub selections.' == str(err.value)
 
@@ -141,7 +141,7 @@ def test_invalid_compound_primary_key_failures():
 
     with pytest.raises(ValueError) as err:
         # Presence of subselection for the scalar 'name' field
-        build_schema(query=Query, enable_federation_2=True)
+        build_schema(query=Query, federation_version=LATEST_VERSION)
 
     assert '@key, type BusinessUnit, field "name" cannot have sub selections.' == str(
         err.value

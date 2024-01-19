@@ -1,7 +1,7 @@
 import graphene
 
 from graphene_federation import (
-    build_schema,
+    LATEST_VERSION, build_schema,
     shareable,
     external,
     key,
@@ -21,7 +21,7 @@ class Query(graphene.ObjectType):
     position = graphene.Field(Product)
 
 
-schema = build_schema(Query, enable_federation_2=True)
+schema = build_schema(Query, federation_version=LATEST_VERSION)
 
 query = """
     query getSDL {

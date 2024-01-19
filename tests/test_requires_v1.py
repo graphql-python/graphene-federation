@@ -5,7 +5,7 @@ from graphene import Field, ID, ObjectType, String
 from graphene import Int
 from graphene_directives import DirectiveValidationError
 
-from graphene_federation import build_schema, key
+from graphene_federation import FederationVersion, build_schema, key
 from graphene_federation import extends, external, requires
 from tests.util import file_handlers, sdl_query
 
@@ -41,7 +41,7 @@ def test_requires_multiple_fields():
     class Query(ObjectType):
         product = Field(Product)
 
-    schema = build_schema(query=Query)
+    schema = build_schema(query=Query, federation_version=FederationVersion.VERSION_1_0)
 
     assert open_file("1") == str(schema)
     assert open_file("2") == sdl_query(schema)
@@ -63,7 +63,7 @@ def test_requires_multiple_fields_as_list():
     class Query(ObjectType):
         product = Field(Product)
 
-    schema = build_schema(query=Query)
+    schema = build_schema(query=Query, federation_version=FederationVersion.VERSION_1_0)
 
     assert open_file("1") == str(schema)
     assert open_file("2") == sdl_query(schema)
@@ -84,7 +84,7 @@ def test_requires_with_input():
     class Query(ObjectType):
         acme = Field(Acme)
 
-    schema = build_schema(query=Query)
+    schema = build_schema(query=Query, federation_version=FederationVersion.VERSION_1_0)
 
     assert open_file("1") == str(schema)
     assert open_file("2") == sdl_query(schema)
