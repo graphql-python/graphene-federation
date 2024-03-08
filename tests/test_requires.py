@@ -43,8 +43,8 @@ def test_requires_multiple_fields():
 
     schema = build_schema(query=Query, federation_version=LATEST_VERSION)
 
-    save_file(str(schema), "1")
-    save_file(sdl_query(schema), "2")
+    # save_file(str(schema), "1")
+    # save_file(sdl_query(schema), "2")
 
     assert open_file("1") == str(schema)
     assert open_file("2") == sdl_query(schema)
@@ -68,8 +68,8 @@ def test_requires_multiple_fields_as_list():
 
     schema = build_schema(query=Query, federation_version=LATEST_VERSION)
 
-    save_file(str(schema), "1")
-    save_file(sdl_query(schema), "2")
+    # save_file(str(schema), "1")
+    # save_file(sdl_query(schema), "2")
 
     assert open_file("1") == str(schema)
     assert open_file("2") == sdl_query(schema)
@@ -92,8 +92,8 @@ def test_requires_with_input():
 
     schema = build_schema(query=Query, federation_version=LATEST_VERSION)
 
-    save_file(str(schema), "1")
-    save_file(sdl_query(schema), "2")
+    # save_file(str(schema), "1")
+    # save_file(sdl_query(schema), "2")
 
     assert open_file("1") == str(schema)
     assert open_file("2") == sdl_query(schema)

@@ -37,13 +37,14 @@ If you need to use a version compatible with `graphene` v2 I recommend using the
 - [x] v2.2
 - [x] v2.3
 - [x] v2.4
-- [x] v2.5 `STABLE_VERSION` . Rover dev supports only upto v2.5
-- [x] v2.6 `LATEST_VERSION`
+- [x] v2.5 
+- [x] v2.6 `STABLE_VERSION` . Rover dev supports only upto v2.6
+- [x] v2.7 `LATEST_VERSION`
 
 All directives could be easily integrated with the help of [graphene-directives](https://github.com/strollby/graphene-directives). 
 Now every directive's values are validated at run time itself by [graphene-directives](https://github.com/strollby/graphene-directives).
 
-### Directives (v2.6)
+### Directives (v2.7)
 
 ```graphql
 directive @composeDirective(name: String!) repeatable on SCHEMA
@@ -62,7 +63,7 @@ directive @inaccessible on
   | INPUT_FIELD_DEFINITION
   | ARGUMENT_DEFINITION
 directive @interfaceObject on OBJECT
-directive @override(from: String!) on FIELD_DEFINITION
+directive @override(from: String!, label: String) on FIELD_DEFINITION
 directive @provides(fields: FieldSet!) on FIELD_DEFINITION
 directive @requires(fields: FieldSet!) on FIELD_DEFINITION
 directive @shareable repeatable on FIELD_DEFINITION | OBJECT
@@ -98,7 +99,6 @@ directive @policy(policies: [[federation__Policy!]!]!) on
 scalar federation__Policy
 scalar federation__Scope
 scalar FieldSet
-
 ```
 
 Read about directives in [official documentation](https://www.apollographql.com/docs/federation/federated-types/federated-directives)

@@ -21,6 +21,9 @@ def test_multiple_keys():
 
     schema = build_schema(query=Query, federation_version=LATEST_VERSION)
 
+    # save_file(str(schema), "1")
+    # save_file(sdl_query(schema), "2")
+
     assert open_file("1") == str(schema)
     assert open_file("2") == sdl_query(schema)
 
@@ -54,6 +57,9 @@ def test_compound_primary_key():
 
     schema = build_schema(query=Query, federation_version=LATEST_VERSION)
 
+    # save_file(str(schema), "1")
+    # save_file(sdl_query(schema), "2")
+
     assert open_file("1") == str(schema)
     assert open_file("2") == sdl_query(schema)
 
@@ -76,6 +82,10 @@ def test_compound_primary_key_with_depth():
         user = Field(User)
 
     schema = build_schema(query=Query, federation_version=LATEST_VERSION)
+
+    # save_file(str(schema), "1")
+    # save_file(sdl_query(schema), "2")
+
     assert open_file("1") == str(schema)
     assert open_file("2") == sdl_query(schema)
 

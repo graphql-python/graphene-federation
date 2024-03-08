@@ -36,7 +36,12 @@ def test_custom_scalar():
         test = String(x=AddressScalar())
         test2 = graphene.List(AddressScalar, required=True)
 
-    schema = build_schema(query=Query, federation_version=LATEST_VERSION, types=(TestScalar,))
+    schema = build_schema(
+        query=Query, federation_version=LATEST_VERSION, types=(TestScalar,)
+    )
+
+    # save_file(str(schema), "1")
+    # save_file(sdl_query(schema), "2")
 
     assert open_file("1") == str(schema)
     assert open_file("2") == sdl_query(schema)

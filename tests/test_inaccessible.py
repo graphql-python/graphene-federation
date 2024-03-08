@@ -43,6 +43,9 @@ def test_inaccessible():
         query=Query, federation_version=LATEST_VERSION, types=(Position,)
     )
 
+    # save_file(str(schema), "1")
+    # save_file(sdl_query(schema), "2")
+
     assert open_file("1") == str(schema)
     assert open_file("2") == sdl_query(schema)
 
@@ -74,6 +77,9 @@ def test_inaccessible_union():
     schema = build_schema(
         query=Query, federation_version=LATEST_VERSION, types=(SearchResult,)
     )
+
+    # save_file(str(schema), "1")
+    # save_file(sdl_query(schema), "2")
 
     assert open_file("1") == str(schema)
     assert open_file("2") == sdl_query(schema)

@@ -1,25 +1,19 @@
 extend schema
-	@link(url: "https://specs.apollo.dev/federation/v2.7", import: ["@extends", "@external", "@key"])
+	@link(url: "https://specs.apollo.dev/federation/v2.7", import: ["@override"])
 
-schema {
-  query: ChatQuery
+type Query {
+  product: Product
+  _service: _Service!
 }
 
-type ChatQuery {
-  message(id: ID!): ChatMessage
+type Product  {
+  sku: ID @override(from: "subgraph-1")
+  size: Int @override(from: "subgraph-2")
+  weight: Int @override(from: "subgraph-3", label: "Test label")
 }
 
-type ChatMessage {
-  id: ID!
-  user: ChatUser
-}
-
-type ChatUser  @key(fields: "id") @extends {
-  uid: ID
-  identified: ID
-  id: ID @external
-  iD: ID
-  ID: ID
+type _Service {
+  sdl: String
 }
 
 """

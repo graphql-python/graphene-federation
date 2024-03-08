@@ -8,10 +8,13 @@ from .v2_3 import get_directives as get_directives_v2_3
 from .v2_4 import get_directives as get_directives_v2_4
 from .v2_5 import get_directives as get_directives_v2_5
 from .v2_6 import get_directives as get_directives_v2_6
+from .v2_7 import get_directives as get_directives_v2_7
 from .version import FederationVersion
 
-LATEST_VERSION = FederationVersion.VERSION_2_6
-STABLE_VERSION = FederationVersion.VERSION_2_5
+LATEST_VERSION = FederationVersion.VERSION_2_7
+
+# Stable version is determined with the latest version that rover cli supports
+STABLE_VERSION = FederationVersion.VERSION_2_6
 
 
 def get_directives_based_on_version(
@@ -20,7 +23,7 @@ def get_directives_based_on_version(
     """
     Returns a dictionary of [directive_name, directive] for the specified federation version
 
-    If no match is found for the specified federation version, latest is taken
+    If no match is found for the specified federation version, the latest is taken
     """
     if federation_version == FederationVersion.VERSION_1_0:
         return get_directives_v1_0()
@@ -38,8 +41,10 @@ def get_directives_based_on_version(
         return get_directives_v2_5()
     if federation_version == FederationVersion.VERSION_2_6:
         return get_directives_v2_6()
+    if federation_version == FederationVersion.VERSION_2_7:
+        return get_directives_v2_7()
 
-    return get_directives_v2_6()
+    return get_directives_v2_7()
 
 
 def get_directive_from_name(

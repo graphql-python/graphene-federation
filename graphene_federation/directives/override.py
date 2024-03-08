@@ -13,6 +13,7 @@ from .utils import is_non_field
 def override(
     graphene_type,
     from_: str,
+    label: str = None,
     *,
     federation_version: FederationVersion = LATEST_VERSION,
 ) -> Callable:
@@ -40,7 +41,7 @@ def override(
                     ]
                 )
             )
-        return decorator(field=field_or_type, **{"from": from_})
+        return decorator(field=field_or_type, **{"from": from_, "label": label})
 
     if graphene_type:
         return wrapper(graphene_type)

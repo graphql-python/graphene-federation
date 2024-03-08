@@ -1,5 +1,5 @@
 extend schema
-	@link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@extends", "@external", "@key", "@requires"])
+	@link(url: "https://specs.apollo.dev/federation/v2.7", import: ["@extends", "@external", "@key", "@requires"])
 
 type Query {
   acme: Acme

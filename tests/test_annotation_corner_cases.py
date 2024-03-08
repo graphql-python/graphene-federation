@@ -38,6 +38,9 @@ def test_similar_field_name():
 
     schema = build_schema(query=ChatQuery, federation_version=LATEST_VERSION)
 
+    # save_file(str(schema), "1")
+    # save_file(sdl_query(schema), "2")
+
     assert open_file("1") == str(schema)
     assert open_file("2") == sdl_query(schema)
 
@@ -59,6 +62,9 @@ def test_camel_case_field_name():
         camel = Field(Camel)
 
     schema = build_schema(query=Query, federation_version=LATEST_VERSION)
+
+    # save_file(str(schema), "1")
+    # save_file(sdl_query(schema), "2")
 
     assert open_file("1") == str(schema)
     assert open_file("2") == sdl_query(schema)
@@ -82,6 +88,9 @@ def test_camel_case_field_name_without_auto_camelcase():
     schema = build_schema(
         query=Query, auto_camelcase=False, federation_version=LATEST_VERSION
     )
+
+    # save_file(str(schema), "1")
+    # save_file(sdl_query(schema), "2")
 
     assert open_file("1") == str(schema)
     assert open_file("2") == sdl_query(schema)
@@ -107,6 +116,9 @@ def test_annotated_field_also_used_in_filter():
 
     schema = build_schema(query=Query, federation_version=LATEST_VERSION)
 
+    # save_file(str(schema), "1")
+    # save_file(sdl_query(schema), "2")
+
     assert open_file("1") == str(schema)
     assert open_file("2") == sdl_query(schema)
 
@@ -131,6 +143,9 @@ def test_annotate_object_with_meta_name():
         a = Field(A)
 
     schema = build_schema(query=Query, federation_version=LATEST_VERSION)
+
+    # save_file(str(schema), "1")
+    # save_file(sdl_query(schema), "2")
 
     assert open_file("1") == str(schema)
     assert open_file("2") == sdl_query(schema)

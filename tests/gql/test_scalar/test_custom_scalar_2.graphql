@@ -1,5 +1,5 @@
 extend schema
-	@link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@inaccessible", "@shareable"])
+	@link(url: "https://specs.apollo.dev/federation/v2.7", import: ["@inaccessible", "@shareable"])
 
 type TestScalar  @shareable {
   testShareableScalar(x: AddressScalar): String @shareable
