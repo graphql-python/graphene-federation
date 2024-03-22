@@ -1,0 +1,15 @@
+type Query {
+  camel: Camel
+}
+
+type Camel  @extends {
+  auto_camel: String @external
+  forcedCamel: String @requires(fields: "auto_camel")
+  a_snake: String
+  aCamel: String
+}
+
+"""
+A string-serialized scalar represents a set of fields that's passed to a federated directive, such as @key, @requires, or @provides
+"""
+scalar _FieldSet

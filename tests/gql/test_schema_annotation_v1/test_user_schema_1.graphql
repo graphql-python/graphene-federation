@@ -1,0 +1,28 @@
+schema {
+  query: UserQuery
+}
+
+type UserQuery {
+  user(userId: ID!): User
+  _entities(representations: [_Any!]!): [_Entity]!
+  _service: _Service!
+}
+
+type User @key(fields: "email") @key(fields: "userId") {
+  userId: ID!
+  email: String!
+  name: String
+}
+
+union _Entity = User
+
+scalar _Any
+
+type _Service {
+  sdl: String
+}
+
+"""
+A string-serialized scalar represents a set of fields that's passed to a federated directive, such as @key, @requires, or @provides
+"""
+scalar _FieldSet

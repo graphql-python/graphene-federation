@@ -1,6 +1,6 @@
-from graphene import ObjectType, Int, Field
+from graphene import Field, Int, ObjectType
 
-from graphene_federation import build_schema, extend, external
+from graphene_federation import FederationVersion, build_schema, extends, external, key
 
 """
 Alphabet order - matters
@@ -9,7 +9,8 @@ https://github.com/preply/graphene-federation/issues/26#issuecomment-572127271
 """
 
 
-@extend(fields='id')
+@key(fields="id")
+@extends
 class Article(ObjectType):
     id = external(Int(required=True))
 
@@ -27,4 +28,4 @@ class Query(ObjectType):
     y = Field(Y)
 
 
-schema = build_schema(query=Query)
+schema = build_schema(query=Query, federation_version=FederationVersion.VERSION_1_0)

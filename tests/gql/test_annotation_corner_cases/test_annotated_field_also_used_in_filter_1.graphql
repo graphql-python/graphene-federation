@@ -1,0 +1,36 @@
+extend schema
+	@link(url: "https://specs.apollo.dev/federation/v2.7", import: ["@extends", "@external", "@key"])
+
+type Query {
+  a: A
+  _entities(representations: [_Any!]!): [_Entity]!
+  _service: _Service!
+}
+
+type A  @extends {
+  id: ID @external
+  b(id: ID ): B
+}
+
+type B @key(fields: "id") {
+  id: ID
+}
+
+union _Entity = A | B
+
+scalar _Any
+
+type _Service {
+  sdl: String
+}
+
+"""
+A string-serialized scalar represents a set of fields that's passed to a federated directive, such as @key, @requires, or @provides
+"""
+scalar FieldSet
+
+"""This string-serialized scalar represents a JWT scope"""
+scalar federation__Scope
+
+"""This string-serialized scalar represents an authorization policy."""
+scalar federation__Policy

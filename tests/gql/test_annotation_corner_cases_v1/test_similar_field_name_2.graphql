@@ -1,0 +1,25 @@
+schema {
+  query: ChatQuery
+}
+
+type ChatQuery {
+  message(id: ID!): ChatMessage
+}
+
+type ChatMessage {
+  id: ID!
+  user: ChatUser
+}
+
+type ChatUser  @key(fields: "id") @extends {
+  uid: ID
+  identified: ID
+  id: ID @external
+  iD: ID
+  ID: ID
+}
+
+"""
+A string-serialized scalar represents a set of fields that's passed to a federated directive, such as @key, @requires, or @provides
+"""
+scalar _FieldSet

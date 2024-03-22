@@ -1,0 +1,24 @@
+extend schema
+	@link(url: "https://specs.apollo.dev/federation/v2.7", import: ["@extends", "@external", "@key", "@requires"])
+
+type Query {
+  camel: Camel
+}
+
+type Camel  @key(fields: "autoCamel") @extends {
+  autoCamel: String @external
+  forcedCamel: String @requires(fields: "autoCamel")
+  aSnake: String
+  aCamel: String
+}
+
+"""
+A string-serialized scalar represents a set of fields that's passed to a federated directive, such as @key, @requires, or @provides
+"""
+scalar FieldSet
+
+"""This string-serialized scalar represents a JWT scope"""
+scalar federation__Scope
+
+"""This string-serialized scalar represents an authorization policy."""
+scalar federation__Policy

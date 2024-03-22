@@ -3,7 +3,7 @@ from graphene_federation import build_schema, key
 
 
 def get_file_by_id(id):
-    return File(**{'id': id, 'name': 'test_name'})
+    return File(**{"id": id, "name": "test_name"})
 
 
 class Author(graphene.ObjectType):
@@ -11,9 +11,9 @@ class Author(graphene.ObjectType):
     name = graphene.String(required=True)
 
 
-@key(fields='id')
-@key(fields='id author { name }')
-@key(fields='id author { id name }')
+@key(fields="id")
+@key(fields="id author { name }")
+@key(fields="id author { id name }")
 class File(graphene.ObjectType):
     id = graphene.Int(required=True)
     name = graphene.String()
@@ -38,18 +38,18 @@ class Query(graphene.ObjectType):
 
 schema = build_schema(Query)
 
-query = '''
+query = """
     query getSDL {
       _service {
          sdl
       }
     }
-'''
+"""
 result = schema.execute(query)
 print(result.data)
 # {'_service': {'sdl': 'type Query {\n  file: File\n}\n\ntype File @key(fields: "id") {\n  id: Int!\n  name: String\n}'}}
 
-query = '''
+query = """
     query entities($_representations: [_Any!]!) {
       _entities(representations: $_representations) {
         ... on File {
@@ -59,15 +59,10 @@ query = '''
       }
     }
     
-'''
+"""
 
-result = schema.execute(query, variables={
-    "_representations": [
-        {
-            "__typename": "File",
-            "id": 1
-        }
-    ]
-})
+result = schema.execute(
+    query, variables={"_representations": [{"__typename": "File", "id": 1}]}
+)
 print(result.data)
 # {'_entities': [{'id': 1, 'name': 'test_name'}]}
