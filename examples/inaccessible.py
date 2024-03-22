@@ -1,12 +1,12 @@
 import graphene
 
 from graphene_federation import (
-    LATEST_VERSION, inaccessible,
+    LATEST_VERSION,
+    inaccessible,
     external,
     provides,
     key,
     override,
-    shareable,
 )
 
 from graphene_federation import build_schema
@@ -64,7 +64,9 @@ class Query(graphene.ObjectType):
 
 
 schema = build_schema(
-    Query, federation_version=LATEST_VERSION, types=(ReviewInterface, SearchResult, Review)
+    Query,
+    federation_version=LATEST_VERSION,
+    types=(ReviewInterface, SearchResult, Review),
 )
 
 query = """

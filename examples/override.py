@@ -1,12 +1,11 @@
 import graphene
 
 from graphene_federation import (
-    LATEST_VERSION, build_schema,
-    shareable,
-    external,
+    LATEST_VERSION,
+    build_schema,
+    inaccessible,
     key,
     override,
-    inaccessible,
 )
 
 

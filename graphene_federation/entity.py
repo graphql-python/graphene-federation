@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any
 from typing import Dict, Type
 
-from graphene import Field, List, NonNull, ObjectType, Union
+from graphene import Enum, Field, List, NonNull, ObjectType, Scalar, Union
 from graphene.types.schema import TypeMap
 from graphene_directives import Schema
 from graphene_directives.utils import has_non_field_attribute
@@ -123,6 +123,12 @@ def get_entity_query(schema: Schema):
                         model_arguments[model_field] = EntityQuery.resolve_entities(
                             self, info, representations=value, sub_field_resolution=True
                         )
+                    elif isinstance(field, Scalar) and getattr(
+                        field, "parse_value", None
+                    ):
+                        model_arguments[model_field] = field.parse_value(value)
+                    elif isinstance(field, Enum):
+                        model_arguments[model_field] = field._meta.enum[value]  # noqa
 
                 model_instance = model(**model_arguments)
 
