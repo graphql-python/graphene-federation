@@ -48,12 +48,15 @@ def _add_sharable_to_page_info_type(
     """
     Add @sharable directive to PageInfo type
     """
-    if PageInfo.__name__ in schema.graphql_schema.type_map:
+
+    if page_info := schema.graphql_schema.type_map.get(PageInfo.__name__):
         try:
             # PageInfo needs @sharable directive
             sharable = get_directive_from_name("shareable", federation_version)
             types.append(
-                directive_decorator(target_directive=sharable)(field=None)(PageInfo)
+                directive_decorator(target_directive=sharable)(field=None)(
+                    page_info.graphene_type
+                )
             )
         except ValueError:
             # Federation Version does not support @sharable
