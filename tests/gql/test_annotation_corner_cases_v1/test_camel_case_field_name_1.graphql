@@ -1,0 +1,25 @@
+type Query {
+  camel: Camel
+  _entities(representations: [_Any!]!): [_Entity]!
+  _service: _Service!
+}
+
+type Camel  @key(fields: "autoCamel") @extends {
+  autoCamel: String @external
+  forcedCamel: String @requires(fields: "autoCamel")
+  aSnake: String
+  aCamel: String
+}
+
+union _Entity = Camel
+
+scalar _Any
+
+type _Service {
+  sdl: String
+}
+
+"""
+A string-serialized scalar represents a set of fields that's passed to a federated directive, such as @key, @requires, or @provides
+"""
+scalar _FieldSet

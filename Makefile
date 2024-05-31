@@ -15,11 +15,11 @@ integration-tests: ## Run integration tests
 # -------------------------
 
 dev-setup: ## Install development dependencies
-	docker-compose up -d && docker-compose exec graphene_federation bash
+	docker-compose up --build -d
 .PHONY: dev-setup
 
 tests: ## Run unit tests
-	docker-compose run graphene_federation py.test graphene_federation --cov=graphene_federation -vv
+	docker-compose run graphene_federation py.test tests --cov=graphene_federation -vv
 .PHONY: tests
 
 check-style: ## Run linting

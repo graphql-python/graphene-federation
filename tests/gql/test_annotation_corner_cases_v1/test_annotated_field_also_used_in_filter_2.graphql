@@ -1,0 +1,17 @@
+type Query {
+  a: A
+}
+
+type A  @extends {
+  id: ID @external
+  b(id: ID ): B
+}
+
+type B @key(fields: "id") {
+  id: ID
+}
+
+"""
+A string-serialized scalar represents a set of fields that's passed to a federated directive, such as @key, @requires, or @provides
+"""
+scalar _FieldSet

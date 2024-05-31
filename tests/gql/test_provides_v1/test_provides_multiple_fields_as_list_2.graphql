@@ -1,0 +1,19 @@
+type Query {
+  inStockCount: InStockCount
+}
+
+type InStockCount  {
+  product: Product! @provides(fields: "name weight")
+  quantity: Int!
+}
+
+type Product  @key(fields: "sku") @extends {
+  sku: String! @external
+  name: String @external
+  weight: Int @external
+}
+
+"""
+A string-serialized scalar represents a set of fields that's passed to a federated directive, such as @key, @requires, or @provides
+"""
+scalar _FieldSet

@@ -1,0 +1,14 @@
+type Query {
+  acme: Acme
+}
+
+type Acme  @key(fields: "id") @extends {
+  id: ID! @external
+  age: Int @external
+  foo(someInput: String ): String @requires(fields: "age")
+}
+
+"""
+A string-serialized scalar represents a set of fields that's passed to a federated directive, such as @key, @requires, or @provides
+"""
+scalar _FieldSet
