@@ -7,7 +7,7 @@ def read(*rnames):
     return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
 
 
-version = "3.1.5"
+version = "3.2.0"
 
 tests_require = [
     "pytest==7.1.2",
