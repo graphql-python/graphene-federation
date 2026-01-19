@@ -154,7 +154,7 @@ from graphene_federation import LATEST_VERSION, build_schema, key
 
 @key("id")
 class User(ObjectType):
-    id = Int(required=True)
+    id = ID(required=True)
     username = String(required=True)
 
     def __resolve_reference(self, info, **kwargs):
@@ -176,7 +176,6 @@ The product service exposes a `Product` type that can be used by other services 
 
 ```python
 from graphene import Argument, Int, List, ObjectType, String
-
 from graphene_federation import LATEST_VERSION, build_schema, key
 
 
@@ -206,14 +205,13 @@ It also has the ability to provide the username of the `User`.
 On top of that it adds to the `User`/`Product` types (that are both defined in other services) the ability to get their reviews.
 
 ```python
-from graphene import Field, Int, List, ObjectType, String
-
-from graphene_federation import LATEST_VERSION, build_schema, external, key, provides
+from graphene import Field, ID, Int, List, ObjectType, String
+from graphene_federation import LATEST_VERSION, build_schema, extend, external, key, provides
 
 
 @key("id")
 class User(ObjectType):
-    id = external(Int(required=True))
+    id = external(ID(required=True))
     reviews = List(lambda: Review)
 
     def resolve_reviews(self, info, *args, **kwargs):
