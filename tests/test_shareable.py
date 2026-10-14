@@ -2,7 +2,7 @@ from pathlib import Path
 
 import graphene
 import pytest
-from graphene import ObjectType
+from graphene import ObjectType, relay
 from graphene_directives import DirectiveValidationError
 
 from graphene_federation import LATEST_VERSION, build_schema
@@ -90,3 +90,29 @@ def test_shareable_union():
         )
 
     assert "@shareable cannot be used for SearchResult" in str(err.value)
+
+
+def test_add_sharable_to_page_info_type_idempotent():
+    """
+    build_schema must not raise DirectiveValidationError when called multiple times
+    with a schema that includes PageInfo (e.g. via relay connections).
+    _add_sharable_to_page_info_type mutates the global PageInfo class in-place,
+    so a second call would previously attempt to apply @shareable again and crash.
+    """
+
+    class Item(graphene.ObjectType):
+        class Meta:
+            interfaces = (relay.Node,)
+
+        name = graphene.String()
+
+    class ItemConnection(relay.Connection):
+        class Meta:
+            node = Item
+
+    class Query(ObjectType):
+        items = relay.ConnectionField(ItemConnection)
+
+    build_schema(query=Query, federation_version=LATEST_VERSION)
+    # Second call must not raise DirectiveValidationError
+    build_schema(query=Query, federation_version=LATEST_VERSION)

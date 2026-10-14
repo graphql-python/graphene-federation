@@ -7,6 +7,7 @@ from graphene_directives import (
     build_schema as build_directive_schema,
     directive_decorator,
 )
+from graphene_directives import utils as graphene_directives_utils
 from graphene_directives.schema import Schema
 
 from .apollo_versions import (
@@ -53,6 +54,11 @@ def _add_sharable_to_page_info_type(
         try:
             # PageInfo needs @sharable directive
             sharable = get_directive_from_name("shareable", federation_version)
+            if graphene_directives_utils.has_non_field_attribute(
+                page_info.graphene_type, sharable
+            ):
+                # already added, skip
+                return
             types.append(
                 directive_decorator(target_directive=sharable)(field=None)(
                     page_info.graphene_type
